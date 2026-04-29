@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { leadFormBottomNote, leadFormUploadHint, productGroups } from "@/data/site-content";
 import { leadSubmitSchema, type LeadSubmitValues } from "@/lib/forms/form-schemas";
@@ -17,21 +17,27 @@ type LeadApiPayload = LeadSubmitValues & {
   uploadedFiles?: string[];
 };
 
-const defaultValues: LeadSubmitValues = {
-  fullName: "",
-  email: "",
-  phone: "",
-  company: "",
-  area: "",
-  productGroup: "",
-  requestedCode: "",
-  application: "",
-  quantity: "",
-  priority: "",
-  notes: "",
+function createDefaultValues(initialRequestedCode = ""): LeadSubmitValues {
+  return {
+    fullName: "",
+    email: "",
+    phone: "",
+    company: "",
+    area: "",
+    productGroup: "",
+    requestedCode: initialRequestedCode,
+    application: "",
+    quantity: "",
+    priority: "",
+    notes: "",
+  };
+}
+
+type LeadFormProps = {
+  initialRequestedCode?: string;
 };
 
-export function LeadForm() {
+export function LeadForm({ initialRequestedCode = "" }: LeadFormProps) {
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [submitMessage, setSubmitMessage] = useState("");
   const [submitError, setSubmitError] = useState("");
@@ -45,11 +51,22 @@ export function LeadForm() {
     reset,
   } = useForm<LeadSubmitValues>({
     resolver: zodResolver(leadSubmitSchema),
-    defaultValues,
+    defaultValues: createDefaultValues(initialRequestedCode),
   });
 
   const selectedProductGroup = watch("productGroup");
   const selectedPriority = watch("priority");
+
+  useEffect(() => {
+    if (!initialRequestedCode) {
+      return;
+    }
+
+    setValue("requestedCode", initialRequestedCode, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  }, [initialRequestedCode, setValue]);
 
   async function onUploadChange(event: React.ChangeEvent<HTMLInputElement>) {
     const fileList = event.target.files;
@@ -87,7 +104,7 @@ export function LeadForm() {
       setSubmitMessage(
         data.message ?? "THL đã tiếp nhận yêu cầu kỹ thuật. Đội THL B2B sẽ phản hồi chi tiết thủ công qua email hoặc điện thoại.",
       );
-      reset(defaultValues);
+      reset(createDefaultValues(initialRequestedCode));
       setUploadedImages([]);
     } catch {
       setSubmitError("Không thể kết nối hệ thống gửi form. Vui lòng thử lại hoặc liên hệ trực tiếp đội THL B2B qua điện thoại.");
