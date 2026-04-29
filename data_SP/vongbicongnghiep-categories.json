@@ -1,0 +1,802 @@
+[
+  {
+    "id": 27,
+    "name": "VÒNG BI",
+    "slug": "vong-bi",
+    "count": 25989,
+    "parent": "",
+    "useful": "YES"
+  },
+  {
+    "id": 83,
+    "name": "SẢN PHẨM TRUYỀN ĐỘNG",
+    "slug": "san-pham-truyen-dong",
+    "count": 16825,
+    "parent": "",
+    "useful": "YES"
+  },
+  {
+    "id": 85,
+    "name": "Dây đai",
+    "slug": "day-dai",
+    "count": 9499,
+    "parent": 83,
+    "useful": "YES"
+  },
+  {
+    "id": 69,
+    "name": "PHỚT",
+    "slug": "phot",
+    "count": 7126,
+    "parent": "",
+    "useful": "YES"
+  },
+  {
+    "id": 29,
+    "name": "Vòng bi cầu 1 dãy",
+    "slug": "vong-bi-cau-1-day",
+    "count": 5251,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 240,
+    "name": "GỐI ĐỠ",
+    "slug": "goi-do",
+    "count": 5203,
+    "parent": "",
+    "useful": "YES"
+  },
+  {
+    "id": 33,
+    "name": "Vòng bi tiếp xúc góc 1 dãy",
+    "slug": "vong-bi-tiep-xuc-goc-1-day",
+    "count": 5162,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 71,
+    "name": "Phớt chặn dầu",
+    "slug": "phot-chan-dau",
+    "count": 5087,
+    "parent": 69,
+    "useful": "YES"
+  },
+  {
+    "id": 47,
+    "name": "Vòng bi tang trống tự lựa",
+    "slug": "vong-bi-tang-trong-tu-lua",
+    "count": 3670,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 43,
+    "name": "Vòng bi đũa trụ",
+    "slug": "vong-bi-dua-tru",
+    "count": 3598,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 16916,
+    "name": "Đĩa xích",
+    "slug": "dia-xich",
+    "count": 2349,
+    "parent": 83,
+    "useful": "YES"
+  },
+  {
+    "id": 87,
+    "name": "Xích",
+    "slug": "xich",
+    "count": 1429,
+    "parent": 83,
+    "useful": "YES"
+  },
+  {
+    "id": 45,
+    "name": "Vòng bi đũa côn",
+    "slug": "vong-bi-dua-con",
+    "count": 1345,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 75,
+    "name": "Phớt thủy lực Piston Seal",
+    "slug": "phot-thuy-luc-piston-seal",
+    "count": 1335,
+    "parent": 69,
+    "useful": "YES"
+  },
+  {
+    "id": 61,
+    "name": "PHỤ KIỆN VÒNG BI",
+    "slug": "phu-kien-vong-bi",
+    "count": 1311,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 8664,
+    "name": "Gối đỡ SAF và SAW",
+    "slug": "goi-saf-va-saw",
+    "count": 1093,
+    "parent": 240,
+    "useful": "YES"
+  },
+  {
+    "id": 49,
+    "name": "Vòng bi đũa kim",
+    "slug": "vong-bi-dua-kim",
+    "count": 809,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 242,
+    "name": "Vòng bi GE",
+    "slug": "vong-bi-ge",
+    "count": 751,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 8048,
+    "name": "Bộ gối UCP vòng bi đũa",
+    "slug": "bo-goi-ucp-vong-bi-dua",
+    "count": 745,
+    "parent": 240,
+    "useful": "YES"
+  },
+  {
+    "id": 6305,
+    "name": "Bộ gối UCP",
+    "slug": "bo-goi-ucp",
+    "count": 679,
+    "parent": 240,
+    "useful": "YES"
+  },
+  {
+    "id": 35,
+    "name": "Vòng bi tiếp xúc góc 2 dãy",
+    "slug": "vong-bi-tiep-xuc-goc-2-day",
+    "count": 635,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 51,
+    "name": "Vòng bi CARB",
+    "slug": "vong-bi-carb",
+    "count": 594,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 77,
+    "name": "Phớt thủy lực Rod Seal",
+    "slug": "phot-thuy-luc-rod-seal",
+    "count": 579,
+    "parent": 69,
+    "useful": "YES"
+  },
+  {
+    "id": 16105,
+    "name": "Bạc lót",
+    "slug": "bac-lot",
+    "count": 572,
+    "parent": "",
+    "useful": "YES"
+  },
+  {
+    "id": 37,
+    "name": "Vòng bi cầu tự lựa",
+    "slug": "vong-bi-cau-tu-lua",
+    "count": 563,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 7479,
+    "name": "Bộ gối UCF",
+    "slug": "bo-goi-ucf",
+    "count": 522,
+    "parent": 240,
+    "useful": "YES"
+  },
+  {
+    "id": 244,
+    "name": "Vòng bi Rod End",
+    "slug": "vong-bi-rod-end",
+    "count": 452,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 246,
+    "name": "Gối đỡ SNL dãy 2,3,5 và 6",
+    "slug": "goi-do-snl-day-235-va-6",
+    "count": 445,
+    "parent": 240,
+    "useful": "YES"
+  },
+  {
+    "id": 13138,
+    "name": "Phớt cho gối",
+    "slug": "phot-cho-goi",
+    "count": 436,
+    "parent": 240,
+    "useful": "YES"
+  },
+  {
+    "id": 93,
+    "name": "HỆ THỐNG BÔI TRƠN",
+    "slug": "he-thong-boi-tron",
+    "count": 424,
+    "parent": "",
+    "useful": "YES"
+  },
+  {
+    "id": 5038,
+    "name": "Vòng bi Track roller",
+    "slug": "vong-bi-track-roller",
+    "count": 424,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 12247,
+    "name": "Vòng bi đũa trụ tỳ",
+    "slug": "vong-bi-dua-tru-ty",
+    "count": 377,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 31,
+    "name": "Vòng bi UC",
+    "slug": "vong-bi-uc",
+    "count": 340,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 67,
+    "name": "Đai ốc",
+    "slug": "dai-oc",
+    "count": 332,
+    "parent": 61,
+    "useful": "YES"
+  },
+  {
+    "id": 8207,
+    "name": "Bộ gối UCF vòng bi đũa",
+    "slug": "bo-goi-ucf-vong-bi-dua",
+    "count": 327,
+    "parent": 240,
+    "useful": "YES"
+  },
+  {
+    "id": 2119,
+    "name": "Vòng bi cầu tỳ",
+    "slug": "vong-bi-cau-ty",
+    "count": 321,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 6280,
+    "name": "Vòng bi QJ",
+    "slug": "vong-bi-qj",
+    "count": 263,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 13288,
+    "name": "Phụ kiện bơm mỡ SKF",
+    "slug": "phu-kien-bom-mo-skf",
+    "count": 224,
+    "parent": 93,
+    "useful": "YES"
+  },
+  {
+    "id": 12919,
+    "name": "Vành chặn cho gối đỡ",
+    "slug": "vanh-chan-cho-goi-do",
+    "count": 221,
+    "parent": 240,
+    "useful": "YES"
+  },
+  {
+    "id": 65,
+    "name": "Ống lót đẩy",
+    "slug": "ong-lot-day",
+    "count": 204,
+    "parent": 61,
+    "useful": "YES"
+  },
+  {
+    "id": 7906,
+    "name": "Bộ gối UCT",
+    "slug": "bo-goi-uct",
+    "count": 186,
+    "parent": 240,
+    "useful": "YES"
+  },
+  {
+    "id": 9652,
+    "name": "VÒNG BI CHỊU NHIỆT",
+    "slug": "vong-bi-chiu-nhiet",
+    "count": 167,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 8611,
+    "name": "Gối FNL",
+    "slug": "goi-fnl",
+    "count": 150,
+    "parent": 240,
+    "useful": "YES"
+  },
+  {
+    "id": 15700,
+    "name": "Spherical roller thrust",
+    "slug": "spherical-roller-thrust-vong-bi-tang-trong-tu-lua",
+    "count": 137,
+    "parent": 47,
+    "useful": "YES"
+  },
+  {
+    "id": 8490,
+    "name": "Gối đỡ SNL dãy 30,31 và 32",
+    "slug": "goi-snl-day-303132",
+    "count": 130,
+    "parent": 240,
+    "useful": "YES"
+  },
+  {
+    "id": 53,
+    "name": "Vòng bi cách điện",
+    "slug": "vong-bi-cach-dien",
+    "count": 116,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 79,
+    "name": "Phớt thủy lực Wiper Seal",
+    "slug": "phot-thuy-luc-wiper-seal",
+    "count": 103,
+    "parent": 69,
+    "useful": "YES"
+  },
+  {
+    "id": 13256,
+    "name": "Vòng định vị",
+    "slug": "vong-dinh-vi",
+    "count": 103,
+    "parent": 61,
+    "useful": "YES"
+  },
+  {
+    "id": 95,
+    "name": "Mỡ bôi trơn SKF",
+    "slug": "mo-boi-tron-skf",
+    "count": 91,
+    "parent": 93,
+    "useful": "YES"
+  },
+  {
+    "id": 12230,
+    "name": "Vòng bi cầu 2 dãy",
+    "slug": "vong-bi-cau-2-day",
+    "count": 77,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 13271,
+    "name": "Vòng bi trục cán",
+    "slug": "vong-bi-truc-can",
+    "count": 69,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 8574,
+    "name": "Gối SONL",
+    "slug": "goi-sonl",
+    "count": 67,
+    "parent": 240,
+    "useful": "YES"
+  },
+  {
+    "id": 13255,
+    "name": "Nắp bị đầu trục cho gối",
+    "slug": "nap-bi-dau-truc-cho-goi",
+    "count": 67,
+    "parent": 240,
+    "useful": "YES"
+  },
+  {
+    "id": 15620,
+    "name": "Phớt",
+    "slug": "phot-phu-kien-vong-bi",
+    "count": 66,
+    "parent": 61,
+    "useful": "YES"
+  },
+  {
+    "id": 12216,
+    "name": "Bộ chia mỡ Lincoln",
+    "slug": "bo-chia-mo-lincoln",
+    "count": 58,
+    "parent": 93,
+    "useful": "YES"
+  },
+  {
+    "id": 11378,
+    "name": "Cảo vòng bi",
+    "slug": "cao-vong-bi",
+    "count": 54,
+    "parent": 101,
+    "useful": "YES"
+  },
+  {
+    "id": 16932,
+    "name": "Bộ gối PF",
+    "slug": "bo-goi-pf",
+    "count": 48,
+    "parent": 240,
+    "useful": "YES"
+  },
+  {
+    "id": 9751,
+    "name": "Vòng bi UC chịu nhiệt",
+    "slug": "vong-bi-uc-chiu-nhiet",
+    "count": 48,
+    "parent": 9652,
+    "useful": "YES"
+  },
+  {
+    "id": 9666,
+    "name": "Gối UCP chịu nhiệt",
+    "slug": "goi-ucp-chiu-nhiet",
+    "count": 44,
+    "parent": 9652,
+    "useful": "YES"
+  },
+  {
+    "id": 9728,
+    "name": "Gối UCF chịu nhiệt",
+    "slug": "goi-ucf-chiu-nhiet",
+    "count": 41,
+    "parent": 9652,
+    "useful": "YES"
+  },
+  {
+    "id": 9741,
+    "name": "Gối Ovan chịu nhiệt",
+    "slug": "goi-oval-chiu-nhiet",
+    "count": 34,
+    "parent": 9652,
+    "useful": "YES"
+  },
+  {
+    "id": 41,
+    "name": "VÒNG BI ĐŨA",
+    "slug": "vong-bi-dua",
+    "count": 32,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 13278,
+    "name": "Vòng bi kim tỳ",
+    "slug": "vong-bi-kim-ty",
+    "count": 32,
+    "parent": 41,
+    "useful": "YES"
+  },
+  {
+    "id": 8266,
+    "name": "Bộ gối UCT vòng bi đũa",
+    "slug": "bo-goi-uct-vong-bi-dua",
+    "count": 29,
+    "parent": 240,
+    "useful": "YES"
+  },
+  {
+    "id": 13140,
+    "name": "Bộ gối UCFL",
+    "slug": "bo-goi-ucfl",
+    "count": 26,
+    "parent": 240,
+    "useful": "YES"
+  },
+  {
+    "id": 15618,
+    "name": "Kẹp khóa cho đai ốc khóa hệ mét",
+    "slug": "kep-khoa-cho-dai-oc-khoa-he-met",
+    "count": 25,
+    "parent": 61,
+    "useful": "YES"
+  },
+  {
+    "id": 99,
+    "name": "Bơm mỡ Lincoln",
+    "slug": "san-pham-lincoln",
+    "count": 23,
+    "parent": 93,
+    "useful": "YES"
+  },
+  {
+    "id": 97,
+    "name": "Dụng cụ bôi trơn",
+    "slug": "dung-cu-boi-tron",
+    "count": 23,
+    "parent": 93,
+    "useful": "YES"
+  },
+  {
+    "id": 9573,
+    "name": "Máy gia nhiệt vòng bi",
+    "slug": "may-gia-nhiet-vong-bi",
+    "count": 22,
+    "parent": 101,
+    "useful": "YES"
+  },
+  {
+    "id": 11637,
+    "name": "Bơm dầu mỡ SKF",
+    "slug": "bom-dau-skf",
+    "count": 20,
+    "parent": 93,
+    "useful": "YES"
+  },
+  {
+    "id": 11562,
+    "name": "Thiết bị kiểm tra máy",
+    "slug": "thiet-bi-kt-may",
+    "count": 19,
+    "parent": 101,
+    "useful": "YES"
+  },
+  {
+    "id": 15621,
+    "name": "Vòng đệm giãn cách",
+    "slug": "vong-dem-gian-cach",
+    "count": 19,
+    "parent": 61,
+    "useful": "YES"
+  },
+  {
+    "id": 13139,
+    "name": "Bộ gối UCFC",
+    "slug": "bo-goi-ucfc",
+    "count": 18,
+    "parent": 240,
+    "useful": "YES"
+  },
+  {
+    "id": 13280,
+    "name": "Miếng chêm máy móc SKF",
+    "slug": "mieng-chem-may-moc-skf",
+    "count": 15,
+    "parent": 101,
+    "useful": "YES"
+  },
+  {
+    "id": 11560,
+    "name": "Thiết bị phân tích",
+    "slug": "thiet-bi-phan-tich",
+    "count": 13,
+    "parent": 101,
+    "useful": "YES"
+  },
+  {
+    "id": 16718,
+    "name": "Vòng bi tiếp xúc góc 4 dãy",
+    "slug": "vong-bi-tiep-xuc-goc-4-day",
+    "count": 11,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 13141,
+    "name": "Bộ gối UCPA",
+    "slug": "bo-goi-ucpa",
+    "count": 10,
+    "parent": 240,
+    "useful": "YES"
+  },
+  {
+    "id": 11379,
+    "name": "Đèn chớp và Súng bắn nhiệt độ",
+    "slug": "den-chop-nhiet-do",
+    "count": 10,
+    "parent": 101,
+    "useful": "YES"
+  },
+  {
+    "id": 13277,
+    "name": "Vòng bi trượt",
+    "slug": "vong-bi-truot",
+    "count": 10,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 13257,
+    "name": "Chìa vặn đai ốc",
+    "slug": "chia-van-dai-oc",
+    "count": 9,
+    "parent": 101,
+    "useful": "YES"
+  },
+  {
+    "id": 13223,
+    "name": "Vòng bi UK",
+    "slug": "vong-bi-uk",
+    "count": 9,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 81,
+    "name": "Phớt thủy lực Buffer Seal",
+    "slug": "phot-thuy-luc-buffer-seal",
+    "count": 8,
+    "parent": 69,
+    "useful": "YES"
+  },
+  {
+    "id": 15619,
+    "name": "Tấm khóa cho đai ốc khóa inch",
+    "slug": "tam-khoa-cho-dai-oc-khoa-inch",
+    "count": 7,
+    "parent": 61,
+    "useful": "YES"
+  },
+  {
+    "id": 12228,
+    "name": "VÒNG BI Ô TÔ &#8211; XE MÁY",
+    "slug": "vong-bi-o-to-xe-may",
+    "count": 7,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 55,
+    "name": "Vòng bi tỳ",
+    "slug": "vong-bi-ty",
+    "count": 7,
+    "parent": 27,
+    "useful": "YES"
+  },
+  {
+    "id": 73,
+    "name": "Phớt chặn dầu chịu nhiệt",
+    "slug": "phot-chan-dau-chiu-nhiet",
+    "count": 3,
+    "parent": 69,
+    "useful": "YES"
+  },
+  {
+    "id": 16931,
+    "name": "Bộ gối UCFB",
+    "slug": "bo-goi-ucfb",
+    "count": 2,
+    "parent": 240,
+    "useful": "YES"
+  },
+  {
+    "id": 16930,
+    "name": "Nắp bịt đầu trục",
+    "slug": "nap-bit-dau-truc",
+    "count": 1,
+    "parent": 240,
+    "useful": "YES"
+  },
+  {
+    "id": 13279,
+    "name": "Vòng đệm cao su cho vòng bi",
+    "slug": "vong-dem-cao-su-cho-vong-bi",
+    "count": 1,
+    "parent": 240,
+    "useful": "YES"
+  },
+  {
+    "id": 89,
+    "name": "Pulley",
+    "slug": "pulley",
+    "count": 1809,
+    "parent": 83,
+    "useful": ""
+  },
+  {
+    "id": 10891,
+    "name": "Khớp nối SH Bushing",
+    "slug": "khop-noi-sh-bushing",
+    "count": 599,
+    "parent": 83,
+    "useful": ""
+  },
+  {
+    "id": 63,
+    "name": "Ống lót rút",
+    "slug": "ong-lot-rut",
+    "count": 555,
+    "parent": 61,
+    "useful": ""
+  },
+  {
+    "id": 12699,
+    "name": "Ống lót TB",
+    "slug": "ong-lot-tb",
+    "count": 518,
+    "parent": 83,
+    "useful": ""
+  },
+  {
+    "id": 16914,
+    "name": "Ống lót QD",
+    "slug": "ong-lot-qd",
+    "count": 441,
+    "parent": 83,
+    "useful": ""
+  },
+  {
+    "id": 101,
+    "name": "SẢN PHẨM BẢO TRÌ",
+    "slug": "san-pham-bao-tri",
+    "count": 141,
+    "parent": "",
+    "useful": ""
+  },
+  {
+    "id": 91,
+    "name": "Ống lót FX",
+    "slug": "ong-lot-fx",
+    "count": 138,
+    "parent": 83,
+    "useful": ""
+  },
+  {
+    "id": 16915,
+    "name": "Ống lót PHH",
+    "slug": "ong-lot-phh",
+    "count": 43,
+    "parent": 83,
+    "useful": ""
+  },
+  {
+    "id": 105,
+    "name": "SẢN PHẨM NỔI BẬT",
+    "slug": "san-pham-noi-bat",
+    "count": 36,
+    "parent": "",
+    "useful": ""
+  },
+  {
+    "id": 12701,
+    "name": "Ống lót sửa trục",
+    "slug": "ong-lot-sua-truc",
+    "count": 10,
+    "parent": 69,
+    "useful": ""
+  },
+  {
+    "id": 16954,
+    "name": "Chưa phân loại",
+    "slug": "chua-phan-loai",
+    "count": 1,
+    "parent": "",
+    "useful": ""
+  }
+]
