@@ -31,11 +31,11 @@ export function MobileQuickActions() {
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur lg:hidden">
       <div className="mx-auto grid max-w-6xl grid-cols-3 gap-2">
         <Link
-          href="/tra-ma-bao-gia"
+          href="/#tra-ma"
           className="flex items-center justify-center gap-1 rounded-md bg-blue-800 px-2 py-2 text-xs font-semibold text-white"
         >
           <Search className="size-4" />
-          Gửi yêu cầu
+          Tra mã
         </Link>
         <Link
           href="/tuyen-dung"
@@ -54,7 +54,7 @@ export function MobileQuickActions() {
                 onClick={() => setContactOpen(false)}
               >
                 <PhoneCall className="size-4" />
-                Goi {siteConfig.phone}
+                Gọi {siteConfig.phone}
               </a>
               <a
                 href={siteConfig.zaloLink}
@@ -64,7 +64,7 @@ export function MobileQuickActions() {
                 onClick={() => setContactOpen(false)}
               >
                 <MessageCircle className="size-4" />
-                Mo Zalo
+                Mở Zalo
               </a>
             </div>
           ) : null}
@@ -73,8 +73,8 @@ export function MobileQuickActions() {
             type="button"
             onClick={() => setContactOpen((prev) => !prev)}
             className="flex w-full items-center justify-center gap-1 rounded-md border border-blue-300 bg-white px-2 py-2 text-xs font-semibold text-blue-900"
-            aria-label={contactOpen ? "Dong lua chon lien he" : "Mo lua chon lien he"}
-            title="Lien he"
+            aria-label={contactOpen ? "Đóng lựa chọn liên hệ" : "Mở lựa chọn liên hệ"}
+            title="Liên hệ"
           >
             <PhoneCall className="size-4" />
             Liên hệ
