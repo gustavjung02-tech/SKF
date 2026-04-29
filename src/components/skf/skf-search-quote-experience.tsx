@@ -1,6 +1,6 @@
 "use client";
 
-import { useDeferredValue, useEffect, useState } from "react";
+import { type FormEvent, useDeferredValue, useEffect, useRef, useState } from "react";
 import { Search, SlidersHorizontal, Loader2, RotateCcw, ArrowDownToLine } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { LeadForm } from "@/components/forms/lead-form";
@@ -53,6 +53,7 @@ type SearchRecord = GroupRecord & {
 
 const FILTER_OPTIONS_URL = "/data/skf-filter-options.json";
 const CODE_INDEX_URL = "/data/skf-code-index.json";
+const DEFAULT_QUICK_SUGGESTIONS = ["6205", "6308", "NU308", "22212", "30208", "UCP208"];
 
 function normalizeCode(value: string) {
   return value.toUpperCase().replace(/[^A-Z0-9]/g, "");
@@ -107,6 +108,7 @@ export function SkfSearchQuoteExperience() {
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get("q") ?? "";
   const groupParam = searchParams.get("group") ?? searchParams.get("nhom") ?? "";
+  const resultsRef = useRef<HTMLElement | null>(null);
 
   const [query, setQuery] = useState(initialQuery);
   const deferredQuery = useDeferredValue(query);
@@ -312,6 +314,38 @@ export function SkfSearchQuoteExperience() {
     selectedSubCategory,
   ]);
 
+  const quickSuggestions = Array.from(
+    new Set([...DEFAULT_QUICK_SUGGESTIONS, ...(filterOptions?.suggestedQueries ?? [])]),
+  );
+
+  const hasActiveSearch =
+    Boolean(query.trim()) ||
+    Boolean(selectedGroup) ||
+    Boolean(selectedSubCategory) ||
+    Boolean(selectedApplication) ||
+    Boolean(selectedIndustry) ||
+    Boolean(selectedMachineGroup) ||
+    Boolean(selectedPriority);
+
+  function scrollToResults() {
+    window.requestAnimationFrame(() => {
+      resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
+  function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (hasActiveSearch) {
+      scrollToResults();
+    }
+  }
+
+  function handleQuickSuggestion(suggestion: string) {
+    setQuery(suggestion);
+    scrollToResults();
+  }
+
   function resetFilters() {
     setSelectedGroup("");
     setSelectedSubCategory("");
@@ -348,29 +382,35 @@ export function SkfSearchQuoteExperience() {
 
         <div className="mt-6 space-y-5">
           <div className="grid gap-4 lg:grid-cols-[1.35fr_0.65fr]">
-            <div className="space-y-2">
+            <form className="space-y-2" onSubmit={handleSearchSubmit}>
               <Label htmlFor="skf-code-search">Tra mã SKF</Label>
-              <div className="relative">
-                <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-                <Input
-                  id="skf-code-search"
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  placeholder="6205, 6308, NU308, LGHP 2"
-                  className="h-12 pl-11"
-                />
+              <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+                <div className="relative">
+                  <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+                  <Input
+                    id="skf-code-search"
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                    placeholder="6205, 6308, NU308, LGHP 2"
+                    className="h-12 pl-11"
+                  />
+                </div>
+                <Button type="submit" className="h-12 bg-blue-800 px-5 text-white hover:bg-blue-900">
+                  <Search className="mr-2 size-4" />
+                  Tìm sản phẩm
+                </Button>
               </div>
-            </div>
+            </form>
 
             <div className="space-y-2">
               <Label>Gợi ý tra mã</Label>
               <div className="flex flex-wrap gap-2">
-                {(filterOptions?.suggestedQueries ?? []).slice(0, 6).map((suggestion) => (
+                {quickSuggestions.slice(0, 6).map((suggestion) => (
                   <button
                     key={suggestion}
                     type="button"
-                    onClick={() => setQuery(suggestion)}
-                    className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-800"
+                    onClick={() => handleQuickSuggestion(suggestion)}
+                    className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-800 transition hover:border-blue-200 hover:bg-white"
                   >
                     {suggestion}
                   </button>
@@ -492,7 +532,7 @@ export function SkfSearchQuoteExperience() {
         </div>
       </section>
 
-      <section className="space-y-4">
+      <section ref={resultsRef} className="scroll-mt-24 space-y-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h3 className="font-heading text-xl font-bold text-slate-950">Kết quả tra mã SKF</h3>
