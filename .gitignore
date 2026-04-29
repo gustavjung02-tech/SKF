@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+node_modules/
 /.pnp
 .pnp.js
 .yarn/install-state.gz
@@ -11,16 +12,21 @@
 
 # next.js
 /.next/
+.next/
 /.next-build/
 /.next-dev/
 /.open-next/
+.open-next/
 /out/
 
 # production
 /build
+build/
+dist/
 
 # misc
 .DS_Store
+Thumbs.db
 *.pem
 .tmp_ntn_zip/
 /public/ntn-codex-data-package.zip
@@ -32,13 +38,17 @@ yarn-error.log*
 *.log
 *.err
 /public/*.log
-/docs/archived-assets/
 
 # local env files
 .env*.local
+.env
+.env.local
+.env.production
+.env.development
 
 # vercel
 .vercel
+.vercel/
 .wrangler
 
 # typescript
