@@ -1,8 +1,9 @@
 "use client";
 
 import { type FormEvent, useDeferredValue, useEffect, useRef, useState } from "react";
-import { Search, SlidersHorizontal, Loader2, RotateCcw, ArrowDownToLine } from "lucide-react";
+import { MessageCircle, Search, SlidersHorizontal, Loader2, RotateCcw, X } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { siteConfig } from "@/config/site";
 import { LeadForm } from "@/components/forms/lead-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -26,6 +27,21 @@ type FilterOptions = {
   suggestedQueries: string[];
 };
 
+type ProductSpecs = {
+  boreMm?: number;
+  innerDiameterMm?: number;
+  dMm?: number;
+  d_mm?: number;
+  outerDiameterMm?: number;
+  outsideDiameterMm?: number;
+  DMm?: number;
+  D_mm?: number;
+  widthMm?: number;
+  thicknessMm?: number;
+  bMm?: number;
+  B_T_mm?: number;
+};
+
 type CodeIndexRecord = {
   id: string;
   code: string;
@@ -36,6 +52,13 @@ type CodeIndexRecord = {
   subCategory?: string;
   applicationText?: string;
   priority?: string;
+  specs?: ProductSpecs;
+  boreMm?: number;
+  outerDiameterMm?: number;
+  widthMm?: number;
+  d_mm?: number;
+  D_mm?: number;
+  B_T_mm?: number;
 };
 
 type GroupRecord = CodeIndexRecord & {
@@ -51,6 +74,11 @@ type SearchRecord = GroupRecord & {
   machineGroupsText: string;
 };
 
+type SelectedQuoteItem = {
+  code: string;
+  name?: string;
+};
+
 const FILTER_OPTIONS_URL = "/data/skf-filter-options.json";
 const CODE_INDEX_URL = "/data/skf-code-index.json";
 const DEFAULT_QUICK_SUGGESTIONS = ["6205", "6308", "NU308", "22212", "30208", "UCP208"];
@@ -61,6 +89,40 @@ function normalizeCode(value: string) {
 
 function normalizeText(value: string | undefined) {
   return (value ?? "").toLowerCase();
+}
+
+function parseDimension(value: string): number | null {
+  const normalizedValue = value.trim().replace(",", ".");
+  if (!normalizedValue) {
+    return null;
+  }
+
+  const parsed = Number(normalizedValue);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function getNumericField(record: GroupRecord, keys: Array<keyof ProductSpecs | keyof CodeIndexRecord>) {
+  for (const key of keys) {
+    const directValue = record[key as keyof CodeIndexRecord];
+    if (typeof directValue === "number" && Number.isFinite(directValue)) {
+      return directValue;
+    }
+
+    const specValue = record.specs?.[key as keyof ProductSpecs];
+    if (typeof specValue === "number" && Number.isFinite(specValue)) {
+      return specValue;
+    }
+  }
+
+  return null;
+}
+
+function matchesDimensionFilter(actual: number | null, expected: number | null) {
+  if (expected === null) {
+    return true;
+  }
+
+  return actual !== null && Math.abs(actual - expected) <= 0.5;
 }
 
 function getApplicationText(record: GroupRecord) {
@@ -120,6 +182,9 @@ export function SkfSearchQuoteExperience() {
   const [selectedIndustry, setSelectedIndustry] = useState("");
   const [selectedMachineGroup, setSelectedMachineGroup] = useState("");
   const [selectedPriority, setSelectedPriority] = useState("");
+  const [innerDiameter, setInnerDiameter] = useState("");
+  const [outerDiameter, setOuterDiameter] = useState("");
+  const [width, setWidth] = useState("");
 
   const [codeIndex, setCodeIndex] = useState<GroupRecord[] | null>(null);
   const [groupDataBySlug, setGroupDataBySlug] = useState<Record<string, GroupRecord[]>>({});
@@ -128,7 +193,8 @@ export function SkfSearchQuoteExperience() {
   const [error, setError] = useState("");
   const [results, setResults] = useState<SearchRecord[]>([]);
   const [totalMatches, setTotalMatches] = useState(0);
-  const [selectedQuoteCode, setSelectedQuoteCode] = useState("");
+  const [selectedQuoteItems, setSelectedQuoteItems] = useState<SelectedQuoteItem[]>([]);
+  const [copyNotice, setCopyNotice] = useState("");
 
   useEffect(() => {
     setQuery(initialQuery);
@@ -168,13 +234,16 @@ export function SkfSearchQuoteExperience() {
     };
   }, [groupParam]);
 
+  const hasDimensionInput = Boolean(innerDiameter.trim() || outerDiameter.trim() || width.trim());
+
   const shouldLoadCodeIndex =
     !selectedGroup &&
     Boolean(
       deferredQuery.trim() ||
         selectedSubCategory ||
         selectedApplication ||
-        selectedPriority,
+        selectedPriority ||
+        hasDimensionInput,
     );
 
   useEffect(() => {
@@ -242,10 +311,71 @@ export function SkfSearchQuoteExperience() {
   }, [groupDataBySlug, selectedGroup]);
 
   useEffect(() => {
-    const sourceData = selectedGroup ? groupDataBySlug[selectedGroup] ?? null : codeIndex;
+    let cancelled = false;
+
+    async function loadDimensionDatasets() {
+      if (!hasDimensionInput || selectedGroup || !filterOptions?.productGroups?.length) {
+        return;
+      }
+
+      const missingGroups = filterOptions.productGroups
+        .map((option) => option.value)
+        .filter((slug) => !groupDataBySlug[slug]);
+
+      if (missingGroups.length === 0) {
+        return;
+      }
+
+      try {
+        setLoadingDataset(true);
+        const loadedGroups = await Promise.all(
+          missingGroups.map(async (slug) => ({
+            slug,
+            data: await fetchJson<GroupRecord[]>(`/data/skf/${slug}.json`),
+          })),
+        );
+
+        if (!cancelled) {
+          setGroupDataBySlug((current) => {
+            const next = { ...current };
+            for (const group of loadedGroups) {
+              next[group.slug] = group.data;
+            }
+            return next;
+          });
+        }
+      } catch (loadError) {
+        if (!cancelled) {
+          setError(loadError instanceof Error ? loadError.message : "KhÃ´ng thá»ƒ táº£i dá»¯ liá»‡u kÃ­ch thÆ°á»›c SKF.");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingDataset(false);
+        }
+      }
+    }
+
+    void loadDimensionDatasets();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [filterOptions, groupDataBySlug, hasDimensionInput, selectedGroup]);
+
+  useEffect(() => {
     const rawQuery = deferredQuery.trim();
     const normalizedQuery = normalizeCode(rawQuery);
     const loweredQuery = normalizeText(rawQuery);
+    const expectedInner = parseDimension(innerDiameter);
+    const expectedOuter = parseDimension(outerDiameter);
+    const expectedWidth = parseDimension(width);
+    const hasParsedDimension = expectedInner !== null || expectedOuter !== null || expectedWidth !== null;
+    const allGroupData = Object.values(groupDataBySlug).flat();
+    const sourceData = selectedGroup
+      ? groupDataBySlug[selectedGroup] ?? null
+      : hasParsedDimension && allGroupData.length
+        ? allGroupData
+        : codeIndex;
 
     if (!sourceData) {
       setResults([]);
@@ -253,7 +383,16 @@ export function SkfSearchQuoteExperience() {
       return;
     }
 
-    if (!selectedGroup && !rawQuery && !selectedSubCategory && !selectedApplication && !selectedPriority) {
+    if (
+      !selectedGroup &&
+      !rawQuery &&
+      !selectedSubCategory &&
+      !selectedApplication &&
+      !selectedPriority &&
+      expectedInner === null &&
+      expectedOuter === null &&
+      expectedWidth === null
+    ) {
       setResults([]);
       setTotalMatches(0);
       return;
@@ -283,8 +422,15 @@ export function SkfSearchQuoteExperience() {
       const matchesIndustry = !selectedIndustry || normalizeText(industriesText).includes(normalizeText(selectedIndustry));
       const matchesMachineGroup = !selectedMachineGroup || normalizeText(machineGroupsText).includes(normalizeText(selectedMachineGroup));
       const matchesPriority = !selectedPriority || record.priority === selectedPriority;
+      const actualInner = getNumericField(record, ["boreMm", "innerDiameterMm", "dMm", "d_mm"]);
+      const actualOuter = getNumericField(record, ["outerDiameterMm", "outsideDiameterMm", "DMm", "D_mm"]);
+      const actualWidth = getNumericField(record, ["widthMm", "thicknessMm", "bMm", "B_T_mm"]);
+      const matchesDimensions =
+        matchesDimensionFilter(actualInner, expectedInner) &&
+        matchesDimensionFilter(actualOuter, expectedOuter) &&
+        matchesDimensionFilter(actualWidth, expectedWidth);
 
-      if (!matchesQuery || !matchesGroup || !matchesSubCategory || !matchesApplication || !matchesIndustry || !matchesMachineGroup || !matchesPriority) {
+      if (!matchesQuery || !matchesGroup || !matchesSubCategory || !matchesApplication || !matchesIndustry || !matchesMachineGroup || !matchesPriority || !matchesDimensions) {
         continue;
       }
 
@@ -312,6 +458,9 @@ export function SkfSearchQuoteExperience() {
     selectedMachineGroup,
     selectedPriority,
     selectedSubCategory,
+    innerDiameter,
+    outerDiameter,
+    width,
   ]);
 
   const quickSuggestions = Array.from(
@@ -325,7 +474,10 @@ export function SkfSearchQuoteExperience() {
     Boolean(selectedApplication) ||
     Boolean(selectedIndustry) ||
     Boolean(selectedMachineGroup) ||
-    Boolean(selectedPriority);
+    Boolean(selectedPriority) ||
+    Boolean(innerDiameter.trim()) ||
+    Boolean(outerDiameter.trim()) ||
+    Boolean(width.trim());
 
   function scrollToResults() {
     window.requestAnimationFrame(() => {
@@ -353,13 +505,81 @@ export function SkfSearchQuoteExperience() {
     setSelectedIndustry("");
     setSelectedMachineGroup("");
     setSelectedPriority("");
+    setInnerDiameter("");
+    setOuterDiameter("");
+    setWidth("");
     setError("");
   }
 
-  function handleQuoteRequest(code: string) {
-    setSelectedQuoteCode(code);
-    document.getElementById("lead-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  function toggleQuoteItem(item: Pick<GroupRecord, "code" | "name" | "subCategory" | "productGroupLabel">) {
+    setSelectedQuoteItems((current) => {
+      const exists = current.some((selectedItem) => selectedItem.code === item.code);
+
+      if (exists) {
+        return current.filter((selectedItem) => selectedItem.code !== item.code);
+      }
+
+      return [
+        ...current,
+        {
+          code: item.code,
+          name: item.name ?? item.subCategory ?? item.productGroupLabel,
+        },
+      ];
+    });
   }
+
+  function buildQuoteMessage() {
+    const itemLines = selectedQuoteItems.map((item, index) => {
+      return `${index + 1}. ${item.code}${item.name ? ` - ${item.name}` : ""}`;
+    });
+
+    const dimensionLines = [
+      innerDiameter.trim() ? `d: ${innerDiameter.trim()} mm` : "",
+      outerDiameter.trim() ? `D: ${outerDiameter.trim()} mm` : "",
+      width.trim() ? `B/T: ${width.trim()} mm` : "",
+    ].filter(Boolean);
+
+    return [
+      "Tôi cần báo giá các mã SKF:",
+      ...itemLines,
+      "",
+      "Vui lòng kiểm tra hàng, giá và thời gian giao.",
+      ...(dimensionLines.length ? ["", "Thông số tìm kiếm:", ...dimensionLines] : []),
+    ].join("\n");
+  }
+
+  async function copyQuoteMessage(message: string) {
+    if (!navigator.clipboard?.writeText) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(message);
+      setCopyNotice("Đã sao chép nội dung báo giá. Anh/chị chỉ cần dán vào Zalo.");
+      window.setTimeout(() => setCopyNotice(""), 4500);
+    } catch {
+      // Browser may block clipboard access; opening Zalo is still the primary action.
+    }
+  }
+
+  function buildZaloHref(message: string) {
+    const separator = siteConfig.zaloLink.includes("?") ? "&" : "?";
+    return `${siteConfig.zaloLink}${separator}text=${encodeURIComponent(message)}`;
+  }
+
+  function handleSendZalo() {
+    if (selectedQuoteItems.length === 0) {
+      return;
+    }
+
+    const quoteMessage = buildQuoteMessage();
+    void copyQuoteMessage(quoteMessage);
+    window.open(buildZaloHref(quoteMessage), "_blank", "noopener,noreferrer");
+  }
+
+  const selectedQuoteCodes = selectedQuoteItems.map((item) => item.code);
+  const selectedQuoteText = selectedQuoteCodes.join(", ");
 
   return (
     <div className="space-y-8">
@@ -368,22 +588,22 @@ export function SkfSearchQuoteExperience() {
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-blue-700">Tra mã SKF</p>
             <h2 className="font-heading text-2xl font-bold text-slate-950 sm:text-3xl">
-              Search theo code và lọc theo nhóm dữ liệu đã có
+              Tra nhanh mã SKF và chọn sản phẩm cần báo giá
             </h2>
             <p className="max-w-3xl text-sm leading-6 text-slate-600">
-              Dùng `skf-code-index.json` cho ô tra mã, dùng `skf-filter-options.json` để render bộ lọc, và chỉ load file nhóm trong `public/data/skf/` khi bạn chọn nhóm.
+              Nhập mã, chọn nhóm hoặc lọc theo kích thước d/D/B-T rồi chọn các mã cần THL báo giá.
             </p>
           </div>
 
           <div className="rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-900">
-            Chỉ hiển thị 50 kết quả đầu tiên.
+            Hiển thị 50 kết quả đầu tiên.
           </div>
         </div>
 
         <div className="mt-6 space-y-5">
           <div className="grid gap-4 lg:grid-cols-[1.35fr_0.65fr]">
             <form className="space-y-2" onSubmit={handleSearchSubmit}>
-              <Label htmlFor="skf-code-search">Tra mã SKF</Label>
+              <Label htmlFor="skf-code-search">Mã sản phẩm</Label>
               <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
                 <div className="relative">
                   <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
@@ -399,6 +619,41 @@ export function SkfSearchQuoteExperience() {
                   <Search className="mr-2 size-4" />
                   Tìm sản phẩm
                 </Button>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="space-y-1">
+                  <Label htmlFor="skf-inner-diameter" className="text-xs">Trục trong d</Label>
+                  <Input
+                    id="skf-inner-diameter"
+                    inputMode="decimal"
+                    value={innerDiameter}
+                    onChange={(event) => setInnerDiameter(event.target.value)}
+                    placeholder="20"
+                    className="h-9 px-3 text-sm"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="skf-outer-diameter" className="text-xs">Trục ngoài D</Label>
+                  <Input
+                    id="skf-outer-diameter"
+                    inputMode="decimal"
+                    value={outerDiameter}
+                    onChange={(event) => setOuterDiameter(event.target.value)}
+                    placeholder="52"
+                    className="h-9 px-3 text-sm"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="skf-width" className="text-xs">Độ dày B/T</Label>
+                  <Input
+                    id="skf-width"
+                    inputMode="decimal"
+                    value={width}
+                    onChange={(event) => setWidth(event.target.value)}
+                    placeholder="15"
+                    className="h-9 px-3 text-sm"
+                  />
+                </div>
               </div>
             </form>
 
@@ -423,7 +678,7 @@ export function SkfSearchQuoteExperience() {
             <div className="mb-4 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
                 <SlidersHorizontal className="size-4 text-blue-700" />
-                Bộ lọc SKF
+                Bộ lọc nhanh
               </div>
               <Button type="button" variant="outline" size="sm" onClick={resetFilters}>
                 <RotateCcw className="mr-1 size-3.5" />
@@ -449,10 +704,10 @@ export function SkfSearchQuoteExperience() {
               </div>
 
               <div className="space-y-2">
-                <Label>Phân nhóm</Label>
+                <Label>Loại sản phẩm</Label>
                 <Select value={selectedSubCategory} onValueChange={(value) => setSelectedSubCategory(value ?? "")}>
                   <SelectTrigger className="h-11 w-full bg-white">
-                    <SelectValue placeholder="Chọn phân nhóm" />
+                    <SelectValue placeholder="Chọn loại sản phẩm" />
                   </SelectTrigger>
                   <SelectContent>
                     {(filterOptions?.subCategories ?? []).map((option) => (
@@ -472,54 +727,6 @@ export function SkfSearchQuoteExperience() {
                   </SelectTrigger>
                   <SelectContent>
                     {(filterOptions?.applications ?? []).map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Ngành</Label>
-                <Select value={selectedIndustry} onValueChange={(value) => setSelectedIndustry(value ?? "")} disabled={!selectedGroup}>
-                  <SelectTrigger className="h-11 w-full bg-white">
-                    <SelectValue placeholder={selectedGroup ? "Chọn ngành" : "Chọn nhóm trước"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(filterOptions?.industries ?? []).map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Cụm máy</Label>
-                <Select value={selectedMachineGroup} onValueChange={(value) => setSelectedMachineGroup(value ?? "")} disabled={!selectedGroup}>
-                  <SelectTrigger className="h-11 w-full bg-white">
-                    <SelectValue placeholder={selectedGroup ? "Chọn cụm máy" : "Chọn nhóm trước"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(filterOptions?.machineGroups ?? []).map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Ưu tiên</Label>
-                <Select value={selectedPriority} onValueChange={(value) => setSelectedPriority(value ?? "")}>
-                  <SelectTrigger className="h-11 w-full bg-white">
-                    <SelectValue placeholder="Chọn mức ưu tiên" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(filterOptions?.priorities ?? []).map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
@@ -552,57 +759,56 @@ export function SkfSearchQuoteExperience() {
         {error ? <p className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</p> : null}
 
         <div className="grid gap-4">
-          {results.map((item) => (
-            <Card key={`${item.productGroup}-${item.id}-${item.code}`} className="border-slate-200 shadow-sm">
-              <CardContent className="space-y-4 p-5">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                  <div className="space-y-3">
-                    <div className="flex flex-wrap gap-2">
-                      <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-800">
-                        {item.productGroupLabel ?? item.productGroup}
-                      </span>
-                      {item.subCategory ? (
-                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
-                          {item.subCategory}
-                        </span>
-                      ) : null}
-                      {item.priority ? (
-                        <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-800">
-                          {item.priority}
-                        </span>
-                      ) : null}
-                    </div>
+          {results.map((item) => {
+            const isSelected = selectedQuoteCodes.includes(item.code);
+            const applicationSummary = item.applicationTextResolved.split("|")[0]?.trim() || "-";
 
-                    <div>
-                      <p className="text-lg font-semibold text-slate-950">{item.code}</p>
-                      <p className="text-sm text-slate-600">{item.name || item.code}</p>
-                    </div>
+            return (
+              <Card
+                key={`${item.productGroup}-${item.id}-${item.code}`}
+                className={`border-slate-200 shadow-sm transition ${
+                  isSelected ? "border-blue-300 bg-blue-50/45 ring-1 ring-blue-200" : "bg-white"
+                }`}
+              >
+                <CardContent className="p-4 sm:p-5">
+                  <div className="flex gap-3">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => toggleQuoteItem(item)}
+                      className="mt-1 size-4 rounded border-slate-300 text-blue-800"
+                      aria-label={`Chọn ${item.code} để báo giá`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => toggleQuoteItem(item)}
+                      className="min-w-0 flex-1 text-left"
+                    >
+                      <div className="flex flex-wrap gap-2">
+                        <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-800">
+                          {item.productGroupLabel ?? item.productGroup}
+                        </span>
+                        {item.subCategory ? (
+                          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+                            {item.subCategory}
+                          </span>
+                        ) : null}
+                      </div>
 
-                    <div className="grid gap-2 text-sm text-slate-600 sm:grid-cols-2">
-                      <p>
-                        <span className="font-medium text-slate-900">Normalized:</span> {item.normalizedCode || "-"}
+                      <div className="mt-3">
+                        <p className="text-lg font-semibold text-slate-950">{item.code}</p>
+                        <p className="mt-1 text-sm text-slate-600">{applicationSummary}</p>
+                      </div>
+
+                      <p className="mt-3 text-xs font-semibold text-blue-800">
+                        {isSelected ? "Đã chọn báo giá" : "Chọn báo giá"}
                       </p>
-                      <p>
-                        <span className="font-medium text-slate-900">Nhóm:</span> {item.productGroupLabel || "-"}
-                      </p>
-                      <p className="sm:col-span-2">
-                        <span className="font-medium text-slate-900">Ứng dụng:</span> {item.applicationTextResolved || "-"}
-                      </p>
-                    </div>
+                    </button>
                   </div>
-
-                  <Button
-                    type="button"
-                    className="h-11 bg-blue-800 text-white hover:bg-blue-900"
-                    onClick={() => handleQuoteRequest(item.code)}
-                  >
-                    <ArrowDownToLine className="mr-2 size-4" />
-                    {selectedQuoteCode === item.code ? "Đã chọn để báo giá" : "Gửi yêu cầu báo giá"}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
 
           {!loadingDataset && !error && results.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-600">
@@ -612,16 +818,46 @@ export function SkfSearchQuoteExperience() {
         </div>
       </section>
 
+      {selectedQuoteItems.length > 0 ? (
+        <div className="fixed inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-50 rounded-2xl border border-blue-200 bg-white/95 p-3 shadow-[0_22px_48px_-26px_rgba(15,23,42,0.55)] backdrop-blur lg:bottom-5 lg:left-auto lg:right-5 lg:w-[520px]">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-slate-950">Đã chọn {selectedQuoteItems.length} sản phẩm</p>
+              <p className="truncate text-xs text-slate-500">{selectedQuoteText}</p>
+              {copyNotice ? <p className="mt-1 text-xs font-medium text-emerald-700">{copyNotice}</p> : null}
+            </div>
+            <div className="grid grid-cols-[1fr_auto] gap-2 sm:flex">
+              <Button type="button" className="bg-blue-800 text-white hover:bg-blue-900" onClick={handleSendZalo}>
+                <MessageCircle className="mr-2 size-4" />
+                Gửi Zalo
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="border-slate-200 text-slate-600"
+                onClick={() => {
+                  setSelectedQuoteItems([]);
+                  setCopyNotice("");
+                }}
+              >
+                <X className="mr-2 size-4" />
+                Xóa chọn
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <section id="lead-form" className="space-y-4">
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h3 className="font-heading text-xl font-bold text-slate-950">Form yêu cầu báo giá</h3>
+          <h3 className="font-heading text-xl font-bold text-slate-950">Kênh phụ: form yêu cầu báo giá</h3>
           <p className="mt-2 text-sm text-slate-600">
-            {selectedQuoteCode
-              ? `Đã chọn mã ${selectedQuoteCode}. Form bên dưới sẽ điền sẵn mã này để bạn gửi yêu cầu báo giá.`
-              : "Chọn một kết quả ở trên hoặc nhập trực tiếp mã SKF vào form bên dưới."}
+            {selectedQuoteCodes.length
+              ? `Ưu tiên bấm Gửi Zalo để gửi nhanh ${selectedQuoteCodes.length} mã: ${selectedQuoteText}. Form bên dưới vẫn được điền sẵn nếu cần gửi qua email.`
+              : "Ưu tiên chọn sản phẩm và gửi Zalo. Form bên dưới chỉ dùng khi cần gửi thêm thông tin qua email."}
           </p>
         </div>
-        <LeadForm initialRequestedCode={selectedQuoteCode} />
+        <LeadForm initialRequestedCode={selectedQuoteText} />
       </section>
     </div>
   );

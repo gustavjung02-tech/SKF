@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -21,19 +21,31 @@ type SiteHeaderClientProps = {
 
 const desktopMenuLabels: Record<string, string> = {
   "/": "Trang chủ",
-  "/gioi-thieu": "Giới thiệu",
-  "/san-pham": "Sản phẩm",
-  "/giai-phap-theo-khach-hang": "Giải pháp",
-  "/tuyen-dung": "Tuyển dụng",
-  "/tra-ma-bao-gia": "Yêu cầu",
+  "/san-pham": "Sản phẩm SKF",
+  "/tra-ma-bao-gia": "Tra mã SKF",
+  "/ung-dung": "Ứng dụng ngành",
   "/kien-thuc": "Kiến thức",
+  "/tuyen-dung": "Tuyển dụng",
   "/lien-he": "Liên hệ",
 };
 
 function CoreBrandMarks({ compact = false, brands }: { compact?: boolean; brands: CoreBrandLogo[] }) {
   const [primary, secondary] = brands;
 
-  if (!primary || !secondary) return null;
+  if (!primary || !secondary) {
+    return (
+      <span className="inline-flex items-center">
+        <Image
+          src="/images/branding/logo-skf.png"
+          alt="SKF B2B Industrial"
+          width={140}
+          height={44}
+          className={cn("h-9 w-auto object-contain", compact ? "h-8" : "h-9")}
+          priority
+        />
+      </span>
+    );
+  }
 
   return (
     <span className="flex items-center gap-2 rounded-md border border-slate-200 bg-white px-2.5 py-1.5">
@@ -66,7 +78,7 @@ export function SiteHeaderClient({ coreBrands }: SiteHeaderClientProps) {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-[#DDE7F3] bg-white/95 backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link href="/" className="flex min-w-0 items-center gap-2">
           <CoreBrandMarks brands={coreBrands} />
@@ -82,7 +94,7 @@ export function SiteHeaderClient({ coreBrands }: SiteHeaderClientProps) {
                 href={item.href}
                 className={cn(
                   "inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md px-2.5 text-[13px] font-semibold transition-colors xl:px-3 xl:text-sm",
-                  active ? "bg-blue-800 text-white" : "text-slate-600 hover:bg-blue-50 hover:text-slate-900",
+                  active ? "bg-[#0050A4] text-white" : "text-slate-600 hover:bg-[#EEF4FB] hover:text-slate-900",
                 )}
               >
                 {desktopMenuLabels[item.href] ?? item.label}
@@ -92,10 +104,10 @@ export function SiteHeaderClient({ coreBrands }: SiteHeaderClientProps) {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button asChild size="sm" className="hidden bg-blue-800 hover:bg-blue-900 sm:inline-flex">
+          <Button asChild size="sm" className="hidden bg-[#0050A4] hover:bg-[#003d7d] sm:inline-flex">
             <a href={siteConfig.phoneHref}>
               <PhoneCall className="mr-2 size-4" />
-              Liên hệ B2B
+              Gọi tư vấn
             </a>
           </Button>
           <Sheet>
@@ -121,7 +133,7 @@ export function SiteHeaderClient({ coreBrands }: SiteHeaderClientProps) {
                         href={item.href}
                         className={cn(
                           "rounded-md px-3 py-2 text-sm font-medium",
-                          active ? "bg-blue-800 text-white" : "text-slate-700 hover:bg-blue-50",
+                          active ? "bg-[#0050A4] text-white" : "text-slate-700 hover:bg-[#EEF4FB]",
                         )}
                       >
                         {item.label}
@@ -131,16 +143,16 @@ export function SiteHeaderClient({ coreBrands }: SiteHeaderClientProps) {
                 </div>
 
                 <div className="grid gap-2">
-                  <Button asChild className="bg-blue-800 hover:bg-blue-900">
+                  <Button asChild className="bg-[#0050A4] hover:bg-[#003d7d]">
                     <a href={siteConfig.phoneHref}>
                       <PhoneCall className="mr-2 size-4" />
-                      Liên hệ kinh doanh
+                      Gọi tư vấn
                     </a>
                   </Button>
-                  <Button asChild variant="outline" className="border-blue-200 text-blue-800 hover:bg-blue-100">
+                  <Button asChild className="bg-[#E30613] text-white hover:bg-[#c80511]">
                     <a href={siteConfig.zaloLink} target="_blank" rel="noreferrer">
                       <MessageCircle className="mr-2 size-4" />
-                      Zalo kinh doanh
+                      Gửi Zalo
                     </a>
                   </Button>
                 </div>

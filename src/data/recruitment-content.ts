@@ -1,4 +1,4 @@
-export type RecruitmentGroup = "Kinh doanh" | "Văn phòng" | "Vận hành";
+﻿export type RecruitmentGroup = "Kinh doanh" | "Văn phòng" | "Vận hành";
 
 export type RecruitmentJob = {
   id: string;
@@ -15,13 +15,13 @@ export type RecruitmentJob = {
 };
 
 export const recruitmentHero = {
-  title: "Gia nhập đội ngũ THL",
+  title: "Gia nhập đội ngũ HT-Saigon",
   subTitle:
-    "THL tuyển dụng nhân sự cho các vị trí kinh doanh, kế toán, logistics, kho và giao nhận trong lĩnh vực vật tư truyền động công nghiệp.",
+    "HT-Saigon tuyển dụng nhân sự cho các vị trí kinh doanh, kế toán, logistics, kho và giao nhận trong lĩnh vực vật tư truyền động công nghiệp.",
   description:
     "Chúng tôi tìm kiếm những người làm việc nghiêm túc, có tinh thần trách nhiệm, chủ động học hỏi và mong muốn phát triển lâu dài trong môi trường B2B phục vụ nhà máy, xưởng cơ khí, bảo trì và mua hàng công nghiệp.",
   image: "/images/tuyen-dung/tuyen-dung-hero.png",
-  imageAlt: "Đội ngũ THL tuyển dụng nhân sự cho lĩnh vực vật tư truyền động công nghiệp",
+  imageAlt: "Đội ngũ HT-Saigon tuyển dụng nhân sự cho lĩnh vực vật tư truyền động công nghiệp",
 };
 
 export const recruitmentJobs: RecruitmentJob[] = [
@@ -32,7 +32,7 @@ export const recruitmentJobs: RecruitmentJob[] = [
     income: "10 - 25 triệu/tháng",
     locations: "TP.HCM, Cần Thơ, Bình Dương, Đà Nẵng, Hà Nội",
     image: "/images/tuyen-dung/tuyen-dung-kinh-doanh.png",
-    imageAlt: "Vị trí Đại diện Kinh doanh B2B vật tư công nghiệp tại THL",
+    imageAlt: "Vị trí Đại diện Kinh doanh B2B vật tư công nghiệp tại HT-Saigon",
     summary:
       "Phát triển khách hàng B2B nhà máy, xưởng cơ khí, bảo trì, mua hàng và nhà thầu cơ điện theo khu vực phụ trách.",
     description: [
@@ -64,7 +64,7 @@ export const recruitmentJobs: RecruitmentJob[] = [
     income: "Thỏa thuận",
     locations: "TP.HCM",
     image: "/images/tuyen-dung/tuyen-dung-ke-toan.png",
-    imageAlt: "Vị trí Kế toán Tổng hợp tại THL",
+    imageAlt: "Vị trí Kế toán Tổng hợp tại HT-Saigon",
     summary:
       "Theo dõi chứng từ, công nợ, nhập xuất tồn và phối hợp với các bộ phận để đảm bảo số liệu chính xác.",
     description: [
@@ -95,7 +95,7 @@ export const recruitmentJobs: RecruitmentJob[] = [
     income: "Thỏa thuận",
     locations: "TP.HCM",
     image: "/images/tuyen-dung/tuyen-dung-logistics.png",
-    imageAlt: "Vị trí Logistics điều phối đơn hàng công nghiệp tại THL",
+    imageAlt: "Vị trí Logistics điều phối đơn hàng công nghiệp tại HT-Saigon",
     summary:
       "Theo dõi đơn hàng, điều phối giao nhận và phối hợp kho - kinh doanh - nhà cung cấp để đảm bảo tiến độ.",
     description: [
@@ -126,7 +126,7 @@ export const recruitmentJobs: RecruitmentJob[] = [
     income: "Thỏa thuận",
     locations: "TP.HCM",
     image: "/images/tuyen-dung/tuyen-dung-kho-giao-nhan.png",
-    imageAlt: "Vị trí Kho và Giao nhận hàng hóa công nghiệp tại THL",
+    imageAlt: "Vị trí Kho và Giao nhận hàng hóa công nghiệp tại HT-Saigon",
     summary:
       "Nhận hàng, soạn hàng, đóng gói và phối hợp giao nhận theo đúng quy trình để đảm bảo đơn hàng chính xác.",
     description: [
@@ -153,14 +153,14 @@ export const recruitmentJobs: RecruitmentJob[] = [
 ];
 
 export const recruitmentEnvironment = {
-  title: "Môi trường làm việc tại THL",
+  title: "Môi trường làm việc tại HT-Saigon",
   content: [
-    "THL hoạt động trong lĩnh vực vật tư truyền động công nghiệp, phục vụ nhóm khách hàng B2B như nhà máy sản xuất, bộ phận bảo trì, kỹ thuật, mua hàng, xưởng cơ khí và nhà thầu cơ điện.",
-    "Công việc tại THL yêu cầu sự rõ ràng, chính xác và trách nhiệm. Mỗi vị trí đều gắn với quy trình thực tế: tiếp nhận yêu cầu, đối chiếu thông tin, xử lý đơn hàng, giao hàng và chăm sóc khách hàng.",
+    "HT-Saigon hoạt động trong lĩnh vực vật tư truyền động công nghiệp, phục vụ nhóm khách hàng B2B như nhà máy sản xuất, bộ phận bảo trì, kỹ thuật, mua hàng, xưởng cơ khí và nhà thầu cơ điện.",
+    "Công việc tại HT-Saigon yêu cầu sự rõ ràng, chính xác và trách nhiệm. Mỗi vị trí đều gắn với quy trình thực tế: tiếp nhận yêu cầu, đối chiếu thông tin, xử lý đơn hàng, giao hàng và chăm sóc khách hàng.",
     "Chúng tôi ưu tiên những ứng viên có thái độ làm việc nghiêm túc, chịu học, biết phối hợp và mong muốn phát triển lâu dài.",
   ],
   image: "/images/tuyen-dung/tuyen-dung-moi-truong-lam-viec.png",
-  imageAlt: "Môi trường làm việc chuyên nghiệp tại THL",
+  imageAlt: "Môi trường làm việc chuyên nghiệp tại HT-Saigon",
 };
 
 export const recruitmentApplyGuide = {
@@ -175,5 +175,5 @@ export const recruitmentApplyGuide = {
     "Kinh nghiệm làm việc nếu có",
     "CV hoặc mô tả ngắn quá trình làm việc",
   ],
-  outro: "THL sẽ liên hệ lại với ứng viên phù hợp để trao đổi chi tiết.",
+  outro: "HT-Saigon sẽ liên hệ lại với ứng viên phù hợp để trao đổi chi tiết.",
 };

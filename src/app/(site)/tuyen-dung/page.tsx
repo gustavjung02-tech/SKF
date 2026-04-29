@@ -8,9 +8,9 @@ import { RecruitmentPageContent } from "@/components/recruitment/recruitment-pag
 import { Button } from "@/components/ui/button";
 
 export const metadata = createPageMetadata({
-  title: "Tuyển dụng THL | Gia nhập đội ngũ B2B vật tư truyền động",
+  title: "Tuyển dụng HT-Saigon | Gia nhập đội ngũ B2B vật tư truyền động",
   description:
-    "THL tuyển dụng các vị trí kinh doanh, kế toán, logistics, kho và giao nhận trong lĩnh vực vật tư truyền động công nghiệp. Xem vị trí đang tuyển và ứng tuyển trực tiếp.",
+    "HT-Saigon tuyển dụng các vị trí kinh doanh, kế toán, logistics, kho và giao nhận trong lĩnh vực vật tư truyền động công nghiệp. Xem vị trí đang tuyển và ứng tuyển trực tiếp.",
   path: "/tuyen-dung",
 });
 
@@ -22,7 +22,7 @@ export default function RecruitmentPage() {
           <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
             <div className="space-y-5">
               <p className="inline-flex rounded-full border border-blue-200/40 bg-blue-500/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-100">
-                Tuyển dụng THL
+                Tuyển dụng HT-Saigon
               </p>
               <h1 className="font-heading text-2xl font-bold leading-tight text-white sm:text-3xl lg:text-[2.15rem]">
                 {recruitmentHero.title}

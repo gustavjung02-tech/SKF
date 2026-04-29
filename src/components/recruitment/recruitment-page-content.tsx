@@ -31,8 +31,8 @@ export function RecruitmentPageContent() {
       <section className="space-y-6">
         <SectionTitle
           eyebrow="Vị trí tuyển dụng"
-          title="Các vị trí đang tuyển tại THL"
-          description={`Chọn theo nhóm để xem nhanh công việc phù hợp. Hiện có ${recruitmentJobs.length} vị trí đang tuyển.`}
+          title="Các vị trí đang tuyển tại HT-Saigon"
+          description={`Chọn theo nhóm để xem nhanh công việc phù hợp tại HT-Saigon. Hiện có ${recruitmentJobs.length} vị trí đang tuyển.`}
         />
         <RecruitmentJobsPanel onApply={handleApply} />
       </section>
@@ -77,7 +77,7 @@ export function RecruitmentPageContent() {
             <Button asChild variant="outline" className="border-blue-200 text-blue-800 hover:bg-blue-50">
               <a href={siteConfig.zaloLink} target="_blank" rel="noreferrer">
                 <MessageCircle className="mr-2 size-4" />
-                Liên hệ bộ phận tuyển dụng
+                Liên hệ tuyển dụng HT-Saigon
               </a>
             </Button>
             <Button asChild variant="outline" className="border-slate-300 text-slate-900 hover:bg-slate-100">
@@ -94,16 +94,16 @@ export function RecruitmentPageContent() {
 
       <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.5)] sm:p-6">
         <h2 className="font-heading text-2xl font-semibold text-slate-900">
-          Cùng THL phát triển sự nghiệp trong ngành vật tư công nghiệp
+          Cùng HT-Saigon phát triển sự nghiệp trong ngành vật tư công nghiệp
         </h2>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600 sm:text-base">
-          Gia nhập đội ngũ làm việc với khách hàng nhà máy, bảo trì, kỹ thuật và mua hàng B2B.
-          THL tìm kiếm những người nghiêm túc, chịu học, có trách nhiệm và muốn gắn bó lâu dài.
+          Gia nhập đội ngũ HT-Saigon làm việc với khách hàng nhà máy, bảo trì, kỹ thuật và mua hàng B2B.
+          Chúng tôi tìm kiếm những người nghiêm túc, chịu học, có trách nhiệm và muốn gắn bó lâu dài.
         </p>
         <div className="mt-4 flex flex-col gap-2.5 sm:flex-row">
           <Button asChild variant="outline" className="border-blue-200 text-blue-800 hover:bg-blue-50">
             <a href={siteConfig.zaloLink} target="_blank" rel="noreferrer">
-              Trao đổi với bộ phận tuyển dụng
+              Trao đổi với tuyển dụng HT-Saigon
             </a>
           </Button>
         </div>

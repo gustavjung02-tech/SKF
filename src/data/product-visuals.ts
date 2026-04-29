@@ -1,4 +1,4 @@
-import { resolveProductCardImage } from "@/lib/image-resolver";
+﻿import { resolveProductCardImage } from "@/lib/image-resolver";
 
 type ProductVisual = {
   image: string;
@@ -8,23 +8,23 @@ type ProductVisual = {
 const productVisualMeta: Record<string, { fallback: string; imageAlt: string }> = {
   ntn: {
     fallback: "/images/cards/products/ntn.png",
-    imageAlt: "Kỹ thuật viên kiểm tra vòng bi NTN trong xưởng công nghiệp",
+    imageAlt: "Vòng bi SKF trong khu vực bảo trì nhà máy",
   },
   tsubaki: {
     fallback: "/images/cards/products/tsubaki.png",
-    imageAlt: "Xích công nghiệp Tsubaki dùng cho truyền động và băng tải",
+    imageAlt: "Nhóm truyền động SKF cho băng tải công nghiệp",
   },
   koyo: {
     fallback: "/images/cards/products/koyo.png",
-    imageAlt: "Cụm vòng bi và gối đỡ Koyo trong dây chuyền công nghiệp",
+    imageAlt: "Gối đỡ SKF trong dây chuyền công nghiệp",
   },
   nok: {
     fallback: "/images/cards/products/nok.png",
-    imageAlt: "Phớt chặn dầu NOK dùng cho cụm trục và hộp số công nghiệp",
+    imageAlt: "Phớt SKF cho cụm làm kín trục và hộp số",
   },
   soho: {
     fallback: "/images/cards/products/soho.png",
-    imageAlt: "Khu vực bảo trì nhà máy dùng vật tư truyền động Soho",
+    imageAlt: "Vật tư bảo trì công nghiệp theo ứng dụng thực tế",
   },
 };
 
@@ -49,6 +49,6 @@ export function getProductVisual(slug: string) {
 
 export const productBenefitBullets = [
   "Đối chiếu theo mã cũ, kích thước và vị trí lắp thực tế",
-  "Ưu tiên NTN và Tsubaki, đồng thời mở rộng sang Koyo/NOK/Soho đúng điều kiện ứng dụng",
-  "Hỗ trợ phương án thay thế chính thức khi cần đảm bảo tiến độ nhà máy",
+  "Khoanh nhanh theo nhóm sản phẩm SKF và điều kiện vận hành",
+  "Ưu tiên phương án xử lý nhanh cho nhà máy cần tiến độ",
 ];

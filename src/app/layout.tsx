@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Be_Vietnam_Pro, Exo_2 } from "next/font/google";
 import "./globals.css";
 import { siteConfig } from "@/config/site";
@@ -23,11 +23,11 @@ export const metadata: Metadata = {
     template: `%s | ${siteConfig.brandName}`,
   },
   description:
-    "Công Ty TNHH Tân Hòa Lợi là nhà phân phối chính thức NTN, Tsubaki và Koyo cho hệ vật tư truyền động công nghiệp chính hãng.",
+    "Tra mã, tư vấn và tiếp nhận yêu cầu báo giá sản phẩm SKF cho nhà máy công nghiệp.",
   openGraph: {
     title: `${siteConfig.brandName} | ${siteConfig.slogan}`,
     description:
-      "Danh mục triển khai tập trung NTN, Tsubaki, NOK, Soho; Koyo được phân phối chính thức trong nhóm vòng bi và gối đỡ.",
+      "Cung cấp và tư vấn sản phẩm SKF theo mã, ứng dụng và điều kiện vận hành.",
     type: "website",
     locale: "vi_VN",
     siteName: siteConfig.brandName,

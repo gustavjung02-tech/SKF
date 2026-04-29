@@ -1,4 +1,4 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, ClipboardCheck } from "lucide-react";
 import { industryApplications } from "@/data/industry-applications";
@@ -7,27 +7,33 @@ import { SectionTitle } from "@/components/shared/section-title";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
+function sanitizeBrandText(value: string) {
+  return value
+    .replace(/NTN\/Koyo/gi, "SKF")
+    .replace(/Koyo\/JTEKT/gi, "SKF")
+    .replace(/\b(NTN|Tsubaki|Koyo|NOK|Soho)\b/gi, "SKF");
+}
+
 export const metadata = createPageMetadata({
-  title: "Ứng dụng theo ngành máy",
-  description:
-    "Khoanh vùng vật tư truyền động theo loại máy và điều kiện vận hành, ưu tiên NTN, Tsubaki cùng các nhóm triển khai phù hợp của THL.",
+  title: "Ứng dụng ngành cho sản phẩm SKF",
+  description: "Khoanh nhóm sản phẩm SKF theo loại máy và điều kiện vận hành.",
   path: "/ung-dung",
 });
 
 export default function IndustryApplicationsPage() {
   return (
     <div className="bg-white">
-      <section className="section-block border-b border-slate-100">
+      <section className="section-block border-b border-[#DDE7F3]">
         <div className="page-shell grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
           <SectionTitle
-            eyebrow="Ứng dụng theo ngành"
-            title="Khoanh vùng vật tư theo loại máy và điều kiện vận hành"
-            description="Mỗi cụm máy có tải, tốc độ, môi trường và tiêu chuẩn lắp khác nhau. THL dùng bối cảnh ứng dụng để chọn đúng NTN, Tsubaki, Koyo hoặc nhóm triển khai liên quan."
+            eyebrow="Ứng dụng ngành"
+            title="Khoanh nhóm sản phẩm SKF theo loại máy và điều kiện vận hành"
+            description="Mỗi cụm máy có tải, tốc độ, môi trường và tiêu chuẩn lắp khác nhau. Tra theo ứng dụng giúp rút ngắn thời gian chọn nhóm mã phù hợp."
           />
-          <Button asChild className="w-fit bg-blue-800 hover:bg-blue-900">
+          <Button asChild className="w-fit bg-[#0050A4] hover:bg-[#003d7d]">
             <Link href="/tra-ma-bao-gia">
               <ClipboardCheck className="mr-2 size-4" />
-              Gửi yêu cầu kỹ thuật
+              Tra mã SKF
             </Link>
           </Button>
         </div>
@@ -37,7 +43,7 @@ export default function IndustryApplicationsPage() {
         <div className="page-shell grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {industryApplications.map((app) => (
             <Link key={app.slug} href={`/ung-dung/${app.slug}`} className="group">
-              <Card className="h-full rounded-lg border-slate-200 bg-white py-0 transition hover:-translate-y-0.5 hover:shadow-[0_18px_38px_-24px_rgba(15,23,42,0.55)]">
+              <Card className="h-full rounded-lg border-[#DDE7F3] bg-white py-0 transition hover:-translate-y-0.5 hover:shadow-[0_18px_38px_-24px_rgba(15,23,42,0.55)]">
                 <div className="relative aspect-[16/9] w-full overflow-hidden">
                   <Image
                     src={app.image}
@@ -50,19 +56,19 @@ export default function IndustryApplicationsPage() {
                   <h2 className="absolute bottom-4 left-4 right-4 font-heading text-lg font-bold text-white">{app.name}</h2>
                 </div>
                 <CardContent className="space-y-4 p-5">
-                  <p className="text-sm leading-relaxed text-slate-600">{app.description}</p>
+                  <p className="text-sm leading-relaxed text-slate-600">{sanitizeBrandText(app.description)}</p>
                   <div className="space-y-2">
                     <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Nhóm vật tư thường dùng</p>
                     <div className="flex flex-wrap gap-2">
                       {app.commonParts.map((part) => (
-                        <span key={part} className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2.5 py-1 text-xs text-blue-800">
+                        <span key={part} className="inline-flex items-center gap-1 rounded-md bg-[#EEF4FB] px-2.5 py-1 text-xs text-[#0050A4]">
                           <CheckCircle2 className="size-3" />
-                          {part}
+                          {sanitizeBrandText(part)}
                         </span>
                       ))}
                     </div>
                   </div>
-                  <p className="inline-flex items-center text-sm font-semibold text-blue-800 group-hover:text-blue-900">
+                  <p className="inline-flex items-center text-sm font-semibold text-[#0050A4] group-hover:text-[#003d7d]">
                     Xem chi tiết ứng dụng
                     <ArrowRight className="ml-1 size-4 transition group-hover:translate-x-0.5" />
                   </p>
