@@ -1,0 +1,16 @@
+{
+  "bearing_missing_fields": ["id", "od", "width", "code", "shaft"],
+  "oil_seal_missing_fields": ["id", "od", "thickness"],
+  "chain_missing_fields": ["pitch", "chain_type", "links"],
+  "pillow_block_missing_fields": ["housing_type", "shaft_diameter"],
+  "belt_missing_fields": ["profile", "length"],
+  "if_high_risk_confusion": {
+    "do_not_finalize_code": true,
+    "triggers": [
+      "similar dimensions but different seal or shield",
+      "series overlap with different mounting style",
+      "cross-standard chain conversion",
+      "incomplete field set for requested group"
+    ]
+  }
+}

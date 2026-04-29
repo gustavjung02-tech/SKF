@@ -1,0 +1,96 @@
+{
+  "version": "v1",
+  "description": "Bảng ứng dụng — liên kết hệ máy / cụm máy cụ thể với mã vật tư phù hợp.",
+  "fitments": [
+    {
+      "machine_type": "xe_tai_hino",
+      "machine_model": "Hino 500 / 4HK1",
+      "subsystem": "bơm nước",
+      "recommended_codes": ["6204-2RS C3", "TC35X52X7"],
+      "product_groups": ["bearings", "oil_seals"],
+      "note": "Cụm bơm nước Hino 4HK1 thường dùng vòng bi 6204 và phớt TC35X52X7.",
+      "caution": "Cần xác minh phiên bản đời máy vì kích thước phớt có thể khác nhau."
+    },
+    {
+      "machine_type": "xe_tai_hino",
+      "machine_model": "Hino 500 / 4HK1",
+      "subsystem": "quạt két nước",
+      "recommended_codes": ["6305-2NSE C3"],
+      "product_groups": ["bearings"],
+      "note": "Quạt két nước Hino thường dùng dòng 6305.",
+      "caution": "Xác minh loại bạc đạn (có seal hay shield) theo điều kiện vận hành."
+    },
+    {
+      "machine_type": "cnc",
+      "machine_model": "CNC phay / tiện",
+      "subsystem": "spindle",
+      "recommended_codes": [],
+      "product_groups": ["bearings"],
+      "note": "Spindle CNC yêu cầu vòng bi tiếp xúc góc (angular contact) cấp chính xác cao, thường không nằm trong catalog phổ thông.",
+      "caution": "KHÔNG đề xuất vòng bi rãnh sâu (deep groove) cho spindle tốc độ cao. Cần mã gốc hoặc datasheet chính xác."
+    },
+    {
+      "machine_type": "may_bom",
+      "machine_model": "Bơm ly tâm / bơm trục ngang",
+      "subsystem": "cụm trục bơm",
+      "recommended_codes": ["6204-2RS C3", "6305-2NSE C3", "TC35X52X7"],
+      "product_groups": ["bearings", "oil_seals"],
+      "note": "Cụm trục bơm thường dùng vòng bi 62xx hoặc 63xx kèm phớt chặn dầu.",
+      "caution": "Kích thước trục và điều kiện nhiệt ảnh hưởng đến việc chọn mã phớt."
+    },
+    {
+      "machine_type": "may_bom",
+      "machine_model": "Bơm chìm / submersible",
+      "subsystem": "motor bơm chìm",
+      "recommended_codes": [],
+      "product_groups": ["bearings"],
+      "note": "Bơm chìm thường dùng vòng bi chuyên dụng, cần mã gốc của nhà sản xuất bơm.",
+      "caution": "Không nên thay vòng bi không rõ nguồn gốc cho bơm chìm."
+    },
+    {
+      "machine_type": "bang_tai",
+      "machine_model": "Băng tải sản xuất",
+      "subsystem": "cụm xích truyền động",
+      "recommended_codes": ["08B-1", "RS40-1"],
+      "product_groups": ["industrial_chains"],
+      "note": "Băng tải thường dùng xích simplex 08B hoặc RS40 tuỳ tiêu chuẩn.",
+      "caution": "Cần xác minh tiêu chuẩn bước xích BS hay ANSI trước khi chốt mã."
+    },
+    {
+      "machine_type": "bang_tai",
+      "machine_model": "Băng tải sản xuất",
+      "subsystem": "gối đỡ trục cuốn",
+      "recommended_codes": ["UCP205", "UCF205"],
+      "product_groups": ["pillow_blocks"],
+      "note": "Trục cuốn băng tải thường dùng gối đỡ UCP hoặc UCF tuỳ kiểu lắp.",
+      "caution": "Xác minh đường kính trục và kiểu thân gối trước khi đề xuất."
+    },
+    {
+      "machine_type": "may_nen_khi",
+      "machine_model": "Máy nén khí piston",
+      "subsystem": "bộ truyền đai",
+      "recommended_codes": ["A-42"],
+      "product_groups": ["belts"],
+      "note": "Máy nén khí piston thường dùng dây curoa cổ điển profile A.",
+      "caution": "Cần đo chiều dài chính xác và xác minh profile trước khi thay."
+    },
+    {
+      "machine_type": "hop_so",
+      "machine_model": "Hộp số giảm tốc",
+      "subsystem": "phớt trục ra",
+      "recommended_codes": ["TC35X52X7"],
+      "product_groups": ["oil_seals"],
+      "note": "Phớt trục ra hộp số cần kiểu TC hoặc SC tuỳ thiết kế rãnh.",
+      "caution": "Cần xác minh kiểu môi TC/SC và vật liệu phớt theo môi chất."
+    },
+    {
+      "machine_type": "xe_may",
+      "machine_model": "Xe máy phổ thông",
+      "subsystem": "xích tải",
+      "recommended_codes": [],
+      "product_groups": ["industrial_chains"],
+      "note": "Xích xe máy (420, 428) ngoài danh mục xích công nghiệp.",
+      "caution": "Xích 420/428 là xích xe máy, không phải xích công nghiệp. Cần phân biệt rõ."
+    }
+  ]
+}

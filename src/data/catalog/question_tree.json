@@ -1,0 +1,84 @@
+{
+  "version": "v1",
+  "description": "Cây câu hỏi — quy trình hỏi từng bước khi thiếu thông tin, tối đa 3 bước.",
+  "trees": [
+    {
+      "entry_condition": "unknown_product_group",
+      "description": "Không xác định được nhóm hàng từ input đầu tiên.",
+      "steps": [
+        {
+          "step": 1,
+          "question": "Anh/chị đang cần hỗ trợ nhóm hàng nào ạ?",
+          "options": ["Vòng bi", "Gối đỡ", "Dây curoa", "Xích công nghiệp", "Phớt chặn dầu", "Mỡ bôi trơn", "Chưa rõ"],
+          "field_to_fill": "product_group"
+        },
+        {
+          "step": 2,
+          "question": "Cụm máy đang cần thay thuộc hệ nào?",
+          "options": ["Motor / bơm / quạt", "Spindle CNC", "Hộp số / trục quay", "Băng tải / xích", "Phớt / cụm kín dầu", "Khác"],
+          "field_to_fill": "machine_type"
+        },
+        {
+          "step": 3,
+          "question": "Hiện tượng đang gặp là gì ạ?",
+          "options": ["Hú / kêu lớn", "Nóng / phát nhiệt", "Rung / lắc", "Rò dầu / chảy mỡ", "Mòn", "Thay định kỳ"],
+          "field_to_fill": "symptom"
+        }
+      ]
+    },
+    {
+      "entry_condition": "has_product_group_no_code",
+      "description": "Biết nhóm hàng nhưng chưa có mã cụ thể.",
+      "steps": [
+        {
+          "step": 1,
+          "question": "Anh/chị có mã cũ hoặc ảnh tem không?",
+          "options": ["Có mã cũ", "Có ảnh tem", "Chỉ có kích thước", "Không có gì"],
+          "field_to_fill": "input_source"
+        },
+        {
+          "step": 2,
+          "question": "Kích thước hoặc thông tin bổ sung?",
+          "options": [],
+          "field_to_fill": "dimensions"
+        }
+      ]
+    },
+    {
+      "entry_condition": "bearings_missing_seal",
+      "description": "Đã xác định vòng bi nhưng chưa biết kiểu chặn.",
+      "steps": [
+        {
+          "step": 1,
+          "question": "Môi trường vận hành có nước hoặc bụi nhiều không?",
+          "options": ["Có nước / ẩm", "Khô / sạch", "Không chắc"],
+          "field_to_fill": "seal_or_shield"
+        }
+      ]
+    },
+    {
+      "entry_condition": "chain_missing_standard",
+      "description": "Có bước xích nhưng chưa xác minh tiêu chuẩn.",
+      "steps": [
+        {
+          "step": 1,
+          "question": "Hệ xích đang dùng theo tiêu chuẩn nào ạ?",
+          "options": ["BS (08B, 10B, ...)", "ANSI (RS40, RS50, ...)", "Không rõ"],
+          "field_to_fill": "chain_standard"
+        }
+      ]
+    },
+    {
+      "entry_condition": "oil_seal_missing_lip",
+      "description": "Có kích thước phớt nhưng chưa biết kiểu môi.",
+      "steps": [
+        {
+          "step": 1,
+          "question": "Kiểu môi phớt hiện tại là TC hay SC ạ?",
+          "options": ["TC (2 môi)", "SC (1 môi)", "Không biết"],
+          "field_to_fill": "lip_type"
+        }
+      ]
+    }
+  ]
+}

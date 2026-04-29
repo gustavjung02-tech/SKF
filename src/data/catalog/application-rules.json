@@ -1,0 +1,113 @@
+{
+  "version": "v1",
+  "rules": [
+    {
+      "application_key": "cnc_spindle",
+      "signals": ["cnc", "spindle", "củ đục", "hú", "nóng"],
+      "recommended_group": "bearings",
+      "required_fields": ["old_code", "shaft_size", "seat_size"],
+      "avoid_notes": [
+        "Không nên dùng dòng không phù hợp cấp chính xác cho spindle tốc độ cao."
+      ],
+      "suggestion_notes": [
+        "Ưu tiên vòng bi tiếp xúc góc cấp chính xác cao cho cụm spindle tốc độ lớn."
+      ]
+    },
+    {
+      "application_key": "pump",
+      "signals": ["máy bơm", "pump", "rò dầu", "hú", "nóng"],
+      "recommended_group": "bearings",
+      "required_fields": ["old_code", "shaft_size", "duty_cycle"],
+      "avoid_notes": [
+        "Không nên bỏ qua điều kiện nhiệt và độ ẩm tại vị trí vận hành."
+      ],
+      "suggestion_notes": [
+        "Ưu tiên mã có khả năng làm kín phù hợp môi trường bơm."
+      ]
+    },
+    {
+      "application_key": "fan",
+      "signals": ["quạt", "fan", "rung", "kêu", "phát nhiệt"],
+      "recommended_group": "bearings",
+      "required_fields": ["old_code", "shaft_size", "rpm"],
+      "avoid_notes": [
+        "Không nên dùng mã có khe hở không phù hợp với tốc độ quay cao liên tục."
+      ],
+      "suggestion_notes": [
+        "Nên đối chiếu thêm mức tải và tốc độ trước khi chốt mã."
+      ]
+    },
+    {
+      "application_key": "gearbox",
+      "signals": ["hộp số", "gearbox", "rít", "nóng", "rò dầu"],
+      "recommended_group": "oil_seals",
+      "required_fields": ["seal_type", "shaft_size", "housing_size"],
+      "avoid_notes": [
+        "Không nên dùng sai kiểu môi phớt khi cụm làm việc liên tục."
+      ],
+      "suggestion_notes": [
+        "Ưu tiên xác minh kiểu môi và vật liệu phớt theo môi trường dầu."
+      ]
+    },
+    {
+      "application_key": "conveyor",
+      "signals": ["băng tải", "conveyor", "xích", "rung", "mòn"],
+      "recommended_group": "industrial_chains",
+      "required_fields": ["chain_pitch", "links", "chain_type"],
+      "avoid_notes": [
+        "Không nên suy diễn mã xích tương đương nếu chưa xác minh tiêu chuẩn bước xích."
+      ],
+      "suggestion_notes": [
+        "Nên đối chiếu bước xích và số mắt trước khi đề xuất phương án thay thế."
+      ]
+    },
+    {
+      "application_key": "electric_motor",
+      "signals": ["motor", "động cơ", "kêu", "nóng", "rung"],
+      "recommended_group": "bearings",
+      "required_fields": ["old_code", "shaft_size", "mounting"],
+      "avoid_notes": [
+        "Không nên dùng mã không phù hợp cấp tải và điều kiện nhiệt của motor."
+      ],
+      "suggestion_notes": [
+        "Ưu tiên đối chiếu mã cũ và kích thước cốt trước khi chốt phương án."
+      ]
+    },
+    {
+      "application_key": "pillow_block_unit",
+      "signals": ["gối đỡ", "pillow block", "lắc", "rung", "trục quay"],
+      "recommended_group": "pillow_blocks",
+      "required_fields": ["housing_type", "shaft_diameter"],
+      "avoid_notes": [
+        "Không nên thay khác kiểu thân gối khi chưa xác minh kiểu lắp."
+      ],
+      "suggestion_notes": [
+        "Cần xác minh kiểu thân UCP/UCF/UCFL trước khi đề xuất mã."
+      ]
+    },
+    {
+      "application_key": "oil_seal_application",
+      "signals": ["phớt", "chặn dầu", "rò dầu", "chảy mỡ"],
+      "recommended_group": "oil_seals",
+      "required_fields": ["id", "od", "thickness"],
+      "avoid_notes": [
+        "Không nên dùng vật liệu phớt không phù hợp với môi chất và nhiệt độ."
+      ],
+      "suggestion_notes": [
+        "Ưu tiên phớt đúng kích thước cốt-vỏ và xác minh kiểu môi làm kín."
+      ]
+    },
+    {
+      "application_key": "chain_drive",
+      "signals": ["xích", "chain", "mòn", "chạy không ổn"],
+      "recommended_group": "industrial_chains",
+      "required_fields": ["pitch", "chain_type", "links"],
+      "avoid_notes": [
+        "Không nên dùng mã xích ngoài tiêu chuẩn đang vận hành nếu chưa xác minh lại."
+      ],
+      "suggestion_notes": [
+        "Có thể cân nhắc phương án tương đương sau khi xác minh tiêu chuẩn xích."
+      ]
+    }
+  ]
+}

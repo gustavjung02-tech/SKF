@@ -1,0 +1,166 @@
+{
+  "version": "v1",
+  "description": "Bảng chuyển đổi tiếng lóng / viết tắt / cách gọi thường gặp sang thuật ngữ chuẩn.",
+  "mappings": [
+    {
+      "slang": "bạc đạn",
+      "canonical": "vòng bi",
+      "product_group": "bearings"
+    },
+    {
+      "slang": "bi",
+      "canonical": "vòng bi",
+      "product_group": "bearings"
+    },
+    {
+      "slang": "bạc",
+      "canonical": "vòng bi",
+      "product_group": "bearings"
+    },
+    {
+      "slang": "viên bi",
+      "canonical": "vòng bi",
+      "product_group": "bearings"
+    },
+    {
+      "slang": "ổ bi",
+      "canonical": "vòng bi",
+      "product_group": "bearings"
+    },
+    {
+      "slang": "gối",
+      "canonical": "gối đỡ",
+      "product_group": "pillow_blocks"
+    },
+    {
+      "slang": "housing",
+      "canonical": "gối đỡ",
+      "product_group": "pillow_blocks"
+    },
+    {
+      "slang": "curoa",
+      "canonical": "dây curoa",
+      "product_group": "belts"
+    },
+    {
+      "slang": "dây đai",
+      "canonical": "dây curoa",
+      "product_group": "belts"
+    },
+    {
+      "slang": "belt",
+      "canonical": "dây curoa",
+      "product_group": "belts"
+    },
+    {
+      "slang": "phớt",
+      "canonical": "phớt chặn dầu",
+      "product_group": "oil_seals"
+    },
+    {
+      "slang": "seal",
+      "canonical": "phớt chặn dầu",
+      "product_group": "oil_seals"
+    },
+    {
+      "slang": "gioăng",
+      "canonical": "phớt chặn dầu",
+      "product_group": "oil_seals"
+    },
+    {
+      "slang": "ron",
+      "canonical": "phớt chặn dầu",
+      "product_group": "oil_seals"
+    },
+    {
+      "slang": "xích",
+      "canonical": "xích công nghiệp",
+      "product_group": "industrial_chains"
+    },
+    {
+      "slang": "sên",
+      "canonical": "xích công nghiệp",
+      "product_group": "industrial_chains"
+    },
+    {
+      "slang": "chain",
+      "canonical": "xích công nghiệp",
+      "product_group": "industrial_chains"
+    },
+    {
+      "slang": "mỡ",
+      "canonical": "mỡ bôi trơn",
+      "product_group": "grease"
+    },
+    {
+      "slang": "grease",
+      "canonical": "mỡ bôi trơn",
+      "product_group": "grease"
+    },
+    {
+      "slang": "bơm mỡ",
+      "canonical": "mỡ bôi trơn",
+      "product_group": "grease"
+    },
+    {
+      "slang": "hú",
+      "canonical": "tiếng ồn bất thường",
+      "product_group": null
+    },
+    {
+      "slang": "kêu",
+      "canonical": "tiếng ồn bất thường",
+      "product_group": null
+    },
+    {
+      "slang": "rít",
+      "canonical": "ma sát bất thường",
+      "product_group": null
+    },
+    {
+      "slang": "nóng",
+      "canonical": "phát nhiệt bất thường",
+      "product_group": null
+    },
+    {
+      "slang": "rung",
+      "canonical": "rung lắc bất thường",
+      "product_group": null
+    },
+    {
+      "slang": "rò",
+      "canonical": "rò rỉ dầu/mỡ",
+      "product_group": null
+    },
+    {
+      "slang": "chảy dầu",
+      "canonical": "rò rỉ dầu/mỡ",
+      "product_group": null
+    },
+    {
+      "slang": "chảy mỡ",
+      "canonical": "rò rỉ dầu/mỡ",
+      "product_group": null
+    },
+    {
+      "slang": "mòn",
+      "canonical": "mài mòn cơ khí",
+      "product_group": null
+    },
+    {
+      "slang": "củ đục",
+      "canonical": "spindle",
+      "product_group": "bearings"
+    },
+    {
+      "slang": "cốt máy",
+      "canonical": "trục chính",
+      "product_group": null
+    },
+    {
+      "slang": "trục quay",
+      "canonical": "trục chính",
+      "product_group": null
+    }
+  ]
+}

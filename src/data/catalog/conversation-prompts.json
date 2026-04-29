@@ -1,0 +1,66 @@
+{
+  "greeting": "Anh/chị đang có mã cũ hay đang mô tả theo máy?",
+  "first_level_options": [
+    "Tôi có mã cũ",
+    "Tôi có ảnh tem",
+    "Tôi mô tả theo máy",
+    "Tôi cần thay gấp"
+  ],
+  "code_flow": {
+    "message": "Anh/chị gửi giúp mã đầy đủ hoặc mã gần đúng để em đối chiếu nhanh.",
+    "options": [
+      "Gửi mã cũ ngay",
+      "Có ảnh tem",
+      "Tôi chưa chắc mã"
+    ]
+  },
+  "image_flow": {
+    "message": "Anh/chị gửi ảnh tem hoặc ảnh vị trí lắp, em sẽ đối chiếu theo cụm máy trước.",
+    "options": [
+      "Tôi tải ảnh ngay",
+      "Chụp ảnh vị trí lắp",
+      "Tôi chỉ có kích thước"
+    ]
+  },
+  "machine_flow_step_1": {
+    "message": "Cụm đang cần hỗ trợ thuộc nhóm nào ạ?",
+    "options": [
+      "Spindle / CNC",
+      "Motor / máy bơm / quạt",
+      "Hộp số / trục quay",
+      "Băng tải / xích / gối đỡ",
+      "Phớt / cụm kín dầu",
+      "Chưa rõ, cần hỏi thêm"
+    ]
+  },
+  "machine_flow_step_2": {
+    "message": "Hiện tượng đang gặp là gì ạ?",
+    "options": [
+      "Hú / kêu lớn",
+      "Nóng / phát nhiệt",
+      "Rung / lắc",
+      "Rò dầu / chảy mỡ",
+      "Mòn / chạy không ổn",
+      "Cần thay định kỳ"
+    ]
+  },
+  "machine_flow_step_3": {
+    "message": "Mức độ ưu tiên hiện tại của anh/chị?",
+    "options": [
+      "Đang cần thay gấp",
+      "Cần chốt đúng mã trước",
+      "Cần phương án tương đương",
+      "Đang tham khảo trước"
+    ]
+  },
+  "urgent_flow": {
+    "message": "Nếu đang cần thay gấp để tránh ảnh hưởng vận hành, anh/chị gửi trước giúp em một trong các thông tin sau:",
+    "options": [
+      "Mã cũ",
+      "Ảnh tem",
+      "Kích thước",
+      "Hệ máy đang chạy"
+    ]
+  },
+  "urgent_note": "Em sẽ ưu tiên chốt đúng nhóm mã trước. Giá và tình trạng hàng xác nhận riêng sau."
+}

@@ -1,0 +1,17 @@
+{
+  "version": "v3-ntn-tsubaki-core",
+  "brand_whitelist": [
+    "NTN",
+    "TSUBAKI",
+    "KOYO/JTEKT",
+    "NOK",
+    "SOHO"
+  ],
+  "product_groups": [
+    "bearings",
+    "industrial_chains",
+    "pillow_blocks",
+    "oil_seals",
+    "belts"
+  ]
+}

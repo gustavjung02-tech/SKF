@@ -1,0 +1,67 @@
+[
+  {
+    "slug": "vong-bi",
+    "prompt": "Kỹ thuật viên cầm vòng bi tại xưởng công nghiệp, phía sau là máy móc và kệ vật tư, realistic industrial B2B photography, clean lighting, professional, no cartoon, no oversized logos, no poster-style collage, 16:9 aspect ratio",
+    "targetPath": "/images/cards/product-vong-bi.jpg"
+  },
+  {
+    "slug": "goi-do",
+    "prompt": "Cụm gối đỡ vòng bi gắn trên trục truyền động trong nhà máy, close-up rõ sản phẩm và bối cảnh ứng dụng thực tế, realistic industrial B2B photography, clean lighting, professional, no cartoon, no oversized logos, no poster-style collage, 16:9 aspect ratio",
+    "targetPath": "/images/cards/product-goi-do.jpg"
+  },
+  {
+    "slug": "xich-cong-nghiep",
+    "prompt": "Cụm truyền động xích trên dây chuyền công nghiệp, thấy rõ xích và nhông đang lắp thực tế, no oversized logo, realistic industrial B2B photography, clean lighting, professional, no cartoon, no oversized logos, no poster-style collage, 16:9 aspect ratio",
+    "targetPath": "/images/cards/product-xich-cong-nghiep.jpg"
+  },
+  {
+    "slug": "phot-chan-dau",
+    "prompt": "Ảnh phớt chặn dầu và vị trí làm kín trên trục máy công nghiệp, technical but realistic, clean background, realistic industrial B2B photography, clean lighting, professional, no cartoon, no oversized logos, no poster-style collage, 16:9 aspect ratio",
+    "targetPath": "/images/cards/product-phot-chan-dau.jpg"
+  },
+  {
+    "slug": "bao-tri",
+    "prompt": "Nhân sự bảo trì kiểm tra cụm máy, cầm mẫu linh kiện thay thế trong xưởng công nghiệp, realistic industrial B2B photography, clean lighting, professional, no cartoon, no oversized logos, no poster-style collage, 16:9 aspect ratio",
+    "targetPath": "/images/cards/solution-bao-tri.jpg"
+  },
+  {
+    "slug": "ky-thuat",
+    "prompt": "Kỹ thuật viên đo kích thước trục và kiểm tra cụm ổ trục bằng thước kẹp, realistic factory environment, realistic industrial B2B photography, clean lighting, professional, no cartoon, no oversized logos, no poster-style collage, 16:9 aspect ratio",
+    "targetPath": "/images/cards/solution-ky-thuat.jpg"
+  },
+  {
+    "slug": "mua-hang",
+    "prompt": "Nhân sự mua hàng kỹ thuật đối chiếu mã, catalog, tem hàng và danh sách vật tư trên bàn làm việc công nghiệp, realistic industrial B2B photography, clean lighting, professional, no cartoon, no oversized logos, no poster-style collage, 16:9 aspect ratio",
+    "targetPath": "/images/cards/solution-mua-hang.jpg"
+  },
+  {
+    "slug": "chu-xuong",
+    "prompt": "Chủ xưởng và kỹ thuật trao đổi nhanh trước cụm máy sản xuất, industrial realistic, professional, realistic industrial B2B photography, clean lighting, professional, no cartoon, no oversized logos, no poster-style collage, 16:9 aspect ratio",
+    "targetPath": "/images/cards/solution-chu-xuong.jpg"
+  },
+  {
+    "slug": "may-go",
+    "prompt": "Máy cưa gỗ công nghiệp đang vận hành trong xưởng gỗ, thấy rõ trục quay và hệ truyền động, bụi gỗ nhẹ trong không khí, realistic industrial B2B photography, clean lighting, professional, no cartoon, no oversized logos, no poster-style collage, 16:9 aspect ratio",
+    "targetPath": "/images/cards/industry-may-go.jpg"
+  },
+  {
+    "slug": "cnc",
+    "prompt": "Máy phay CNC đang gia công kim loại, close-up trục chính quay tốc độ cao với phoi kim loại, realistic industrial B2B photography, clean lighting, professional, no cartoon, no oversized logos, no poster-style collage, 16:9 aspect ratio",
+    "targetPath": "/images/cards/industry-cnc.jpg"
+  },
+  {
+    "slug": "ep-nhua",
+    "prompt": "Máy ép nhựa công nghiệp trong nhà máy, thấy rõ cụm kẹp và hệ thống thủy lực đang vận hành, realistic industrial B2B photography, clean lighting, professional, no cartoon, no oversized logos, no poster-style collage, 16:9 aspect ratio",
+    "targetPath": "/images/cards/industry-ep-nhua.jpg"
+  },
+  {
+    "slug": "bom-quat-dong-co",
+    "prompt": "Cụm bơm nước công nghiệp và quạt hút gió trong nhà máy, thấy rõ motor điện và cụm truyền động dây curoa, realistic industrial B2B photography, clean lighting, professional, no cartoon, no oversized logos, no poster-style collage, 16:9 aspect ratio",
+    "targetPath": "/images/cards/industry-bom-quat.jpg"
+  },
+  {
+    "slug": "bang-tai-truyen-dong",
+    "prompt": "Hệ băng tải xích và con lăn trong dây chuyền sản xuất, thấy rõ nhông xích và gối đỡ trục, realistic industrial B2B photography, clean lighting, professional, no cartoon, no oversized logos, no poster-style collage, 16:9 aspect ratio",
+    "targetPath": "/images/cards/industry-bang-tai.jpg"
+  }
+]

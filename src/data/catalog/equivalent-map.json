@@ -1,0 +1,81 @@
+{
+  "version": "v2-ntn-focus",
+  "equivalents": [
+    {
+      "source_code": "6204-2RS",
+      "normalized_source": "62042RS",
+      "product_group": "bearings",
+      "candidates": [
+        {
+          "exact_code": "6204-2RS C3",
+          "brand": "NTN",
+          "confidence": "high",
+          "note": "NTN là ưu tiên chính cho mã vòng bi này."
+        },
+        {
+          "exact_code": "6204-ZZ C3",
+          "brand": "KOYO/JTEKT",
+          "confidence": "medium",
+          "note": "Cùng kích thước lõi nhưng kiểu che chắn khác; cần xác nhận môi trường."
+        }
+      ],
+      "requires_manual_confirmation": true
+    },
+    {
+      "source_code": "UCP205",
+      "normalized_source": "UCP205",
+      "product_group": "pillow_blocks",
+      "candidates": [
+        {
+          "exact_code": "UCP205",
+          "brand": "KOYO/JTEKT",
+          "confidence": "high",
+          "note": "Khớp kiểu chân đế, cần xác nhận đường kính trục và kích thước lắp."
+        }
+      ],
+      "requires_manual_confirmation": true
+    },
+    {
+      "source_code": "08B-1",
+      "normalized_source": "08B1",
+      "product_group": "industrial_chains",
+      "candidates": [
+        {
+          "exact_code": "RS40-1",
+          "brand": "TSUBAKI",
+          "confidence": "low",
+          "note": "Chỉ dùng để khoanh vùng; đổi chuẩn xích cần kiểm tra trực tiếp."
+        }
+      ],
+      "requires_manual_confirmation": true
+    },
+    {
+      "source_code": "A-42",
+      "normalized_source": "A42",
+      "product_group": "belts",
+      "candidates": [
+        {
+          "exact_code": "A-42",
+          "brand": "SOHO",
+          "confidence": "high",
+          "note": "Đúng mã dây curoa A-42 trong nhóm Soho, cần xác nhận profile thực tế."
+        }
+      ],
+      "requires_manual_confirmation": true
+    },
+    {
+      "source_code": "35X52X7",
+      "normalized_source": "35X52X7",
+      "product_group": "oil_seals",
+      "candidates": [
+        {
+          "exact_code": "TC35X52X7",
+          "brand": "NOK",
+          "confidence": "high",
+          "note": "Khớp kích thước phớt 35 x 52 x 7, cần xác nhận kiểu môi TC/SC trước khi chốt."
+        }
+      ],
+      "requires_manual_confirmation": true
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "slug": "kiem-tra-lai-ma-vong-bi-truoc-khi-dat-hang",
+    "title": "Khi nào cần kiểm tra lại mã vòng bi trước khi đặt hàng?",
+    "excerpt": "Checklist nhanh để tránh đặt sai mã khi thông tin từ bảo trì, kỹ thuật và mua hàng chưa đồng nhất.",
+    "category": "Bảo trì",
+    "publishedAt": "2026-03-10",
+    "readTime": "4 phút đọc"
+  },
+  {
+    "slug": "2rs-zz-c3-khac-nhau-trong-ung-dung-thuc-te",
+    "title": "2RS, ZZ, C3 khác nhau ở điểm nào trong ứng dụng thực tế?",
+    "excerpt": "So sánh theo môi trường làm việc, tải và tốc độ để chọn đúng tiêu chuẩn vòng bi cho cụm máy.",
+    "category": "Kỹ thuật",
+    "publishedAt": "2026-03-07",
+    "readTime": "5 phút đọc"
+  },
+  {
+    "slug": "dau-hieu-chon-sai-phot-chan-dau-trong-cum-truc-hop-so",
+    "title": "Dấu hiệu chọn sai phớt chặn dầu trong cụm trục và hộp số",
+    "excerpt": "Những lỗi thường gặp khi đối chiếu phớt theo kích thước trục-vỏ và môi trường vận hành thực tế.",
+    "category": "Phớt chặn dầu",
+    "publishedAt": "2026-02-28",
+    "readTime": "6 phút đọc"
+  },
+  {
+    "slug": "cach-kiem-tra-buoc-xich-truoc-khi-thay",
+    "title": "Cách kiểm tra bước xích trước khi thay để tránh sai mã",
+    "excerpt": "Các bước đo nhanh tại hiện trường để xác định đúng bước xích, số mắt và phương án thay thế.",
+    "category": "Xích công nghiệp",
+    "publishedAt": "2026-02-22",
+    "readTime": "4 phút đọc"
+  },
+  {
+    "slug": "goi-do-ucp-ucf-ucfl-chon-theo-kieu-lap-nao",
+    "title": "Gối đỡ UCP, UCF, UCFL nên chọn theo kiểu lắp nào?",
+    "excerpt": "Gợi ý cách chọn theo vị trí lắp, phương trục và điều kiện tải để giảm lỗi khi thay trong nhà máy.",
+    "category": "Gối đỡ",
+    "publishedAt": "2026-02-18",
+    "readTime": "5 phút đọc"
+  },
+  {
+    "slug": "thong-tin-can-gui-de-bao-gia-nhanh-hon",
+    "title": "Gửi gì trước để báo giá nhanh hơn?",
+    "excerpt": "Danh sách thông tin cần có cho bảo trì, kỹ thuật và mua hàng để xử lý báo giá trong ngày.",
+    "category": "Mua hàng kỹ thuật",
+    "publishedAt": "2026-02-12",
+    "readTime": "4 phút đọc"
+  }
+]

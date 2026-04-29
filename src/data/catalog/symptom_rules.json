@@ -1,0 +1,62 @@
+{
+  "version": "v1",
+  "description": "Luật suy đoán nhóm hàng và mức khẩn từ triệu chứng mô tả.",
+  "rules": [
+    {
+      "symptom_key": "noise",
+      "signals": ["hú", "kêu", "kêu lớn", "ồn", "rít", "noise"],
+      "likely_groups": ["bearings", "pillow_blocks"],
+      "urgency_hint": "medium",
+      "follow_up": "Tiếng ồn phát ra ở vị trí nào? Liên tục hay chỉ khi tải cao?",
+      "note": "Tiếng hú/kêu thường liên quan đến vòng bi mòn hoặc thiếu mỡ."
+    },
+    {
+      "symptom_key": "heat",
+      "signals": ["nóng", "phát nhiệt", "quá nhiệt", "cháy", "hot"],
+      "likely_groups": ["bearings", "oil_seals", "grease"],
+      "urgency_hint": "high",
+      "follow_up": "Cụm nào phát nhiệt? Có rò dầu/mỡ kèm theo không?",
+      "note": "Phát nhiệt bất thường có thể do vòng bi kẹt, thiếu mỡ, hoặc phớt bị mòn."
+    },
+    {
+      "symptom_key": "vibration",
+      "signals": ["rung", "lắc", "rung lắc", "vibration", "dao động"],
+      "likely_groups": ["bearings", "pillow_blocks", "industrial_chains"],
+      "urgency_hint": "medium",
+      "follow_up": "Rung khi tải cao hay khi không tải? Có thay đổi khi tốc độ thay đổi?",
+      "note": "Rung có thể do vòng bi mòn, gối đỡ lệch, hoặc xích giãn."
+    },
+    {
+      "symptom_key": "oil_leak",
+      "signals": ["rò dầu", "chảy dầu", "rò mỡ", "chảy mỡ", "leak", "rỉ dầu"],
+      "likely_groups": ["oil_seals"],
+      "urgency_hint": "high",
+      "follow_up": "Dầu rò ở vị trí trục ra hay cụm nắp? Kiểu phớt hiện tại là TC hay SC?",
+      "note": "Rò dầu thường do phớt mòn hoặc sai kiểu môi."
+    },
+    {
+      "symptom_key": "wear",
+      "signals": ["mòn", "sờn", "worn", "mài", "giãn"],
+      "likely_groups": ["industrial_chains", "belts", "bearings"],
+      "urgency_hint": "medium",
+      "follow_up": "Mòn ở bộ phận nào? Thời gian sử dụng từ lần thay cuối?",
+      "note": "Mòn xích/curoa là hao mòn tự nhiên, cần xác minh bước xích hoặc profile."
+    },
+    {
+      "symptom_key": "unstable_operation",
+      "signals": ["chạy không ổn", "giật", "không đều", "trượt", "tuột"],
+      "likely_groups": ["belts", "industrial_chains"],
+      "urgency_hint": "medium",
+      "follow_up": "Hiện tượng xảy ra khi khởi động hay khi đang chạy tải?",
+      "note": "Có thể do curoa trượt hoặc xích giãn quá mức cho phép."
+    },
+    {
+      "symptom_key": "periodic_replacement",
+      "signals": ["thay định kỳ", "bảo trì", "PM", "preventive", "lên kế hoạch"],
+      "likely_groups": ["bearings", "oil_seals", "grease", "belts", "industrial_chains"],
+      "urgency_hint": "low",
+      "follow_up": "Cần thay cho cụm nào? Mã cũ đang dùng là gì?",
+      "note": "Thay định kỳ ưu tiên chốt đúng mã cũ, không cần đánh giá triệu chứng."
+    }
+  ]
+}

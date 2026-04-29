@@ -1,0 +1,62 @@
+{
+  "version": "v1",
+  "description": "Luật phát hiện nhầm lẫn phổ biến giữa các mã / nhóm hàng.",
+  "rules": [
+    {
+      "rule_key": "bearing_seal_vs_shield",
+      "description": "Nhầm giữa mã 2RS (seal) và ZZ (shield) cùng kích thước.",
+      "trigger_codes": ["6204-2RS", "6204-ZZ", "6305-2NSE", "6305-ZZ"],
+      "confusion_type": "seal_shield_mismatch",
+      "warning": "Mã 2RS (seal cao su) và ZZ (shield kim loại) cùng kích thước nhưng khả năng chặn khác nhau. Môi trường ẩm/bụi nên dùng 2RS.",
+      "action": "ask_environment"
+    },
+    {
+      "rule_key": "ucp_vs_ucf",
+      "description": "Nhầm giữa gối đỡ chân đế (UCP) và gối mặt bích (UCF).",
+      "trigger_codes": ["UCP205", "UCF205", "UCP204", "UCF204"],
+      "confusion_type": "housing_type_mismatch",
+      "warning": "UCP là gối chân đế (pedestal), UCF là gối mặt bích (flange). Cùng đường kính trục nhưng kiểu lắp hoàn toàn khác.",
+      "action": "ask_mounting_type"
+    },
+    {
+      "rule_key": "chain_bs_vs_ansi",
+      "description": "Nhầm giữa xích tiêu chuẩn BS (08B) và ANSI (RS40).",
+      "trigger_codes": ["08B-1", "RS40-1", "10B-1", "RS50-1"],
+      "confusion_type": "chain_standard_mismatch",
+      "warning": "08B-1 (BS) và RS40-1 (ANSI) có bước xích gần nhau nhưng không thay thế trực tiếp. Cần xác minh tiêu chuẩn đang dùng.",
+      "action": "ask_chain_standard"
+    },
+    {
+      "rule_key": "oil_seal_tc_vs_sc",
+      "description": "Nhầm giữa phớt TC (2 môi) và SC (1 môi).",
+      "trigger_codes": ["TC35X52X7", "SC35X52X7"],
+      "confusion_type": "lip_type_mismatch",
+      "warning": "TC có 2 môi chặn (dầu + bụi), SC chỉ 1 môi. Lắp sai kiểu môi gây rò dầu hoặc kẹt trục.",
+      "action": "ask_lip_type"
+    },
+    {
+      "rule_key": "belt_profile_a_vs_spa",
+      "description": "Nhầm giữa dây curoa profile A (cổ điển) và SPA (hẹp).",
+      "trigger_codes": ["A-42", "SPA-1060"],
+      "confusion_type": "belt_profile_mismatch",
+      "warning": "Profile A (cổ điển) và SPA (narrow) có chiều dài gần nhau nhưng tiết diện khác. Lắp sai profile gây trượt hoặc đứt.",
+      "action": "ask_pulley_groove"
+    },
+    {
+      "rule_key": "motorcycle_vs_industrial_chain",
+      "description": "Nhầm xích xe máy (420, 428) với xích công nghiệp.",
+      "trigger_codes": ["420", "428", "520"],
+      "confusion_type": "product_scope_mismatch",
+      "warning": "Xích 420/428 là xích xe máy, không phải xích công nghiệp. Ngoài danh mục đang hỗ trợ.",
+      "action": "inform_out_of_scope"
+    },
+    {
+      "rule_key": "clearance_cn_vs_c3",
+      "description": "Nhầm khe hở CN (normal) và C3 (lớn hơn normal).",
+      "trigger_codes": ["6204-2RS", "6204-2RS C3"],
+      "confusion_type": "clearance_mismatch",
+      "warning": "C3 có khe hở lớn hơn CN, phù hợp hơn khi chạy nhiệt hoặc lắp chặt. Lắp sai khe hở gây mòn sớm.",
+      "action": "ask_operating_condition"
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "version": "v2",
+  "description": "Mẫu câu trả lời cho đội THL B2B, bám danh mục phân phối chính thức NTN, Tsubaki, Koyo và trục triển khai theo ứng dụng.",
+  "templates": [
+    {
+      "key": "found_exact",
+      "scenario": "Tìm được mã chính xác trong catalog.",
+      "template": "Mã {exact_code} ({brand}) phù hợp với yêu cầu. {reason}. Giá được xác nhận riêng. Chưa xác nhận tồn kho tự động.",
+      "variables": ["exact_code", "brand", "reason"]
+    },
+    {
+      "key": "found_equivalent",
+      "scenario": "Tìm được mã tương đương.",
+      "template": "Mã gốc {source_code} có thể đối chiếu sang {exact_code} ({brand}). {note}. Cần xác minh thêm trước khi chốt.",
+      "variables": ["source_code", "exact_code", "brand", "note"]
+    },
+    {
+      "key": "need_more_info",
+      "scenario": "Thiếu thông tin, cần hỏi thêm.",
+      "template": "Chưa đủ thông tin để chốt mã. Cần thêm: {missing_fields}. {next_question}",
+      "variables": ["missing_fields", "next_question"]
+    },
+    {
+      "key": "not_in_catalog",
+      "scenario": "Mã không có trong catalog hiện tại.",
+      "template": "Mã {query} chưa có trong hệ thống tra cứu hiện hành. THL cần đối chiếu thủ công trước khi xác nhận để tránh sai mã.",
+      "variables": ["query"]
+    },
+    {
+      "key": "brand_not_allowed",
+      "scenario": "Khách hỏi thương hiệu ngoài whitelist.",
+      "template": "Thương hiệu {brand} hiện ngoài phạm vi danh mục triển khai trên hệ thống. THL đề xuất phương án tương đương đã đối chiếu: {suggested}.",
+      "variables": ["brand", "suggested"]
+    },
+    {
+      "key": "high_risk_confusion",
+      "scenario": "Có nguy cơ nhầm lẫn cao giữa các mã.",
+      "template": "Cần xác minh thêm: {confusion_note}. Chưa chốt mã để tránh sai.",
+      "variables": ["confusion_note"]
+    },
+    {
+      "key": "manual_review",
+      "scenario": "Cần review thủ công trước khi trả kết quả.",
+      "template": "Trường hợp này cần xác minh thủ công. Anh/chị vui lòng gửi thêm ảnh tem hoặc liên hệ đội THL B2B để được đối chiếu rõ hơn.",
+      "variables": []
+    },
+    {
+      "key": "outside_scope",
+      "scenario": "Hàng ngoài phạm vi hỗ trợ (VD: xích xe máy 420/428).",
+      "template": "Nhóm hàng này ({item}) nằm ngoài danh mục xích công nghiệp THL đang triển khai. Anh/chị vui lòng liên hệ đơn vị chuyên dụng để được hỗ trợ phù hợp.",
+      "variables": ["item"]
+    },
+    {
+      "key": "urgent_ack",
+      "scenario": "Ghi nhận nhu cầu gấp.",
+      "template": "Đã ghi nhận nhu cầu gấp. THL ưu tiên chốt đúng nhóm vật tư trước; giá và tình trạng hàng xác nhận riêng sau.",
+      "variables": []
+    },
+    {
+      "key": "greeting",
+      "scenario": "Khách chào hỏi chung chung.",
+      "template": "Chào anh/chị, THL hỗ trợ đối chiếu danh mục NTN, Tsubaki, Koyo và các nhóm vật tư truyền động theo ứng dụng. Anh/chị gửi mã cũ, ảnh tem hoặc mô tả máy để THL kiểm tra chính xác.",
+      "variables": []
+    }
+  ]
+}
