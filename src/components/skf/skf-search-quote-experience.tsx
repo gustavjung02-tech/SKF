@@ -692,6 +692,7 @@ export function SkfSearchQuoteExperience() {
   const initialQuery = searchParams.get("q") ?? "";
   const groupParam = searchParams.get("group") ?? searchParams.get("nhom") ?? "";
   const resultsRef = useRef<HTMLElement | null>(null);
+  const rfqMessageTextareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const [query, setQuery] = useState(initialQuery);
   const deferredQuery = useDeferredValue(query);
@@ -719,6 +720,10 @@ export function SkfSearchQuoteExperience() {
   const [quoteFormError, setQuoteFormError] = useState("");
   const [customerForm, setCustomerForm] = useState<QuoteRequestCustomerForm>(EMPTY_CUSTOMER_FORM);
   const [quoteItemDrafts, setQuoteItemDrafts] = useState<Record<string, QuoteItemDraft>>({});
+  const [isQuoteResultModalOpen, setIsQuoteResultModalOpen] = useState(false);
+  const [latestQuoteMessage, setLatestQuoteMessage] = useState("");
+  const [latestQuoteJson, setLatestQuoteJson] = useState("");
+  const [clipboardAvailable, setClipboardAvailable] = useState(true);
 
   useEffect(() => {
     setQuery(initialQuery);
@@ -1145,6 +1150,48 @@ export function SkfSearchQuoteExperience() {
     }
   }
 
+  function downloadQuoteRequestJson() {
+    if (!latestQuoteJson) {
+      return;
+    }
+
+    const quoteId = (() => {
+      try {
+        const parsed = JSON.parse(latestQuoteJson) as { id?: string };
+        return parsed.id || "rfq-skf";
+      } catch {
+        return "rfq-skf";
+      }
+    })();
+
+    const blob = new Blob([latestQuoteJson], { type: "application/json;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `${quoteId}.json`;
+    anchor.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1200);
+  }
+
+  async function copyLatestQuoteMessageAgain() {
+    if (!latestQuoteMessage) {
+      return;
+    }
+
+    const copied = await tryCopyQuoteMessage(latestQuoteMessage);
+    setClipboardAvailable(copied);
+    if (!copied) {
+      window.requestAnimationFrame(() => {
+        rfqMessageTextareaRef.current?.focus();
+        rfqMessageTextareaRef.current?.select();
+      });
+    }
+  }
+
+  function openZaloOnly() {
+    window.open(RFQ_ZALO_FALLBACK_LINK, "_blank", "noopener,noreferrer");
+  }
+
   function updateCustomerForm<K extends keyof QuoteRequestCustomerForm>(key: K, value: QuoteRequestCustomerForm[K]) {
     setCustomerForm((current) => ({ ...current, [key]: value }));
   }
@@ -1167,6 +1214,7 @@ export function SkfSearchQuoteExperience() {
     }
 
     setQuoteFormError("");
+    setIsQuoteResultModalOpen(false);
     setIsQuoteModalOpen(true);
   }
 
@@ -1216,19 +1264,33 @@ export function SkfSearchQuoteExperience() {
     saveQuoteRequestDraft(rfq);
 
     const quoteMessage = buildZaloQuoteMessage(rfq);
-    await tryCopyQuoteMessage(quoteMessage);
+    const copied = await tryCopyQuoteMessage(quoteMessage);
 
     setCopyNotice("Đã tạo phiếu yêu cầu báo giá và copy nội dung Zalo.");
     window.setTimeout(() => setCopyNotice(""), 5500);
+    setLatestQuoteMessage(quoteMessage);
+    setLatestQuoteJson(rfqJson);
+    setClipboardAvailable(copied);
     setIsQuoteModalOpen(false);
+    setIsQuoteResultModalOpen(true);
     setQuoteFormError("");
-    window.open(siteConfig.zaloLink || RFQ_ZALO_FALLBACK_LINK, "_blank", "noopener,noreferrer");
   }
 
   function closeQuoteModal() {
     setIsQuoteModalOpen(false);
     setQuoteFormError("");
   }
+
+  useEffect(() => {
+    if (!isQuoteResultModalOpen || clipboardAvailable) {
+      return;
+    }
+
+    window.requestAnimationFrame(() => {
+      rfqMessageTextareaRef.current?.focus();
+      rfqMessageTextareaRef.current?.select();
+    });
+  }, [clipboardAvailable, isQuoteResultModalOpen]);
 
   const selectedQuoteCodes = selectedQuoteItems.map((item) => item.code);
   const selectedQuoteText = selectedQuoteCodes.join(", ");
@@ -1648,6 +1710,57 @@ export function SkfSearchQuoteExperience() {
                 </Button>
               </div>
             </form>
+          </div>
+        </div>
+      ) : null}
+
+      {isQuoteResultModalOpen ? (
+        <div className="fixed inset-0 z-[72] flex items-center justify-center bg-slate-950/55 p-3">
+          <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl sm:p-5">
+            <div className="mb-3 flex items-start justify-between gap-2">
+              <div>
+                <h3 className="font-heading text-xl font-bold text-slate-950">Đã tạo phiếu yêu cầu báo giá</h3>
+                <p className="mt-1 text-sm text-slate-600">
+                  Nội dung yêu cầu đã được copy. Anh/chị chỉ cần mở Zalo, dán nội dung và gửi cho SKF Công Nghiệp.
+                </p>
+              </div>
+              <Button type="button" variant="outline" className="border-slate-200 text-slate-600" onClick={() => setIsQuoteResultModalOpen(false)}>
+                <X className="mr-1 size-4" />
+                Đóng
+              </Button>
+            </div>
+
+            {!clipboardAvailable ? (
+              <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50 p-3">
+                <p className="mb-2 text-sm font-medium text-amber-800">Vui lòng copy nội dung bên dưới rồi dán vào Zalo.</p>
+                <Textarea
+                  ref={rfqMessageTextareaRef}
+                  rows={8}
+                  value={latestQuoteMessage}
+                  readOnly
+                  className="bg-white"
+                />
+              </div>
+            ) : null}
+
+            <div className="flex flex-wrap gap-2">
+              <Button type="button" className="bg-blue-800 text-white hover:bg-blue-900" onClick={openZaloOnly}>
+                <MessageCircle className="mr-2 size-4" />
+                Mở Zalo
+              </Button>
+              <Button type="button" variant="outline" className="border-slate-200 text-slate-700" onClick={copyLatestQuoteMessageAgain}>
+                Copy lại nội dung
+              </Button>
+            </div>
+
+            <details className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <summary className="cursor-pointer text-sm font-semibold text-slate-800">Tùy chọn khác</summary>
+              <div className="mt-2">
+                <Button type="button" variant="outline" className="border-slate-300 text-slate-700" onClick={downloadQuoteRequestJson}>
+                  Tải phiếu JSON
+                </Button>
+              </div>
+            </details>
           </div>
         </div>
       ) : null}
