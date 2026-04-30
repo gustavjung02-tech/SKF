@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { type FormEvent, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { MessageCircle, Search, SlidersHorizontal, Loader2, RotateCcw, X } from "lucide-react";
+import { Fragment, type FormEvent, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { FileSpreadsheet, FileText, MessageCircle, Search, SlidersHorizontal, Loader2, RotateCcw, X } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { LeadForm } from "@/components/forms/lead-form";
@@ -50,6 +50,7 @@ type CodeIndexRecord = {
   normalizedCode?: string;
   name?: string;
   productGroup?: string;
+  productGroupSlug?: string;
   productGroupLabel?: string;
   subCategory?: string;
   applicationText?: string;
@@ -95,9 +96,16 @@ type SelectedQuoteItem = {
 
 const FILTER_OPTIONS_URL = "/data/skf-filter-options.json";
 const CODE_INDEX_URL = "/data/skf-code-index.json";
-const DEFAULT_QUICK_SUGGESTIONS = ["22212", "6225", "6379", "IR 90X100X26", "UCP208", "60X90X10"];
+const FACEBOOK_PAGE_URL = "https://www.facebook.com/SKF.CongNghiep/";
 const TECHNICAL_CODE_PREFIXES = ["TMFT", "TKSA", "NUP", "UCP", "TIH", "NU", "NJ", "UC", "IR", "LG"];
 const DIMENSION_TOLERANCE_MM = 0.5;
+const QUICK_SUGGESTION_GROUPS = [
+  { label: "Vòng bi", codes: ["6205", "6308", "22212", "NU308"] },
+  { label: "Gối đỡ", codes: ["UCP208", "UCF207"] },
+  { label: "Phớt", codes: ["60X90X10", "90X100X26"] },
+  { label: "Bôi trơn", codes: ["LGHP 2", "LGMT 3"] },
+] as const;
+const BEARING_FOCUSED_SUGGESTIONS = ["6205", "6206", "6218", "6308", "22212", "NU308"];
 const RESULT_CARD_IMAGES = {
   bearings: "/images/cards/product-vong-bi.webp",
   housings: "/images/cards/product-goi-do.webp",
@@ -107,6 +115,14 @@ const RESULT_CARD_IMAGES = {
   transmission: "/images/industry/hero-ung-dung-nganh-skf.png",
   fallback: "/images/brands/hero-san-pham-skf.png",
 };
+
+function FacebookMarkIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="currentColor">
+      <path d="M13.7 21v-8.2h2.8l.4-3.2h-3.2V7.5c0-.9.3-1.6 1.6-1.6h1.7V3c-.3 0-1.4-.1-2.6-.1-2.6 0-4.3 1.6-4.3 4.5v2.2H8v3.2h2.7V21h3z" />
+    </svg>
+  );
+}
 
 function normalizeCode(value: string) {
   return value.toUpperCase().replace(/[^A-Z0-9]/g, "");
@@ -241,6 +257,27 @@ function hasFilterOption(options: FilterOption[], value: string) {
 
 function getRecordNormalizedCode(record: GroupRecord) {
   return normalizeCode(record.normalizedCode || record.code);
+}
+
+function normalizeGroupKey(value: string | undefined) {
+  return normalizeLookupText(value).replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
+function doesRecordMatchGroup(record: GroupRecord, selectedGroup: string) {
+  if (!selectedGroup) {
+    return true;
+  }
+
+  const selectedGroupKey = normalizeGroupKey(selectedGroup);
+  const candidateGroups = [
+    record.productGroup,
+    record.productGroupSlug,
+    record.productGroupLabel,
+  ]
+    .map((value) => normalizeGroupKey(value))
+    .filter(Boolean);
+
+  return candidateGroups.some((value) => value === selectedGroupKey);
 }
 
 function getTechnicalPrefix(normalizedQuery: string) {
@@ -475,7 +512,6 @@ export function SkfSearchQuoteExperience() {
 
   const [filterOptions, setFilterOptions] = useState<FilterOptions | null>(null);
   const [selectedGroup, setSelectedGroup] = useState("");
-  const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [selectedApplication, setSelectedApplication] = useState("");
   const [selectedIndustry, setSelectedIndustry] = useState("");
   const [selectedMachineGroup, setSelectedMachineGroup] = useState("");
@@ -538,7 +574,6 @@ export function SkfSearchQuoteExperience() {
     !selectedGroup &&
     Boolean(
       deferredQuery.trim() ||
-        selectedSubCategory ||
         selectedApplication ||
         selectedPriority ||
         hasDimensionInput,
@@ -644,7 +679,7 @@ export function SkfSearchQuoteExperience() {
         }
       } catch (loadError) {
         if (!cancelled) {
-          setError(loadError instanceof Error ? loadError.message : "KhÃ´ng thá»ƒ táº£i dá»¯ liá»‡u kÃ­ch thÆ°á»›c SKF.");
+          setError(loadError instanceof Error ? loadError.message : "Không thể tải dữ liệu kích thước SKF.");
         }
       } finally {
         if (!cancelled) {
@@ -662,62 +697,45 @@ export function SkfSearchQuoteExperience() {
 
   const allGroupData = useMemo(() => Object.values(groupDataBySlug).flat(), [groupDataBySlug]);
 
-  const availableSubCategoryOptions = useMemo(() => {
-    if (!filterOptions) {
-      return [];
-    }
-
+  const selectedGroupLabel = useMemo(() => {
     if (!selectedGroup) {
-      return filterOptions.subCategories;
+      return "";
     }
 
-    return buildFilterOptionsFromRecords(
-      groupDataBySlug[selectedGroup] ?? [],
-      (record) => (record.subCategory ? [record.subCategory] : []),
-      filterOptions.subCategories,
-    );
-  }, [filterOptions, groupDataBySlug, selectedGroup]);
+    const option = filterOptions?.productGroups.find((group) => group.value === selectedGroup);
+    return option?.label ?? "";
+  }, [filterOptions, selectedGroup]);
 
   const availableApplicationOptions = useMemo(() => {
     if (!filterOptions) {
       return [];
     }
 
-    if (!selectedGroup && !selectedSubCategory) {
+    if (selectedGroup) {
+      return buildFilterOptionsFromRecords(
+        groupDataBySlug[selectedGroup] ?? [],
+        getApplicationValues,
+        filterOptions.applications,
+      );
+    }
+
+    const records = codeIndex ?? allGroupData;
+    if (!records.length) {
       return filterOptions.applications;
     }
 
-    const records = selectedGroup ? groupDataBySlug[selectedGroup] ?? [] : codeIndex ?? allGroupData;
-    const scopedRecords = records.filter((record) => {
-      return (
-        (!selectedGroup || record.productGroup === selectedGroup) &&
-        (!selectedSubCategory || record.subCategory === selectedSubCategory)
-      );
-    });
-
-    return buildFilterOptionsFromRecords(scopedRecords, getApplicationValues, filterOptions.applications);
-  }, [allGroupData, codeIndex, filterOptions, groupDataBySlug, selectedGroup, selectedSubCategory]);
+    return buildFilterOptionsFromRecords(records, getApplicationValues, filterOptions.applications);
+  }, [allGroupData, codeIndex, filterOptions, groupDataBySlug, selectedGroup]);
 
   useEffect(() => {
-    if (!selectedSubCategory || availableSubCategoryOptions.length === 0) {
-      return;
-    }
-
-    if (!hasFilterOption(availableSubCategoryOptions, selectedSubCategory)) {
-      setSelectedSubCategory("");
-      setSelectedApplication("");
-    }
-  }, [availableSubCategoryOptions, selectedSubCategory]);
-
-  useEffect(() => {
-    if (!selectedApplication || (!selectedGroup && !selectedSubCategory) || availableApplicationOptions.length === 0) {
+    if (!selectedApplication || availableApplicationOptions.length === 0) {
       return;
     }
 
     if (!hasFilterOption(availableApplicationOptions, selectedApplication)) {
       setSelectedApplication("");
     }
-  }, [availableApplicationOptions, selectedApplication, selectedGroup, selectedSubCategory]);
+  }, [availableApplicationOptions, selectedApplication]);
 
   const parsedInnerDiameter = parseDimension(innerDiameter);
   const parsedOuterDiameter = parseDimension(outerDiameter);
@@ -754,7 +772,6 @@ export function SkfSearchQuoteExperience() {
     if (
       !selectedGroup &&
       !rawQuery &&
-      !selectedSubCategory &&
       !selectedApplication &&
       !selectedPriority &&
       expectedInner === null &&
@@ -788,14 +805,13 @@ export function SkfSearchQuoteExperience() {
 
       const actualDimensions = getRecordDimensions(record);
       const dimensionMatch = scoreDimensionMatch(actualDimensions, expectedDimensions);
-      const matchesGroup = !selectedGroup || record.productGroup === selectedGroup;
-      const matchesSubCategory = !selectedSubCategory || record.subCategory === selectedSubCategory;
+      const matchesGroup = !selectedGroup || doesRecordMatchGroup(record, selectedGroup);
       const matchesApplication = !selectedApplication || normalizeText(applicationTextResolved).includes(normalizeText(selectedApplication));
       const matchesIndustry = !selectedIndustry || normalizeText(industriesText).includes(normalizeText(selectedIndustry));
       const matchesMachineGroup = !selectedMachineGroup || normalizeText(machineGroupsText).includes(normalizeText(selectedMachineGroup));
       const matchesPriority = !selectedPriority || record.priority === selectedPriority;
 
-      if (!queryMatch.matches || !matchesGroup || !matchesSubCategory || !matchesApplication || !matchesIndustry || !matchesMachineGroup || !matchesPriority || !dimensionMatch.matches) {
+      if (!queryMatch.matches || !matchesGroup || !matchesApplication || !matchesIndustry || !matchesMachineGroup || !matchesPriority || !dimensionMatch.matches) {
         continue;
       }
 
@@ -833,18 +849,22 @@ export function SkfSearchQuoteExperience() {
     selectedIndustry,
     selectedMachineGroup,
     selectedPriority,
-    selectedSubCategory,
     parsedInnerDiameter,
     parsedOuterDiameter,
     parsedWidth,
   ]);
 
-  const quickSuggestions = DEFAULT_QUICK_SUGGESTIONS;
+  const quickSuggestionGroups = useMemo(() => {
+    if (selectedGroup === "vong-bi-skf") {
+      return [{ label: "Vòng bi", codes: BEARING_FOCUSED_SUGGESTIONS }];
+    }
+
+    return QUICK_SUGGESTION_GROUPS;
+  }, [selectedGroup]);
 
   const hasActiveSearch =
     Boolean(query.trim()) ||
     Boolean(selectedGroup) ||
-    Boolean(selectedSubCategory) ||
     Boolean(selectedApplication) ||
     Boolean(selectedIndustry) ||
     Boolean(selectedMachineGroup) ||
@@ -874,18 +894,11 @@ export function SkfSearchQuoteExperience() {
 
   function handleGroupChange(value: string | null) {
     setSelectedGroup(value ?? "");
-    setSelectedSubCategory("");
-    setSelectedApplication("");
-  }
-
-  function handleSubCategoryChange(value: string | null) {
-    setSelectedSubCategory(value ?? "");
     setSelectedApplication("");
   }
 
   function resetFilters() {
     setSelectedGroup("");
-    setSelectedSubCategory("");
     setSelectedApplication("");
     setSelectedIndustry("");
     setSelectedMachineGroup("");
@@ -934,21 +947,133 @@ export function SkfSearchQuoteExperience() {
     ].join("\n");
   }
 
-  async function copyQuoteMessage(message: string) {
+  function buildQuoteFileTimestamp() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = `${now.getMonth() + 1}`.padStart(2, "0");
+    const date = `${now.getDate()}`.padStart(2, "0");
+    const hours = `${now.getHours()}`.padStart(2, "0");
+    const minutes = `${now.getMinutes()}`.padStart(2, "0");
+    return `${year}${month}${date}-${hours}${minutes}`;
+  }
+
+  function escapeCsvCell(value: string) {
+    const normalized = value.replace(/"/g, "\"\"");
+    return /[",\n]/.test(normalized) ? `"${normalized}"` : normalized;
+  }
+
+  function downloadBlob(filename: string, blob: Blob) {
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = filename;
+    anchor.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
+
+  function toPdfAscii(value: string) {
+    return value
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[đĐ]/g, (match) => (match === "Đ" ? "D" : "d"))
+      .replace(/[^\x20-\x7E]/g, "");
+  }
+
+  function escapePdfText(value: string) {
+    return value.replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
+  }
+
+  function buildQuoteCsvContent() {
+    const header = ["STT", "Mã sản phẩm", "Mô tả"];
+    const rows = selectedQuoteItems.map((item, index) => [String(index + 1), item.code, item.name ?? ""]);
+    const dimensionRows = [
+      innerDiameter.trim() ? ["", "d", innerDiameter.trim()] : null,
+      outerDiameter.trim() ? ["", "D", outerDiameter.trim()] : null,
+      width.trim() ? ["", "B/T", width.trim()] : null,
+    ].filter((row): row is string[] => Boolean(row));
+
+    const csvRows = [header, ...rows, [], ["Thông số tìm kiếm", "", ""], ...dimensionRows];
+    return csvRows.map((row) => row.map((cell) => escapeCsvCell(cell)).join(",")).join("\r\n");
+  }
+
+  function buildQuotePdfBlob() {
+    const lines = [
+      "SKF QUOTE REQUEST",
+      `Timestamp: ${new Date().toLocaleString("vi-VN")}`,
+      "",
+      ...selectedQuoteItems.map((item, index) => `${index + 1}. ${item.code}${item.name ? ` - ${item.name}` : ""}`),
+      "",
+      "Search dimensions:",
+      innerDiameter.trim() ? `d = ${innerDiameter.trim()} mm` : "d = (empty)",
+      outerDiameter.trim() ? `D = ${outerDiameter.trim()} mm` : "D = (empty)",
+      width.trim() ? `B/T = ${width.trim()} mm` : "B/T = (empty)",
+    ];
+
+    const content = lines
+      .slice(0, 40)
+      .map((line, index) => {
+        const yPosition = 790 - index * 18;
+        return `BT\n/F1 11 Tf\n50 ${yPosition} Td\n(${escapePdfText(toPdfAscii(line))}) Tj\nET`;
+      })
+      .join("\n");
+
+    const objects = [
+      "1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n",
+      "2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n",
+      "3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>\nendobj\n",
+      `4 0 obj\n<< /Length ${content.length} >>\nstream\n${content}\nendstream\nendobj\n`,
+      "5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n",
+    ];
+
+    const encoder = new TextEncoder();
+    let pdf = "%PDF-1.4\n";
+    const offsets: number[] = [0];
+
+    for (const objectContent of objects) {
+      offsets.push(encoder.encode(pdf).length);
+      pdf += objectContent;
+    }
+
+    const xrefOffset = encoder.encode(pdf).length;
+    pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+
+    for (let index = 1; index <= objects.length; index += 1) {
+      pdf += `${offsets[index].toString().padStart(10, "0")} 00000 n \n`;
+    }
+
+    pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
+    return new Blob([pdf], { type: "application/pdf" });
+  }
+
+  function exportQuoteDocuments() {
+    const timestamp = buildQuoteFileTimestamp();
+    const csvContent = buildQuoteCsvContent();
+    const csvBlob = new Blob([`\uFEFF${csvContent}`], { type: "text/csv;charset=utf-8;" });
+    const pdfBlob = buildQuotePdfBlob();
+
+    downloadBlob(`bao-gia-skf-${timestamp}.csv`, csvBlob);
+    downloadBlob(`bao-gia-skf-${timestamp}.pdf`, pdfBlob);
+  }
+
+  async function tryCopyQuoteMessage(message: string) {
     if (!navigator.clipboard?.writeText) {
-      return;
+      return false;
     }
 
     try {
       await navigator.clipboard.writeText(message);
-      setCopyNotice("Đã sao chép nội dung báo giá. Anh/chị chỉ cần dán vào Zalo.");
-      window.setTimeout(() => setCopyNotice(""), 4500);
+      return true;
     } catch {
-      // Browser may block clipboard access; opening Zalo is still the primary action.
+      return false;
     }
   }
 
   function buildZaloHref(message: string) {
+    const zaloPhone = siteConfig.phoneHref.replace(/[^0-9]/g, "");
+    if (zaloPhone) {
+      return `https://chat.zalo.me/?phone=${zaloPhone}&text=${encodeURIComponent(message)}`;
+    }
+
     const separator = siteConfig.zaloLink.includes("?") ? "&" : "?";
     return `${siteConfig.zaloLink}${separator}text=${encodeURIComponent(message)}`;
   }
@@ -959,7 +1084,15 @@ export function SkfSearchQuoteExperience() {
     }
 
     const quoteMessage = buildQuoteMessage();
-    void copyQuoteMessage(quoteMessage);
+    exportQuoteDocuments();
+    void tryCopyQuoteMessage(quoteMessage).then((copied) => {
+      setCopyNotice(
+        copied
+          ? "Đã xuất CSV/PDF và sao chép nội dung mã. Mở Zalo, dán tin nhắn rồi gửi."
+          : "Đã xuất CSV/PDF. Trình duyệt chặn sao chép tự động, vui lòng copy thủ công trước khi gửi Zalo.",
+      );
+      window.setTimeout(() => setCopyNotice(""), 5500);
+    });
     window.open(buildZaloHref(quoteMessage), "_blank", "noopener,noreferrer");
   }
 
@@ -976,12 +1109,21 @@ export function SkfSearchQuoteExperience() {
               Tra nhanh mã SKF và chọn sản phẩm cần báo giá
             </h2>
             <p className="max-w-3xl text-sm leading-6 text-slate-600">
-              Nhập mã, chọn nhóm hoặc lọc theo kích thước d/D/B-T rồi chọn các mã cần THL báo giá.
+              Nhập mã, chọn nhóm hoặc lọc theo kích thước d/D/B-T rồi chọn các mã cần gửi báo giá.
             </p>
           </div>
 
-          <div className="rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-900">
-            Hiển thị 50 kết quả đầu tiên.
+          <div className="space-y-2 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-900">
+            <p>Hiển thị 50 kết quả đầu tiên.</p>
+            <a
+              href={FACEBOOK_PAGE_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1877F2] hover:underline"
+            >
+              <FacebookMarkIcon className="size-3.5" />
+              Fanpage SKF Công Nghiệp
+            </a>
           </div>
         </div>
 
@@ -1044,17 +1186,24 @@ export function SkfSearchQuoteExperience() {
             </form>
 
             <div className="space-y-2">
-              <Label>Gợi ý tra mã</Label>
-              <div className="flex flex-wrap gap-2">
-                {quickSuggestions.slice(0, 6).map((suggestion) => (
-                  <button
-                    key={suggestion}
-                    type="button"
-                    onClick={() => handleQuickSuggestion(suggestion)}
-                    className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-800 transition hover:border-blue-200 hover:bg-white"
-                  >
-                    {suggestion}
-                  </button>
+              <Label>Gợi ý nhanh</Label>
+              <div className="space-y-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+                {quickSuggestionGroups.map((group) => (
+                  <div key={group.label} className="flex flex-wrap items-center gap-x-1.5 text-[12px] leading-5">
+                    <span className="font-semibold text-slate-600">{group.label}:</span>
+                    {group.codes.map((suggestion, index) => (
+                      <Fragment key={suggestion}>
+                        <button
+                          type="button"
+                          onClick={() => handleQuickSuggestion(suggestion)}
+                          className="font-medium text-blue-800 transition hover:text-blue-900 hover:underline"
+                        >
+                          {suggestion}
+                        </button>
+                        {index < group.codes.length - 1 ? <span className="text-slate-400">·</span> : null}
+                      </Fragment>
+                    ))}
+                  </div>
                 ))}
               </div>
             </div>
@@ -1072,12 +1221,12 @@ export function SkfSearchQuoteExperience() {
               </Button>
             </div>
 
-            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-              <div className="space-y-2">
+            <div className="grid gap-3 md:grid-cols-2">
+              <div className="space-y-2 group-filter">
                 <Label>Nhóm sản phẩm</Label>
                 <Select value={selectedGroup} onValueChange={handleGroupChange}>
                   <SelectTrigger className="h-11 w-full bg-white">
-                    <SelectValue placeholder="Chọn nhóm sản phẩm" />
+                    <SelectValue placeholder="Chọn nhóm sản phẩm">{selectedGroupLabel || undefined}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {(filterOptions?.productGroups ?? []).map((option) => (
@@ -1087,22 +1236,7 @@ export function SkfSearchQuoteExperience() {
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Loại sản phẩm</Label>
-                <Select value={selectedSubCategory} onValueChange={handleSubCategoryChange}>
-                  <SelectTrigger className="h-11 w-full bg-white">
-                    <SelectValue placeholder="Chọn loại sản phẩm" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableSubCategoryOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {selectedGroupLabel ? <p className="text-xs text-slate-500">{selectedGroupLabel}</p> : null}
               </div>
 
               <div className="space-y-2">
@@ -1137,7 +1271,7 @@ export function SkfSearchQuoteExperience() {
           {loadingOptions || loadingDataset ? (
             <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-600">
               <Loader2 className="size-4 animate-spin" />
-              Đang tải dữ liệu
+              {selectedGroup && loadingDataset ? "Đang tải dữ liệu nhóm sản phẩm..." : "Đang tải dữ liệu"}
             </div>
           ) : null}
         </div>
@@ -1215,7 +1349,7 @@ export function SkfSearchQuoteExperience() {
 
           {!loadingDataset && !error && results.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-600">
-              Không có kết quả phù hợp với bộ lọc hiện tại.
+              Không có kết quả phù hợp.
             </div>
           ) : null}
         </div>
@@ -1229,10 +1363,18 @@ export function SkfSearchQuoteExperience() {
               <p className="truncate text-xs text-slate-500">{selectedQuoteText}</p>
               {copyNotice ? <p className="mt-1 text-xs font-medium text-emerald-700">{copyNotice}</p> : null}
             </div>
-            <div className="grid grid-cols-[1fr_auto] gap-2 sm:flex">
+            <div className="grid gap-2 sm:flex">
               <Button type="button" className="bg-blue-800 text-white hover:bg-blue-900" onClick={handleSendZalo}>
                 <MessageCircle className="mr-2 size-4" />
+                <FileSpreadsheet className="mr-1 size-4" />
+                <FileText className="mr-2 size-4" />
                 Gửi Zalo
+              </Button>
+              <Button asChild type="button" variant="outline" className="border-[#D9E6FB] text-[#1877F2] hover:bg-[#EEF4FF]">
+                <a href={FACEBOOK_PAGE_URL} target="_blank" rel="noreferrer">
+                  <FacebookMarkIcon className="mr-2 size-4" />
+                  Fanpage
+                </a>
               </Button>
               <Button
                 type="button"

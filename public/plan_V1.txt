@@ -1,0 +1,131 @@
+Nhiệm vụ: Sửa dứt điểm logic tra mã SKF trong src/components/skf/skf-search-quote-experience.tsx. KHÔNG chạy pnpm build. KHÔNG commit. KHÔNG push. Sau khi sửa chỉ báo file đã sửa và git diff --stat.
+
+Vấn đề hiện tại:
+- Trang /tra-ma-bao-gia tìm chưa sát.
+- Ví dụ chọn Nhóm sản phẩm = vong-bi-skf, nhập mã "62" nhưng không ra kết quả đúng.
+- Bộ lọc "Loại sản phẩm" đang gây nhiễu, có khả năng làm mất kết quả.
+- Dropdown Nhóm sản phẩm đang hiển thị slug như "vong-bi-skf", cần hiển thị label dễ hiểu như "Vòng bi SKF".
+- Yêu cầu ưu tiên lúc này là tra mã chính xác, không cần lọc quá nhiều tầng.
+
+File cần sửa:
+src/components/skf/skf-search-quote-experience.tsx
+
+Yêu cầu A — Bỏ hẳn bộ lọc Loại sản phẩm khỏi UI và logic:
+1. Xóa/ẩn dropdown "Loại sản phẩm" khỏi giao diện.
+2. Không dùng selectedSubCategory trong điều kiện lọc kết quả nữa.
+3. Không dùng availableSubCategoryOptions nữa nếu chỉ phục vụ dropdown này.
+4. Không dùng matchesSubCategory nữa.
+5. Khi reset filter cũng không cần reset selectedSubCategory.
+6. Không để "Loại sản phẩm" xuất hiện trong UI.
+
+Yêu cầu B — Nhóm sản phẩm phải chính xác và dễ hiểu:
+1. Dropdown Nhóm sản phẩm phải hiển thị label, không hiển thị slug.
+   Ví dụ:
+   - value: vong-bi-skf
+   - label hiển thị: Vòng bi SKF
+2. Nếu SelectTrigger đang hiện value/slug, sửa để hiện label tương ứng.
+3. Khi chọn Nhóm sản phẩm:
+   - chỉ load file /data/skf/[selectedGroup].json
+   - kết quả lấy từ groupDataBySlug[selectedGroup]
+   - không cần check lại record.productGroup === selectedGroup nếu sourceData đã là group dataset.
+4. Nếu vẫn cần check group thì phải check mềm:
+   - record.productGroup === selectedGroup
+   - hoặc record.productGroupSlug === selectedGroup nếu có
+   - hoặc normalize label/slug tương đương
+   - không được để mismatch field làm mất kết quả.
+
+Yêu cầu C — Logic tìm mã phải sát theo đầu mã:
+1. Query "62" phải tìm các mã có normalizedCode/code bắt đầu bằng "62".
+2. Không được dùng contains cho query ngắn 1-3 ký tự.
+3. Query số ngắn:
+   - "6" chỉ match code bắt đầu bằng 6.
+   - "62" chỉ match code bắt đầu bằng 62.
+   - "630" chỉ match code bắt đầu bằng 630.
+4. Query chữ kỹ thuật:
+   - NU, NJ, NUP, UCP, UC, IR, LG, TMFT, TIH, TKSA
+   - chỉ match code bắt đầu bằng prefix đó.
+5. contains chỉ được dùng khi query dài >= 4 ký tự và chỉ dùng như điểm phụ.
+6. Ví dụ bắt buộc:
+   - query "62", nhóm "Vòng bi SKF": phải ra các mã bắt đầu bằng 62 nếu có trong data.
+   - query "6", d=90: không được ra IR 90X100X26.
+   - query "IR", d=90: lúc đó mới được ra IR 90X100X26 nếu có.
+
+Yêu cầu D — Tìm theo d/D/B:
+1. Trục trong d, trục ngoài D, độ dày B/T vẫn giữ.
+2. Placeholder 20 / 52 / 15 chỉ là placeholder, không được dùng làm filter nếu input rỗng.
+3. Nếu nhập d=90 thì lọc theo d ≈ 90.
+4. Nếu nhập query "62" và d=90 thì kết quả phải vừa bắt đầu bằng 62 vừa có d ≈ 90.
+5. Nếu nhập D nhỏ hơn hoặc bằng d thì hiện cảnh báo:
+   "Đường kính ngoài D phải lớn hơn trục trong d."
+6. Sai số cho d/D/B: ±0.5mm.
+
+Yêu cầu E — Ứng dụng chỉ còn là filter phụ:
+1. Giữ dropdown Ứng dụng, nhưng option phải được tính từ tập dữ liệu sau khi chọn Nhóm sản phẩm.
+2. Nếu chọn Nhóm sản phẩm = Vòng bi SKF thì Ứng dụng chỉ lấy từ data Vòng bi SKF.
+3. Không lấy option ứng dụng toàn bộ data khi đã chọn nhóm.
+4. Nếu đổi Nhóm sản phẩm thì reset Ứng dụng nếu ứng dụng cũ không còn hợp lệ.
+
+Yêu cầu F — Kết quả hiển thị:
+1. Nếu đang loading data nhóm, hiện:
+   "Đang tải dữ liệu nhóm sản phẩm..."
+2. Chỉ hiện "Không có kết quả phù hợp" sau khi data đã tải xong.
+3. Nếu chưa nhập mã/chưa chọn filter thì hiện:
+   "Nhập mã hoặc chọn nhóm để bắt đầu."
+4. Không hiển thị "Normalized" cho khách.
+5. Card kết quả hiển thị gọn:
+   - mã sản phẩm
+   - nhóm sản phẩm
+   - ứng dụng ngắn
+   - thông số d/D/B nếu có
+   - checkbox/nút chọn báo giá
+
+Yêu cầu G — Gợi ý tra mã:
+1. Khi chưa chọn nhóm, gợi ý chung:
+   6205, 6308, NU308, 22212, UCP208, LGHP 2
+2. Khi chọn Vòng bi SKF, gợi ý nên là:
+   6205, 6206, 6218, 6308, 22212, NU308
+3. Không gợi ý IR 90X100X26 nếu đang hướng người dùng tìm vòng bi 6xxx.
+4. Nếu bấm chip gợi ý thì set query và scroll xuống kết quả.
+
+Yêu cầu H — Không làm ngoài phạm vi:
+1. Không sửa public/data.
+2. Không import JSON trực tiếp.
+3. Không sửa ảnh/hero/SEO trong task này.
+4. Không tạo route mới.
+5. Không chạy pnpm build.
+6. Không commit.
+7. Không push.
+
+Sau khi sửa:
+1. Chỉ chạy hoặc báo:
+   git diff --stat
+2. Báo rõ đã bỏ "Loại sản phẩm" chưa.
+3. Báo rõ test logic dự kiến:
+   - nhóm vong-bi-skf + query 62
+   - query 6 + d=90
+   - query IR + d=90
+
+---
+Sửa nhanh phần “Gợi ý tra mã” trong trang /tra-ma-bao-gia.
+
+Yêu cầu:
+- Làm text nhỏ gọn hơn, không để chip quá to chiếm chỗ.
+- Đổi label thành: “Gợi ý nhanh”
+- Chia gợi ý theo nhóm ngắn:
+  - Vòng bi: 6205, 6308, 22212, NU308
+  - Gối đỡ: UCP208, UCF207
+  - Phớt: 60X90X10, 90X100X26
+  - Bôi trơn: LGHP 2, LGMT 3
+- Hiển thị dạng text/chip nhỏ, ví dụ:
+  “Vòng bi: 6205 · 6308 · 22212 · NU308”
+- Bấm vào mã vẫn set query và chạy tìm như hiện tại.
+- Không sửa logic search lớn.
+- Không chạy pnpm build, không commit, không push.
+- Sau khi sửa chỉ báo file đã sửa và git diff --stat.
+----
+thêm fanpage-có icon cảu facebook : https://www.facebook.com/SKF.CongNghiep/
+
+----
+khi click báo giá chọn mục xong chuyển zalo :
+-tự động xuất csv/pdf gửi
+-tình trạng hiện tại là chỉ chuyển qua zalo mà không mang theo bất cứ mã nào
