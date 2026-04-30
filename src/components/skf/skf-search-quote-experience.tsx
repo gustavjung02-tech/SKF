@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { type FormEvent, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { MessageCircle, Search, SlidersHorizontal, Loader2, RotateCcw, X } from "lucide-react";
 import { useSearchParams } from "next/navigation";
@@ -97,6 +98,15 @@ const CODE_INDEX_URL = "/data/skf-code-index.json";
 const DEFAULT_QUICK_SUGGESTIONS = ["22212", "6225", "6379", "IR 90X100X26", "UCP208", "60X90X10"];
 const TECHNICAL_CODE_PREFIXES = ["TMFT", "TKSA", "NUP", "UCP", "TIH", "NU", "NJ", "UC", "IR", "LG"];
 const DIMENSION_TOLERANCE_MM = 0.5;
+const RESULT_CARD_IMAGES = {
+  bearings: "/images/cards/product-vong-bi.webp",
+  housings: "/images/cards/product-goi-do.webp",
+  seals: "/images/card-kien-thuc-sai-phot-chan-dau.png",
+  lubrication: "/images/tra-ma/hero-tra-ma-skf.png",
+  maintenance: "/images/heroes/home/hero-home-skf-main.png",
+  transmission: "/images/industry/hero-ung-dung-nganh-skf.png",
+  fallback: "/images/brands/hero-san-pham-skf.png",
+};
 
 function normalizeCode(value: string) {
   return value.toUpperCase().replace(/[^A-Z0-9]/g, "");
@@ -104,6 +114,14 @@ function normalizeCode(value: string) {
 
 function normalizeText(value: string | undefined) {
   return (value ?? "").toLowerCase();
+}
+
+function normalizeLookupText(value: string | undefined) {
+  return (value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .toLowerCase();
 }
 
 function parseDimension(value: string): number | null {
@@ -319,6 +337,86 @@ function getRecordDimensions(record: GroupRecord): DimensionValues {
     outer: getNumericField(record, ["outerDiameterMm", "outsideDiameterMm", "DMm", "D_mm"]) ?? parsedCodeDimensions.outer,
     width: getNumericField(record, ["widthMm", "thicknessMm", "bMm", "B_T_mm"]) ?? parsedCodeDimensions.width,
   };
+}
+
+function resolveResultCardImage(record: GroupRecord) {
+  const lookup = normalizeLookupText([
+    record.productGroupLabel ?? "",
+    record.productGroup ?? "",
+    record.subCategory ?? "",
+    record.name ?? "",
+    record.code ?? "",
+  ].join(" "));
+
+  if (
+    lookup.includes("vong bi") ||
+    lookup.includes("bearing") ||
+    lookup.includes("bac dan")
+  ) {
+    return { src: RESULT_CARD_IMAGES.bearings, alt: "Vòng bi SKF" };
+  }
+
+  if (
+    lookup.includes("goi do") ||
+    lookup.includes("housing") ||
+    lookup.includes("ucp") ||
+    lookup.includes("ucf") ||
+    lookup.includes("ucfl")
+  ) {
+    return { src: RESULT_CARD_IMAGES.housings, alt: "Gối đỡ SKF" };
+  }
+
+  if (
+    lookup.includes("phot") ||
+    lookup.includes("seal")
+  ) {
+    return { src: RESULT_CARD_IMAGES.seals, alt: "Phớt SKF" };
+  }
+
+  if (
+    lookup.includes("boi tron") ||
+    lookup.includes("mo ") ||
+    lookup.includes("lubrication") ||
+    lookup.includes("lincoln")
+  ) {
+    return { src: RESULT_CARD_IMAGES.lubrication, alt: "Bôi trơn SKF" };
+  }
+
+  if (
+    lookup.includes("bao tri") ||
+    lookup.includes("tool") ||
+    lookup.includes("dung cu")
+  ) {
+    return { src: RESULT_CARD_IMAGES.maintenance, alt: "Dụng cụ bảo trì SKF" };
+  }
+
+  if (
+    lookup.includes("truyen dong") ||
+    lookup.includes("xich") ||
+    lookup.includes("chain") ||
+    lookup.includes("belt")
+  ) {
+    return { src: RESULT_CARD_IMAGES.transmission, alt: "Truyền động SKF" };
+  }
+
+  return { src: RESULT_CARD_IMAGES.fallback, alt: "Sản phẩm SKF" };
+}
+
+function buildSpecsSummary(record: GroupRecord) {
+  const dimensions = getRecordDimensions(record);
+  const parts: string[] = [];
+
+  if (dimensions.inner !== null) {
+    parts.push(`d ${dimensions.inner}mm`);
+  }
+  if (dimensions.outer !== null) {
+    parts.push(`D ${dimensions.outer}mm`);
+  }
+  if (dimensions.width !== null) {
+    parts.push(`B/T ${dimensions.width}mm`);
+  }
+
+  return parts.join(" | ");
 }
 
 function scoreDimensionMatch(actual: DimensionValues, expected: DimensionValues): QueryMatch {
@@ -1050,6 +1148,8 @@ export function SkfSearchQuoteExperience() {
           {results.map((item) => {
             const isSelected = selectedQuoteCodes.includes(item.code);
             const applicationSummary = item.applicationTextResolved.split("|")[0]?.trim() || "-";
+            const specsSummary = buildSpecsSummary(item);
+            const thumbnail = resolveResultCardImage(item);
 
             return (
               <Card
@@ -1059,7 +1159,7 @@ export function SkfSearchQuoteExperience() {
                 }`}
               >
                 <CardContent className="p-4 sm:p-5">
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 sm:gap-4">
                     <input
                       type="checkbox"
                       checked={isSelected}
@@ -1072,7 +1172,19 @@ export function SkfSearchQuoteExperience() {
                       onClick={() => toggleQuoteItem(item)}
                       className="min-w-0 flex-1 text-left"
                     >
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex gap-3 sm:gap-4">
+                        <div className="relative size-16 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-100 sm:size-[78px]">
+                          <Image
+                            src={thumbnail.src}
+                            alt={thumbnail.alt}
+                            fill
+                            sizes="(max-width: 640px) 64px, 78px"
+                            className="object-cover"
+                          />
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap gap-2">
                         <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-800">
                           {item.productGroupLabel ?? item.productGroup}
                         </span>
@@ -1083,14 +1195,17 @@ export function SkfSearchQuoteExperience() {
                         ) : null}
                       </div>
 
-                      <div className="mt-3">
-                        <p className="text-lg font-semibold text-slate-950">{item.code}</p>
-                        <p className="mt-1 text-sm text-slate-600">{applicationSummary}</p>
+                      <div className="mt-2">
+                        <p className="truncate text-base font-semibold text-slate-950 sm:text-lg">{item.code}</p>
+                        <p className="mt-1 truncate text-sm text-slate-600">{applicationSummary}</p>
+                        {specsSummary ? <p className="mt-1 text-xs font-medium text-slate-500">{specsSummary}</p> : null}
                       </div>
 
-                      <p className="mt-3 text-xs font-semibold text-blue-800">
+                      <p className="mt-2 text-xs font-semibold text-blue-800">
                         {isSelected ? "Đã chọn báo giá" : "Chọn báo giá"}
                       </p>
+                        </div>
+                      </div>
                     </button>
                   </div>
                 </CardContent>

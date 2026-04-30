@@ -19,15 +19,31 @@ const headingFont = Exo_2({
 export const metadata: Metadata = {
   metadataBase: new URL(`https://${siteConfig.domain}`),
   title: {
-    default: `${siteConfig.brandName} | ${siteConfig.slogan}`,
+    default: "SKF Công Nghiệp - Tra mã, tư vấn và báo giá sản phẩm SKF",
     template: `%s | ${siteConfig.brandName}`,
   },
   description:
-    "Tra mã, tư vấn và tiếp nhận yêu cầu báo giá sản phẩm SKF cho nhà máy công nghiệp.",
+    "Tra mã sản phẩm SKF theo mã, nhóm sản phẩm và thông số d/D/B. Hỗ trợ tư vấn vòng bi, gối đỡ, phớt, bôi trơn, bảo trì và truyền động cho nhà máy công nghiệp.",
+  keywords: [
+    "SKF công nghiệp",
+    "tra mã SKF",
+    "vòng bi SKF",
+    "gối đỡ SKF",
+    "phớt SKF",
+    "mỡ bôi trơn SKF",
+    "dụng cụ bảo trì SKF",
+    "báo giá SKF",
+    "sản phẩm SKF cho nhà máy",
+    "phụ tùng công nghiệp SKF",
+  ],
+  alternates: {
+    canonical: `https://${siteConfig.domain}`,
+  },
   openGraph: {
-    title: `${siteConfig.brandName} | ${siteConfig.slogan}`,
+    url: `https://${siteConfig.domain}`,
+    title: "SKF Công Nghiệp - Tra mã và báo giá sản phẩm SKF",
     description:
-      "Cung cấp và tư vấn sản phẩm SKF theo mã, ứng dụng và điều kiện vận hành.",
+      "Tra mã, lọc nhóm sản phẩm và gửi yêu cầu báo giá SKF nhanh cho nhu cầu bảo trì, thay thế và vận hành nhà máy.",
     type: "website",
     locale: "vi_VN",
     siteName: siteConfig.brandName,
@@ -39,6 +55,13 @@ export const metadata: Metadata = {
         alt: `${siteConfig.brandName} - ${siteConfig.slogan}`,
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SKF Công Nghiệp - Tra mã và báo giá sản phẩm SKF",
+    description:
+      "Tra mã, lọc nhóm sản phẩm và gửi yêu cầu báo giá SKF nhanh cho nhu cầu bảo trì, thay thế và vận hành nhà máy.",
+    images: [siteConfig.defaultOgImage],
   },
 };
 

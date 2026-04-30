@@ -12,8 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 export const metadata = createPageMetadata({
-  title: "Sản phẩm SKF cho nhà máy công nghiệp",
-  description: "Cung cấp và tư vấn sản phẩm SKF theo mã, ứng dụng và điều kiện vận hành.",
+  title: "Sản phẩm SKF theo nhóm ứng dụng",
+  description: "Tổng hợp vòng bi, gối đỡ, phớt, bôi trơn, dụng cụ bảo trì và truyền động phục vụ nhà máy công nghiệp.",
   path: "/san-pham",
 });
 
@@ -201,8 +201,8 @@ function ProductCard({ item }: { item: ProductGroupCard }) {
 
 export default function ProductsPage() {
   const pageSchema = createWebPageSchema({
-    title: "Sản phẩm SKF cho nhà máy công nghiệp",
-    description: "Cung cấp và tư vấn sản phẩm SKF theo mã, ứng dụng và điều kiện vận hành.",
+    title: "Sản phẩm SKF theo nhóm ứng dụng",
+    description: "Tổng hợp vòng bi, gối đỡ, phớt, bôi trơn, dụng cụ bảo trì và truyền động phục vụ nhà máy công nghiệp.",
     path: "/san-pham",
     type: "CollectionPage",
   });
@@ -220,8 +220,9 @@ export default function ProductsPage() {
           <div className="page-shell">
             <SitePageHero
               badge="DANH MỤC SẢN PHẨM SKF"
-              title="Sản phẩm SKF theo từng nhóm ứng dụng"
+              title="Sản phẩm SKF theo nhóm ứng dụng"
               highlightText="SKF"
+              description="Tổng hợp vòng bi, gối đỡ, phớt, bôi trơn, dụng cụ bảo trì và truyền động phục vụ nhà máy công nghiệp."
               primaryCta={{
                 label: "Xem nhóm sản phẩm",
                 href: "#nhom-san-pham",
@@ -281,7 +282,7 @@ export default function ProductsPage() {
             <SectionTitle
               eyebrow="6 nhóm chính"
               title="Chọn nhóm phù hợp rồi gửi yêu cầu ngay"
-              description="Không dùng link thương hiệu cũ trên giao diện chính. Nếu cần, tất cả nhóm đều có thể đi thẳng vào tra mã SKF."
+              description="Chọn nhóm phù hợp, tra mã nhanh và gửi yêu cầu báo giá SKF theo nhu cầu vận hành."
             />
             <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
               {productGroupCards.map((item) => (

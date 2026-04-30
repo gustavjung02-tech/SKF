@@ -8,15 +8,16 @@ import { SitePageHero } from "@/components/shared/site-page-hero";
 import { SkfSearchQuoteExperience } from "@/components/skf/skf-search-quote-experience";
 
 export const metadata = createPageMetadata({
-  title: "Tra mã SKF / yêu cầu báo giá",
-  description: "Tra mã SKF nhanh và gửi yêu cầu báo giá gọn hơn cho nhu cầu nhà máy công nghiệp.",
+  title: "Tra mã SKF và yêu cầu báo giá",
+  description:
+    "Tra mã sản phẩm SKF theo mã, nhóm sản phẩm và thông số d/D/B. Hỗ trợ tư vấn vòng bi, gối đỡ, phớt, bôi trơn, bảo trì và truyền động cho nhà máy công nghiệp.",
   path: "/tra-ma-bao-gia",
 });
 
 export default function QuotePage() {
   const pageSchema = createWebPageSchema({
-    title: "Tra mã SKF / yêu cầu báo giá",
-    description: "Tra mã SKF nhanh và gửi yêu cầu báo giá gọn hơn cho nhu cầu nhà máy công nghiệp.",
+    title: "Tra mã SKF nhanh và gửi yêu cầu báo giá",
+    description: "Tìm theo mã, nhóm sản phẩm hoặc thông số d / D / B-T. Chọn nhiều mã và gửi yêu cầu qua Zalo.",
     path: "/tra-ma-bao-gia",
   });
 
@@ -33,9 +34,9 @@ export default function QuotePage() {
         <div className="page-shell space-y-8">
           <SitePageHero
             badge="TRA MÃ SKF / BÁO GIÁ"
-            title="Tra mã SKF nhanh và gửi yêu cầu báo giá gọn hơn"
+            title="Tra mã SKF nhanh và gửi yêu cầu báo giá"
             highlightText="Tra mã SKF"
-            description="Tìm theo mã, nhóm sản phẩm hoặc thông số d / D / B-T. Chọn nhiều mã và gửi yêu cầu nhanh qua Zalo."
+            description="Tìm theo mã, nhóm sản phẩm hoặc thông số d / D / B-T. Chọn nhiều mã và gửi yêu cầu qua Zalo."
             primaryCta={{
               label: "Mở trang tra mã",
               href: "#tra-ma-skf",
@@ -50,7 +51,7 @@ export default function QuotePage() {
               tone: "red",
             }}
             imageSrc="/images/tra-ma/hero-tra-ma-skf.png"
-            imageAlt="Tra mã SKF nhanh và gửi yêu cầu báo giá gọn hơn"
+            imageAlt="Tra mã SKF nhanh và gửi yêu cầu báo giá"
             imagePriority
           />
 

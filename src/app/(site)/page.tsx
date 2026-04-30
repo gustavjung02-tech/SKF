@@ -13,13 +13,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 export const metadata = createPageMetadata({
-  title: "SKF Công Nghiệp",
-  description: "Website tra mã và tiếp nhận yêu cầu báo giá sản phẩm SKF cho khách hàng công nghiệp.",
+  title: "SKF Công Nghiệp - Tra mã, tư vấn và báo giá sản phẩm SKF",
+  description:
+    "Tra mã sản phẩm SKF theo mã, nhóm sản phẩm và thông số d/D/B. Hỗ trợ tư vấn vòng bi, gối đỡ, phớt, bôi trơn, bảo trì và truyền động cho nhà máy công nghiệp.",
   path: "/",
 });
 
-const homepageTitle = "SKF Công Nghiệp";
-const homepageDescription = "Website tra mã và tiếp nhận yêu cầu báo giá sản phẩm SKF cho khách hàng công nghiệp.";
+const homepageTitle = "SKF Công Nghiệp cho nhà máy hiện đại";
+const homepageDescription =
+  "Tra mã, chọn nhóm sản phẩm và gửi yêu cầu báo giá nhanh cho vòng bi, gối đỡ, phớt, bôi trơn, bảo trì và truyền động.";
 
 const appBySlug = new Map(industryApplications.map((app) => [app.slug, app]));
 const pumpFanApplication = appBySlug.get("bom-quat-dong-co") ?? industryApplications[0];
@@ -130,9 +132,9 @@ export default function Home() {
           <div className="page-shell">
             <SitePageHero
               badge="SKF CHO NHÀ MÁY CÔNG NGHIỆP"
-              title="Giải pháp SKF công nghiệp cho nhà máy hiện đại"
-              highlightText="SKF công nghiệp"
-              description="Tra mã, chọn nhóm sản phẩm và gửi yêu cầu báo giá nhanh cho nhu cầu bảo trì, thay thế và vận hành."
+              title="SKF Công Nghiệp cho nhà máy hiện đại"
+              highlightText="SKF Công Nghiệp"
+              description="Tra mã, chọn nhóm sản phẩm và gửi yêu cầu báo giá nhanh cho vòng bi, gối đỡ, phớt, bôi trơn, bảo trì và truyền động."
               primaryCta={{
                 label: "Tra mã SKF",
                 href: "/tra-ma-bao-gia",
