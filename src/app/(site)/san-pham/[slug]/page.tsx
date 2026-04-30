@@ -48,7 +48,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   }
 
   const visual = getProductVisual(product.slug);
-  const isCore = product.slug === "ntn" || product.slug === "tsubaki";
   const path = `/san-pham/${product.slug}`;
   const pageSchema = createWebPageSchema({
     title: `${product.name} | Vật tư truyền động công nghiệp`,
@@ -91,7 +90,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
           <div className="mt-8 max-w-3xl space-y-4">
             <p className="text-xs font-semibold uppercase tracking-wide text-blue-200">
-              {isCore ? "Thương hiệu chính" : "Thương hiệu theo ứng dụng"}
+              Nhóm sản phẩm SKF
             </p>
             <h1 className="font-heading text-3xl font-bold leading-tight sm:text-4xl">{product.name}</h1>
             <p className="text-base leading-relaxed text-slate-100">{product.shortDescription}</p>

@@ -1,17 +1,15 @@
 {
-  "version": "v3-ntn-tsubaki-core",
+  "version": "v4-skf-industrial",
   "brand_whitelist": [
-    "NTN",
-    "TSUBAKI",
-    "KOYO/JTEKT",
-    "NOK",
-    "SOHO"
+    "SKF",
+    "SKF/LINCOLN"
   ],
   "product_groups": [
     "bearings",
-    "industrial_chains",
     "pillow_blocks",
     "oil_seals",
-    "belts"
+    "lubrication",
+    "maintenance_tools",
+    "transmission"
   ]
 }

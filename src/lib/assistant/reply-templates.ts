@@ -584,8 +584,8 @@ function buildPreliminaryAssessmentReply(input: BuildReplyInput): BuiltReplyMess
 /* ── Conversational reply builders (no API needed) ── */
 
 const greetingVariants = [
-  "Chào anh/chị! THL hỗ trợ đối chiếu NTN, Tsubaki và vật tư truyền động theo mã cũ, ảnh tem hoặc cụm máy.",
-  "Chào ạ! Anh/chị gửi mã cũ, ảnh tem hoặc mô tả cụm máy để THL khoanh đúng nhóm vật tư.",
+  "Chào anh/chị! SKF Công Nghiệp hỗ trợ đối chiếu sản phẩm SKF theo mã cũ, ảnh tem hoặc cụm máy.",
+  "Chào ạ! Anh/chị gửi mã cũ, ảnh tem hoặc mô tả cụm máy để SKF Công Nghiệp khoanh đúng nhóm sản phẩm.",
   "Em chào, mình có thể bắt đầu từ mã cũ, kích thước hoặc vị trí lắp trên cụm máy ạ.",
 ];
 
@@ -596,8 +596,8 @@ const gratitudeVariants = [
 ];
 
 const smalltalkVariants = [
-  "Dạ, THL hỗ trợ NTN, Tsubaki và nhóm vật tư truyền động theo cụm máy. Anh/chị đang cần kiểm tra gì ạ?",
-  "THL đối chiếu vật tư theo ứng dụng cụm máy. Anh/chị gửi mã cũ hoặc mô tả máy để em hỗ trợ nhé.",
+  "Dạ, SKF Công Nghiệp hỗ trợ sản phẩm SKF theo cụm máy. Anh/chị đang cần kiểm tra gì ạ?",
+  "SKF Công Nghiệp đối chiếu sản phẩm theo ứng dụng cụm máy. Anh/chị gửi mã cũ hoặc mô tả máy để em hỗ trợ nhé.",
   "Dạ có ạ! Mình có thể bắt đầu từ mã cũ, kích thước hoặc ảnh tem.",
 ];
 

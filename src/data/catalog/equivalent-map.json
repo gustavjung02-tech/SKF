@@ -1,5 +1,5 @@
 {
-  "version": "v2-ntn-focus",
+  "version": "v4-skf-industrial",
   "equivalents": [
     {
       "source_code": "6204-2RS",
@@ -7,16 +7,10 @@
       "product_group": "bearings",
       "candidates": [
         {
-          "exact_code": "6204-2RS C3",
-          "brand": "NTN",
-          "confidence": "high",
-          "note": "NTN là ưu tiên chính cho mã vòng bi này."
-        },
-        {
-          "exact_code": "6204-ZZ C3",
-          "brand": "KOYO/JTEKT",
+          "exact_code": "6204-2RSH/C3",
+          "brand": "SKF",
           "confidence": "medium",
-          "note": "Cùng kích thước lõi nhưng kiểu che chắn khác; cần xác nhận môi trường."
+          "note": "Cùng nhóm vòng bi rãnh sâu, cần xác nhận kiểu che chắn, độ rơ và điều kiện vận hành."
         }
       ],
       "requires_manual_confirmation": true
@@ -27,38 +21,10 @@
       "product_group": "pillow_blocks",
       "candidates": [
         {
-          "exact_code": "UCP205",
-          "brand": "KOYO/JTEKT",
-          "confidence": "high",
-          "note": "Khớp kiểu chân đế, cần xác nhận đường kính trục và kích thước lắp."
-        }
-      ],
-      "requires_manual_confirmation": true
-    },
-    {
-      "source_code": "08B-1",
-      "normalized_source": "08B1",
-      "product_group": "industrial_chains",
-      "candidates": [
-        {
-          "exact_code": "RS40-1",
-          "brand": "TSUBAKI",
-          "confidence": "low",
-          "note": "Chỉ dùng để khoanh vùng; đổi chuẩn xích cần kiểm tra trực tiếp."
-        }
-      ],
-      "requires_manual_confirmation": true
-    },
-    {
-      "source_code": "A-42",
-      "normalized_source": "A42",
-      "product_group": "belts",
-      "candidates": [
-        {
-          "exact_code": "A-42",
-          "brand": "SOHO",
-          "confidence": "high",
-          "note": "Đúng mã dây curoa A-42 trong nhóm Soho, cần xác nhận profile thực tế."
+          "exact_code": "SY 25 TF",
+          "brand": "SKF",
+          "confidence": "medium",
+          "note": "Cần xác nhận kiểu thân gối, đường kính trục và kích thước lắp trước khi chốt."
         }
       ],
       "requires_manual_confirmation": true
@@ -69,10 +35,10 @@
       "product_group": "oil_seals",
       "candidates": [
         {
-          "exact_code": "TC35X52X7",
-          "brand": "NOK",
-          "confidence": "high",
-          "note": "Khớp kích thước phớt 35 x 52 x 7, cần xác nhận kiểu môi TC/SC trước khi chốt."
+          "exact_code": "35X52X7 HMSA10 RG",
+          "brand": "SKF",
+          "confidence": "medium",
+          "note": "Cần xác nhận kiểu môi, vật liệu và môi trường dầu trước khi chốt."
         }
       ],
       "requires_manual_confirmation": true

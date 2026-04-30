@@ -17,7 +17,7 @@ export function SiteFooter() {
         <div className="space-y-2.5">
           <Link href="/" className="inline-flex items-center gap-2 rounded-md border border-[#DDE7F3] bg-white px-2.5 py-1.5">
             <span className="rounded bg-[#0050A4] px-2 py-0.5 text-xs font-bold tracking-wide text-white">SKF</span>
-            <span className="text-xs font-semibold text-slate-700">B2B Industrial</span>
+            <span className="text-xs font-semibold text-slate-700">Công Nghiệp</span>
           </Link>
           <p className="text-sm font-semibold leading-relaxed text-slate-800">{siteConfig.slogan}</p>
           <p className="text-sm leading-relaxed text-slate-600">

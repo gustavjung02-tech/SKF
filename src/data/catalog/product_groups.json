@@ -1,56 +1,66 @@
 {
-  "version": "v3-ntn-tsubaki-core",
-  "description": "Nhóm hàng đang hỗ trợ theo hệ thương hiệu NTN và Tsubaki chủ lực truyền thông, Koyo phân phối chính thức theo nhóm vòng bi, cùng NOK và Soho theo ứng dụng.",
+  "version": "v4-skf-industrial",
+  "description": "Nhóm hàng đang hỗ trợ theo danh mục SKF cho nhà máy công nghiệp.",
   "groups": [
     {
       "key": "bearings",
-      "label_vi": "Vòng bi",
-      "label_en": "Bearings",
+      "label_vi": "Vòng bi SKF",
+      "label_en": "SKF Bearings",
       "required_fields": ["id", "od", "width", "code", "shaft"],
       "optional_fields": ["seal_or_shield", "clearance", "series"],
-      "keywords": ["vòng bi", "bearing", "bạc đạn", "620", "630", "6200", "6300", "2rs", "zz", "c3", "ntn", "koyo"],
-      "priority_brands": ["NTN", "KOYO/JTEKT"],
-      "note": "NTN là thương hiệu chủ lực cho vòng bi; Koyo là thương hiệu phân phối chính thức và được triển khai theo nhu cầu ứng dụng."
-    },
-    {
-      "key": "industrial_chains",
-      "label_vi": "Xích công nghiệp",
-      "label_en": "Industrial Chains",
-      "required_fields": ["pitch", "chain_type", "links"],
-      "optional_fields": ["strand", "standard"],
-      "keywords": ["xích", "chain", "08b", "10b", "rs40", "rs50", "pitch", "tsubaki"],
-      "priority_brands": ["TSUBAKI"],
-      "note": "Tsubaki là thương hiệu chủ lực cho xích công nghiệp; cần xác minh bước xích, tiêu chuẩn BS/ANSI và số dãy."
+      "keywords": ["vòng bi", "bearing", "bạc đạn", "620", "630", "6200", "6300", "2rs", "zz", "c3", "skf"],
+      "priority_brands": ["SKF"],
+      "note": "Cần xác minh mã, kích thước, kiểu che chắn, độ rơ và điều kiện vận hành."
     },
     {
       "key": "pillow_blocks",
-      "label_vi": "Gối đỡ",
-      "label_en": "Pillow Blocks / Housing Units",
+      "label_vi": "Gối đỡ SKF",
+      "label_en": "SKF Pillow Blocks / Housing Units",
       "required_fields": ["housing_type", "shaft_diameter"],
       "optional_fields": ["mounting_style", "insert_bearing"],
-      "keywords": ["gối đỡ", "pillow block", "ucp", "ucf", "ucfl", "housing", "koyo"],
-      "priority_brands": ["KOYO/JTEKT"],
+      "keywords": ["gối đỡ", "pillow block", "ucp", "ucf", "ucfl", "housing", "skf"],
+      "priority_brands": ["SKF"],
       "note": "Cần xác minh kiểu thân, đường kính trục và vị trí lắp."
     },
     {
       "key": "oil_seals",
-      "label_vi": "Phớt chặn dầu",
-      "label_en": "Oil Seals",
+      "label_vi": "Phớt SKF",
+      "label_en": "SKF Seals",
       "required_fields": ["id", "od", "thickness"],
       "optional_fields": ["lip_type", "material"],
-      "keywords": ["phớt", "oil seal", "chặn dầu", "tc", "sc", "seal", "rò dầu", "nok"],
-      "priority_brands": ["NOK"],
+      "keywords": ["phớt", "oil seal", "chặn dầu", "tc", "sc", "seal", "rò dầu", "skf"],
+      "priority_brands": ["SKF"],
       "note": "Cần xác minh kích thước cốt-vỏ-dày, kiểu môi và môi trường làm việc."
     },
     {
-      "key": "belts",
-      "label_vi": "Dây curoa / vật tư truyền động",
-      "label_en": "V-Belts / Transmission Parts",
-      "required_fields": ["profile", "length"],
-      "optional_fields": ["belt_type", "teeth_count"],
-      "keywords": ["dây curoa", "belt", "v-belt", "curoa", "spa", "spb", "profile a", "profile b", "soho"],
-      "priority_brands": ["SOHO"],
-      "note": "Dùng Soho cho nhóm vật tư truyền động theo ứng dụng, cần đối chiếu theo mã thực tế."
+      "key": "lubrication",
+      "label_vi": "Mỡ & hệ thống bôi trơn SKF/Lincoln",
+      "label_en": "SKF/Lincoln Lubrication",
+      "required_fields": ["application_detail"],
+      "optional_fields": ["temperature", "load", "speed", "environment"],
+      "keywords": ["mỡ", "grease", "bôi trơn", "lubrication", "lincoln", "skf"],
+      "priority_brands": ["SKF/LINCOLN"],
+      "note": "Cần xác minh nhiệt độ, tải, tốc độ, môi trường và chu kỳ bảo trì."
+    },
+    {
+      "key": "maintenance_tools",
+      "label_vi": "Dụng cụ bảo trì SKF",
+      "label_en": "SKF Maintenance Tools",
+      "required_fields": ["application_detail"],
+      "optional_fields": ["tool_type", "bearing_size", "worksite_condition"],
+      "keywords": ["dụng cụ", "cảo", "gia nhiệt", "căn chỉnh", "bảo trì", "skf"],
+      "priority_brands": ["SKF"],
+      "note": "Cần xác minh thao tác cần làm, kích thước cụm lắp và điều kiện hiện trường."
+    },
+    {
+      "key": "transmission",
+      "label_vi": "Truyền động SKF",
+      "label_en": "SKF Power Transmission",
+      "required_fields": ["application_detail"],
+      "optional_fields": ["profile", "length", "load", "speed"],
+      "keywords": ["truyền động", "belt", "v-belt", "curoa", "pulley", "skf"],
+      "priority_brands": ["SKF"],
+      "note": "Cần đối chiếu theo vị trí máy, tải, tốc độ và quy cách thực tế."
     }
   ]
 }

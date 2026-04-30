@@ -1,8 +1,8 @@
 ﻿export const siteConfig = {
-  brandName: "SKF B2B Industrial",
+  brandName: "SKF Công Nghiệp",
   domain: "luanphutung.vn",
   slogan: "SKF cho nhà máy công nghiệp: vòng bi, gối đỡ, phớt, bôi trơn, bảo trì và truyền động",
-  personalName: "Đội ngũ SKF B2B",
+  personalName: "Đội ngũ SKF Công Nghiệp",
   email: "khuongbinh.info@gmail.com",
   emailHref: "mailto:khuongbinh.info@gmail.com",
   phone: "0969 155 751",
@@ -13,7 +13,7 @@
   responseTime: "Phản hồi trong giờ hành chính hoặc theo mức độ ưu tiên của yêu cầu B2B",
   address: "Dĩ An, Bình Dương / Phú Thạnh, Tân Phú, TP.HCM",
   defaultOgImage: "/images/branding/og-industrial.svg",
-  footerCredit: "SKF B2B Industrial",
+  footerCredit: "SKF Công Nghiệp",
 };
 
 export const mainMenu = [

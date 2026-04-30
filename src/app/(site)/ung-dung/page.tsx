@@ -8,10 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 function sanitizeBrandText(value: string) {
-  return value
-    .replace(/NTN\/Koyo/gi, "SKF")
-    .replace(/Koyo\/JTEKT/gi, "SKF")
-    .replace(/\b(NTN|Tsubaki|Koyo|NOK|Soho)\b/gi, "SKF");
+  return value;
 }
 
 export const metadata = createPageMetadata({

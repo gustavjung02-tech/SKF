@@ -1,77 +1,59 @@
 {
-  "version": "v3-ntn-tsubaki-core",
-  "description": "Ví dụ hội thoại tham khảo cho hệ NTN và Tsubaki chủ lực truyền thông, Koyo phân phối chính thức và NOK/Soho theo ứng dụng.",
+  "version": "v4-skf-industrial",
+  "description": "Ví dụ hội thoại tham khảo cho hệ SKF Công Nghiệp.",
   "conversations": [
     {
       "id": "conv_01",
-      "title": "Tra mã vòng bi NTN theo mã cũ",
-      "tags": ["exact_code", "bearings", "ntn"],
+      "title": "Tra mã vòng bi SKF theo mã cũ",
+      "tags": ["exact_code", "bearings", "skf"],
       "turns": [
         { "role": "user", "content": "6204 2RS" },
-        { "role": "assistant", "content": "Mã 6204-2RS thuộc nhóm vòng bi. THL ưu tiên đối chiếu theo NTN trước; kích thước lõi thường là ID 20 x OD 47 x W 14mm. Anh/chị vui lòng bổ sung môi trường chạy để THL xác nhận kiểu che chắn và độ rơ phù hợp." }
+        { "role": "assistant", "content": "Mã 6204-2RS thuộc nhóm vòng bi. Em sẽ đối chiếu theo SKF; kích thước lõi thường là ID 20 x OD 47 x W 14mm. Anh/chị vui lòng bổ sung môi trường chạy để xác nhận kiểu che chắn và độ rơ phù hợp." }
       ]
     },
     {
       "id": "conv_02",
-      "title": "Xích Tsubaki",
-      "tags": ["exact_code", "industrial_chains", "tsubaki"],
+      "title": "Gối đỡ SKF",
+      "tags": ["exact_code", "pillow_blocks", "skf"],
       "turns": [
-        { "role": "user", "content": "xích rs40-1" },
-        { "role": "assistant", "content": "RS40-1 thuộc nhóm xích công nghiệp, ưu tiên đối chiếu theo Tsubaki. Cần xác nhận số mắt, số dãy và tiêu chuẩn lắp hiện tại để tránh nhầm với mã gần tương đương." }
+        { "role": "user", "content": "UCP205" },
+        { "role": "assistant", "content": "UCP205 thuộc nhóm gối đỡ trục 25mm. Em cần xác nhận kiểu chân đế hay mặt bích, đường kính trục và vị trí bắt bulong trước khi khoanh mã SKF phù hợp." }
       ]
     },
     {
       "id": "conv_03",
-      "title": "Đối chiếu vòng bi Koyo",
-      "tags": ["exact_code", "bearings", "koyo"],
+      "title": "Phớt SKF theo kích thước",
+      "tags": ["exact_code", "oil_seals", "skf"],
       "turns": [
-        { "role": "user", "content": "6204 zz c3 koyo" },
-        { "role": "assistant", "content": "6204-ZZ C3 Koyo/JTEKT cùng kích thước lõi với 6204-2RS nhưng kiểu che chắn khác. THL dùng Koyo như phương án phân phối chính thức trong nhóm vòng bi; anh/chị cho biết môi trường có bụi, ẩm hay chạy khô để chốt đúng loại." }
+        { "role": "user", "content": "phớt 35x52x7" },
+        { "role": "assistant", "content": "Kích thước 35 x 52 x 7 thuộc nhóm phớt. Anh/chị gửi thêm ảnh phớt cũ hoặc vị trí lắp để em xác nhận kiểu môi, vật liệu và môi trường dầu trước khi chốt." }
       ]
     },
     {
       "id": "conv_04",
-      "title": "Gối đỡ Koyo UCP205",
-      "tags": ["exact_code", "pillow_blocks", "koyo"],
+      "title": "Bôi trơn SKF/Lincoln",
+      "tags": ["lubrication", "skf"],
       "turns": [
-        { "role": "user", "content": "UCP205" },
-        { "role": "assistant", "content": "UCP205 thuộc nhóm gối đỡ trục 25mm. Em sẽ đối chiếu theo Koyo/JTEKT và cần anh/chị xác nhận kiểu chân đế hay mặt bích trước khi chốt." }
+        { "role": "user", "content": "mỡ cho gối đỡ băng tải bụi nhiều" },
+        { "role": "assistant", "content": "Em sẽ khoanh nhóm mỡ SKF/Lincoln theo tải, tốc độ, bụi và chu kỳ bơm mỡ. Anh/chị cho em biết nhiệt độ vận hành và tốc độ quay gần đúng để chọn hướng phù hợp hơn." }
       ]
     },
     {
       "id": "conv_05",
-      "title": "Dây curoa Soho",
-      "tags": ["exact_code", "belts", "soho"],
-      "turns": [
-        { "role": "user", "content": "dây A42" },
-        { "role": "assistant", "content": "A-42 thuộc nhóm dây curoa profile A. THL đối chiếu theo nhóm Soho theo ứng dụng; anh/chị gửi thêm ảnh dây cũ hoặc kích thước đo thực tế để xác nhận profile." }
-      ]
-    },
-    {
-      "id": "conv_06",
       "title": "Chào hỏi",
       "tags": ["greeting", "discovery"],
       "turns": [
         { "role": "user", "content": "chào" },
-        { "role": "assistant", "content": "Chào anh/chị, THL B2B đã tiếp nhận yêu cầu. THL ưu tiên NTN và Tsubaki trên trục truyền thông chính, đồng thời triển khai Koyo, NOK, Soho theo ứng dụng. Anh/chị đang có mã cũ, ảnh tem hay mô tả cụm máy cần thay thế?" }
+        { "role": "assistant", "content": "Chào anh/chị, SKF Công Nghiệp hỗ trợ tra mã và tiếp nhận yêu cầu báo giá sản phẩm SKF cho nhà máy. Anh/chị đang có mã cũ, ảnh tem hay mô tả cụm máy cần đối chiếu?" }
       ]
     },
     {
-      "id": "conv_07",
-      "title": "Đối chiếu thương hiệu theo mã khách gửi",
-      "tags": ["brand_request", "out_of_scope"],
-      "turns": [
-        { "role": "user", "content": "có hàng SKF không" },
-        { "role": "assistant", "content": "Anh/chị gửi mã SKF cụ thể giúp em. Em sẽ đối chiếu thông số và đề xuất phương án phù hợp trong nhóm NTN, Tsubaki, Koyo, NOK hoặc Soho trước khi chuyển báo giá." }
-      ]
-    },
-    {
-      "id": "conv_08",
+      "id": "conv_06",
       "title": "Nhu cầu gấp",
       "tags": ["urgent", "bearings"],
       "turns": [
         { "role": "user", "content": "cần thay gấp bi motor đang kêu" },
-        { "role": "assistant", "content": "Em ưu tiên khoanh mã theo NTN trước vì đây là nhóm vòng bi chủ lực. Anh/chị gửi giúp mã cũ trên tem hoặc kích thước cốt motor; nếu không có, gửi ảnh cụm máy để em đối chiếu nhanh hơn." }
+        { "role": "assistant", "content": "Em ưu tiên khoanh mã SKF theo cụm motor trước. Anh/chị gửi giúp mã cũ trên tem hoặc kích thước cốt motor; nếu không có, gửi ảnh cụm máy để em đối chiếu nhanh hơn." }
       ]
     }
   ]

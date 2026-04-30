@@ -55,21 +55,21 @@ export const assistantPolicyReviewMocks: AssistantPolicyReviewMock[] = [
   },
   {
     id: "case_4",
-    input: "tôi dùng máy 4hk1 xe hino,cần tư vấn vòng bi koyo",
+    input: "tôi dùng máy 4hk1 xe hino,cần tư vấn vòng bi skf",
     expectedRoute: "code_lookup",
     shouldUseGrounding: true,
     shouldTriggerCommercialGuard: false,
     reviewerChecks: [
-      "Hiểu được ngữ cảnh xe Hino 4HK1 và brand Koyo.",
+      "Hiểu được ngữ cảnh xe Hino 4HK1 và brand SKF.",
       "Không hỏi theo field nội bộ.",
       "Chỉ hỏi lại cụm cần kiểm tra nếu chưa rõ.",
     ],
     expectedPreview:
-      "- Em đang hiểu anh/chị cần tư vấn vòng bi Koyo cho hệ 4HK1 Hino.\n- Anh/chị cho em biết đang kiểm tra cụm nào: bánh xe, máy phát, puly tăng, lốc lạnh hay hộp số?",
+      "- Em đang hiểu anh/chị cần tư vấn vòng bi SKF cho hệ 4HK1 Hino.\n- Anh/chị cho em biết đang kiểm tra cụm nào: bánh xe, máy phát, puly tăng, lốc lạnh hay hộp số?",
   },
   {
     id: "case_5",
-    input: "báo giá giúp 6305 koyo",
+    input: "báo giá giúp 6305 skf",
     expectedRoute: "pricing_request",
     shouldUseGrounding: false,
     shouldTriggerCommercialGuard: true,

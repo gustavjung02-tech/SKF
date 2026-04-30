@@ -13,13 +13,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 export const metadata = createPageMetadata({
-  title: "Trang chủ SKF B2B",
-  description: "Tra mã, tư vấn và tiếp nhận yêu cầu báo giá sản phẩm SKF cho nhà máy công nghiệp.",
+  title: "SKF Công Nghiệp",
+  description: "Website tra mã và tiếp nhận yêu cầu báo giá sản phẩm SKF cho khách hàng công nghiệp.",
   path: "/",
 });
 
-const homepageTitle = "Trang chủ SKF B2B";
-const homepageDescription = "Tra mã, tư vấn và tiếp nhận yêu cầu báo giá sản phẩm SKF cho nhà máy công nghiệp.";
+const homepageTitle = "SKF Công Nghiệp";
+const homepageDescription = "Website tra mã và tiếp nhận yêu cầu báo giá sản phẩm SKF cho khách hàng công nghiệp.";
 
 const appBySlug = new Map(industryApplications.map((app) => [app.slug, app]));
 const pumpFanApplication = appBySlug.get("bom-quat-dong-co") ?? industryApplications[0];
@@ -32,37 +32,37 @@ const productCategories = [
   {
     title: "Vòng bi SKF",
     summary: "Tra theo mã và điều kiện tải cho cụm quay chính.",
-    image: getProductVisual("ntn").image,
+    image: getProductVisual("vong-bi-skf").image,
     alt: "Vòng bi SKF cho dây chuyền công nghiệp",
   },
   {
     title: "Gối đỡ SKF",
     summary: "Khoanh nhanh nhóm gối đỡ theo cụm trục và vị trí lắp.",
-    image: getProductVisual("koyo").image,
+    image: getProductVisual("goi-do-skf").image,
     alt: "Gối đỡ SKF cho trục truyền động",
   },
   {
     title: "Phớt SKF",
     summary: "Đối chiếu phớt theo môi trường dầu, bụi và nhiệt.",
-    image: getProductVisual("nok").image,
+    image: getProductVisual("phot-skf").image,
     alt: "Phớt SKF cho cụm làm kín công nghiệp",
   },
   {
-    title: "Bôi trơn SKF/Lincoln",
+    title: "Mỡ & hệ thống bôi trơn SKF/Lincoln",
     summary: "Mỡ và hệ thống bôi trơn cho vận hành ổn định.",
-    image: pumpFanApplication.image,
+    image: getProductVisual("boi-tron-skf-lincoln").image,
     alt: "Mỡ và hệ thống bôi trơn SKF Lincoln",
   },
   {
     title: "Dụng cụ bảo trì SKF",
     summary: "Thiết bị hỗ trợ tháo lắp, kiểm tra và bảo trì định kỳ.",
-    image: "/images/giai-phap-khach-hang-hero.png",
+    image: getProductVisual("dung-cu-bao-tri-skf").image,
     alt: "Dụng cụ bảo trì SKF trong nhà máy",
   },
   {
     title: "Truyền động SKF",
     summary: "Nhóm truyền động cho băng tải, cụm quay và dây chuyền.",
-    image: getProductVisual("tsubaki").image,
+    image: getProductVisual("truyen-dong-skf").image,
     alt: "Nhóm truyền động SKF cho dây chuyền sản xuất",
   },
 ] as const;
@@ -112,7 +112,7 @@ const applicationCards = [
   },
 ] as const;
 
-const searchExamples = ["6205", "6308", "NU308", "22212", "30208", "UCP208"] as const;
+const searchExamples = ["22212", "6225", "6379", "IR 90X100X26", "UCP208", "60X90X10"] as const;
 
 export default function Home() {
   const pageSchema = createWebPageSchema({
@@ -147,11 +147,11 @@ export default function Home() {
               </p>
               <div className="space-y-4">
                 <h1 className="font-heading text-balance text-4xl font-bold leading-tight sm:text-5xl lg:text-[3.3rem]">
-                  Tra mã, tư vấn và tiếp nhận yêu cầu báo giá sản phẩm SKF
+                  SKF Công Nghiệp
                 </h1>
                 <p className="max-w-2xl text-sm leading-7 text-slate-200 sm:text-base">
-                  Cung cấp và tư vấn sản phẩm SKF theo mã, ứng dụng và điều kiện vận hành. Giao diện ưu tiên thao tác nhanh cho kỹ thuật,
-                  bảo trì và mua hàng B2B.
+                  Tra mã, tư vấn và tiếp nhận yêu cầu báo giá sản phẩm SKF cho nhà máy công nghiệp. Cung cấp và tư vấn sản phẩm SKF theo mã,
+                  ứng dụng và điều kiện vận hành.
                 </p>
               </div>
 
@@ -167,6 +167,12 @@ export default function Home() {
                     <MessageCircle className="mr-2 size-4" />
                     Gửi Zalo
                   </a>
+                </Button>
+                <Button asChild variant="outline" className="h-11 border-white/30 bg-white/10 px-5 text-white hover:bg-white hover:text-slate-950">
+                  <Link href="/lien-he">
+                    <PhoneCall className="mr-2 size-4" />
+                    Liên hệ
+                  </Link>
                 </Button>
               </div>
             </div>
@@ -209,7 +215,7 @@ export default function Home() {
           <div className="page-shell space-y-8">
             <SectionTitle
               eyebrow="Danh mục SKF"
-              title="6 nhóm sản phẩm chính"
+              title="SKF cho nhà máy công nghiệp: vòng bi, gối đỡ, phớt, bôi trơn, bảo trì và truyền động"
               description="Nhấn Tra mã, Xem nhóm hoặc Gửi Zalo tùy cách làm việc của đội kỹ thuật và mua hàng."
             />
 
@@ -319,9 +325,9 @@ export default function Home() {
                   </a>
                 </Button>
                 <Button asChild variant="outline" className="h-11 border-[#DDE7F3] text-slate-900 hover:bg-[#EEF4FB]">
-                  <Link href="/tra-ma-bao-gia">
-                    <Search className="mr-2 size-4" />
-                    Mở trang Tra mã SKF
+                  <Link href="/lien-he">
+                    <PhoneCall className="mr-2 size-4" />
+                    Liên hệ
                   </Link>
                 </Button>
               </div>

@@ -1,50 +1,26 @@
 {
-  "version": "v3-ntn-tsubaki-core",
-  "description": "Chính sách thương hiệu: NTN và Tsubaki là hai thương hiệu chủ lực truyền thông; Koyo là thương hiệu phân phối chính thức theo nhóm vòng bi; NOK và Soho là nhóm triển khai theo ứng dụng.",
+  "version": "v4-skf-industrial",
+  "description": "Chính sách thương hiệu: tập trung tư vấn sản phẩm SKF cho khách hàng công nghiệp theo mã, ứng dụng và điều kiện vận hành.",
   "policies": [
     {
-      "brand": "NTN",
+      "brand": "SKF",
       "status": "active",
       "sell_allowed": true,
       "priority": 1,
-      "product_groups": ["bearings"],
-      "note": "Thương hiệu chủ lực cho vòng bi Nhật, ưu tiên đề xuất đầu tiên khi phù hợp cụm quay và điều kiện vận hành."
+      "product_groups": ["bearings", "pillow_blocks", "oil_seals", "maintenance_tools", "transmission"],
+      "note": "Thương hiệu trọng tâm cho vòng bi, gối đỡ, phớt, dụng cụ bảo trì và truyền động công nghiệp."
     },
     {
-      "brand": "TSUBAKI",
+      "brand": "SKF/LINCOLN",
       "status": "active",
       "sell_allowed": true,
       "priority": 1,
-      "product_groups": ["industrial_chains"],
-      "note": "Thương hiệu chủ lực cho xích công nghiệp, băng tải xích và cơ cấu truyền động tải liên tục."
-    },
-    {
-      "brand": "KOYO/JTEKT",
-      "status": "active",
-      "sell_allowed": true,
-      "priority": 2,
-      "product_groups": ["bearings", "pillow_blocks"],
-      "note": "Thương hiệu phân phối chính thức cho vòng bi, gối đỡ và các cụm đỡ trục cần đối chiếu mã."
-    },
-    {
-      "brand": "NOK",
-      "status": "active",
-      "sell_allowed": true,
-      "priority": 2,
-      "product_groups": ["oil_seals"],
-      "note": "Nhóm triển khai trọng tâm cho phớt chặn dầu và làm kín trục, cần xác minh kích thước và kiểu môi."
-    },
-    {
-      "brand": "SOHO",
-      "status": "active",
-      "sell_allowed": true,
-      "priority": 3,
-      "product_groups": ["belts"],
-      "note": "Nhóm vật tư truyền động triển khai theo mã thực tế và điều kiện vận hành."
+      "product_groups": ["lubrication"],
+      "note": "Nhóm mỡ và hệ thống bôi trơn dùng cho thiết bị quay, điểm bôi trơn xa và bảo trì định kỳ."
     }
   ],
   "rules": {
-    "if_customer_asks_blocked_brand": "Ghi nhận thương hiệu khách hỏi; nếu khách gửi mã cụ thể thì hỗ trợ đối chiếu sang nhóm phù hợp trong các thương hiệu đang tư vấn.",
-    "if_no_brand_specified": "Ưu tiên NTN cho vòng bi và Tsubaki cho xích truyền động; đồng thời cân nhắc Koyo, NOK hoặc Soho theo đúng nhóm hàng và điều kiện ứng dụng."
+    "if_customer_asks_blocked_brand": "Ghi nhận thương hiệu khách hỏi; nếu khách gửi mã cụ thể thì hỗ trợ đối chiếu thông số và khoanh nhóm SKF phù hợp.",
+    "if_no_brand_specified": "Ưu tiên khoanh theo nhóm sản phẩm SKF, ứng dụng và điều kiện vận hành trước khi đề xuất phương án phù hợp."
   }
 }

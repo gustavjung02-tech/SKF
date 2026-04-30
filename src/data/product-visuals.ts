@@ -6,25 +6,29 @@ type ProductVisual = {
 };
 
 const productVisualMeta: Record<string, { fallback: string; imageAlt: string }> = {
-  ntn: {
-    fallback: "/images/cards/products/ntn.png",
+  "vong-bi-skf": {
+    fallback: "/images/cards/product-vong-bi.webp",
     imageAlt: "Vòng bi SKF trong khu vực bảo trì nhà máy",
   },
-  tsubaki: {
-    fallback: "/images/cards/products/tsubaki.png",
-    imageAlt: "Nhóm truyền động SKF cho băng tải công nghiệp",
-  },
-  koyo: {
-    fallback: "/images/cards/products/koyo.png",
+  "goi-do-skf": {
+    fallback: "/images/cards/product-goi-do.webp",
     imageAlt: "Gối đỡ SKF trong dây chuyền công nghiệp",
   },
-  nok: {
-    fallback: "/images/cards/products/nok.png",
+  "phot-skf": {
+    fallback: "/images/card-kien-thuc-sai-phot-chan-dau.png",
     imageAlt: "Phớt SKF cho cụm làm kín trục và hộp số",
   },
-  soho: {
-    fallback: "/images/cards/products/soho.png",
-    imageAlt: "Vật tư bảo trì công nghiệp theo ứng dụng thực tế",
+  "boi-tron-skf-lincoln": {
+    fallback: "/images/backgrounds/he-sinh-thai-home.jpeg",
+    imageAlt: "Mỡ và hệ thống bôi trơn SKF Lincoln trong nhà máy",
+  },
+  "dung-cu-bao-tri-skf": {
+    fallback: "/images/giai-phap-khach-hang-hero.png",
+    imageAlt: "Dụng cụ bảo trì SKF trong môi trường nhà máy",
+  },
+  "truyen-dong-skf": {
+    fallback: "/images/card-ung-dung-bang-tai-truyen-dong.png",
+    imageAlt: "Nhóm truyền động SKF cho băng tải công nghiệp",
   },
 };
 

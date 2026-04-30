@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useDeferredValue, useEffect, useRef, useState } from "react";
+import { type FormEvent, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { MessageCircle, Search, SlidersHorizontal, Loader2, RotateCcw, X } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { siteConfig } from "@/config/site";
@@ -28,18 +28,19 @@ type FilterOptions = {
 };
 
 type ProductSpecs = {
-  boreMm?: number;
-  innerDiameterMm?: number;
-  dMm?: number;
-  d_mm?: number;
-  outerDiameterMm?: number;
-  outsideDiameterMm?: number;
-  DMm?: number;
-  D_mm?: number;
-  widthMm?: number;
-  thicknessMm?: number;
-  bMm?: number;
-  B_T_mm?: number;
+  boreMm?: number | string;
+  innerDiameterMm?: number | string;
+  dMm?: number | string;
+  d_mm?: number | string;
+  d1_mm?: number | string;
+  outerDiameterMm?: number | string;
+  outsideDiameterMm?: number | string;
+  DMm?: number | string;
+  D_mm?: number | string;
+  widthMm?: number | string;
+  thicknessMm?: number | string;
+  bMm?: number | string;
+  B_T_mm?: number | string;
 };
 
 type CodeIndexRecord = {
@@ -53,12 +54,13 @@ type CodeIndexRecord = {
   applicationText?: string;
   priority?: string;
   specs?: ProductSpecs;
-  boreMm?: number;
-  outerDiameterMm?: number;
-  widthMm?: number;
-  d_mm?: number;
-  D_mm?: number;
-  B_T_mm?: number;
+  boreMm?: number | string;
+  outerDiameterMm?: number | string;
+  widthMm?: number | string;
+  d_mm?: number | string;
+  d1_mm?: number | string;
+  D_mm?: number | string;
+  B_T_mm?: number | string;
 };
 
 type GroupRecord = CodeIndexRecord & {
@@ -74,6 +76,17 @@ type SearchRecord = GroupRecord & {
   machineGroupsText: string;
 };
 
+type QueryMatch = {
+  matches: boolean;
+  score: number;
+};
+
+type DimensionValues = {
+  inner: number | null;
+  outer: number | null;
+  width: number | null;
+};
+
 type SelectedQuoteItem = {
   code: string;
   name?: string;
@@ -81,7 +94,9 @@ type SelectedQuoteItem = {
 
 const FILTER_OPTIONS_URL = "/data/skf-filter-options.json";
 const CODE_INDEX_URL = "/data/skf-code-index.json";
-const DEFAULT_QUICK_SUGGESTIONS = ["6205", "6308", "NU308", "22212", "30208", "UCP208"];
+const DEFAULT_QUICK_SUGGESTIONS = ["22212", "6225", "6379", "IR 90X100X26", "UCP208", "60X90X10"];
+const TECHNICAL_CODE_PREFIXES = ["TMFT", "TKSA", "NUP", "UCP", "TIH", "NU", "NJ", "UC", "IR", "LG"];
+const DIMENSION_TOLERANCE_MM = 0.5;
 
 function normalizeCode(value: string) {
   return value.toUpperCase().replace(/[^A-Z0-9]/g, "");
@@ -101,28 +116,34 @@ function parseDimension(value: string): number | null {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-function getNumericField(record: GroupRecord, keys: Array<keyof ProductSpecs | keyof CodeIndexRecord>) {
-  for (const key of keys) {
-    const directValue = record[key as keyof CodeIndexRecord];
-    if (typeof directValue === "number" && Number.isFinite(directValue)) {
-      return directValue;
-    }
+function toFiniteNumber(value: unknown) {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
 
-    const specValue = record.specs?.[key as keyof ProductSpecs];
-    if (typeof specValue === "number" && Number.isFinite(specValue)) {
-      return specValue;
-    }
+  if (typeof value === "string") {
+    return parseDimension(value);
   }
 
   return null;
 }
 
-function matchesDimensionFilter(actual: number | null, expected: number | null) {
-  if (expected === null) {
-    return true;
+function getNumericField(record: GroupRecord, keys: Array<keyof ProductSpecs | keyof CodeIndexRecord>) {
+  for (const key of keys) {
+    const directValue = record[key as keyof CodeIndexRecord];
+    const directNumber = toFiniteNumber(directValue);
+    if (directNumber !== null) {
+      return directNumber;
+    }
+
+    const specValue = record.specs?.[key as keyof ProductSpecs];
+    const specNumber = toFiniteNumber(specValue);
+    if (specNumber !== null) {
+      return specNumber;
+    }
   }
 
-  return actual !== null && Math.abs(actual - expected) <= 0.5;
+  return null;
 }
 
 function getApplicationText(record: GroupRecord) {
@@ -143,6 +164,185 @@ function getIndustriesText(record: GroupRecord) {
 
 function getMachineGroupsText(record: GroupRecord) {
   return Array.isArray(record.machineGroups) ? record.machineGroups.join(" | ") : "";
+}
+
+function splitOptionText(value: string | undefined) {
+  return (value ?? "")
+    .split("|")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function getApplicationValues(record: GroupRecord) {
+  if (Array.isArray(record.applications) && record.applications.length > 0) {
+    return record.applications;
+  }
+
+  return splitOptionText(record.applicationText);
+}
+
+function buildFilterOptionsFromRecords(
+  records: GroupRecord[],
+  getValues: (record: GroupRecord) => string[],
+  fallbackOptions: FilterOption[] = [],
+) {
+  const fallbackLabels = new Map(fallbackOptions.map((option) => [normalizeText(option.value).trim(), option.label]));
+  const optionsByValue = new Map<string, FilterOption>();
+
+  for (const record of records) {
+    for (const rawValue of getValues(record)) {
+      const value = rawValue.trim();
+      if (!value) {
+        continue;
+      }
+
+      const key = normalizeText(value).trim();
+      const current = optionsByValue.get(key);
+      optionsByValue.set(key, {
+        value,
+        label: fallbackLabels.get(key) ?? current?.label ?? value,
+        count: (current?.count ?? 0) + 1,
+      });
+    }
+  }
+
+  return Array.from(optionsByValue.values()).sort((a, b) => {
+    const countDiff = (b.count ?? 0) - (a.count ?? 0);
+    if (countDiff !== 0) {
+      return countDiff;
+    }
+
+    return a.label.localeCompare(b.label, "vi");
+  });
+}
+
+function hasFilterOption(options: FilterOption[], value: string) {
+  const normalizedValue = normalizeText(value).trim();
+  return options.some((option) => normalizeText(option.value).trim() === normalizedValue);
+}
+
+function getRecordNormalizedCode(record: GroupRecord) {
+  return normalizeCode(record.normalizedCode || record.code);
+}
+
+function getTechnicalPrefix(normalizedQuery: string) {
+  return TECHNICAL_CODE_PREFIXES.find((prefix) => normalizedQuery === prefix || normalizedQuery.startsWith(prefix)) ?? null;
+}
+
+function getNumericSeriesPrefix(normalizedQuery: string, normalizedCode: string) {
+  if (!/^\d{4,}$/.test(normalizedQuery)) {
+    return null;
+  }
+
+  const prefixes = [normalizedQuery.slice(0, 3), normalizedQuery.slice(0, 2)];
+  return prefixes.find((prefix) => prefix.length >= 2 && normalizedCode.startsWith(prefix)) ?? null;
+}
+
+function scoreQueryMatch(record: GroupRecord, rawQuery: string, textParts: string[]): QueryMatch {
+  const trimmedQuery = rawQuery.trim();
+
+  if (!trimmedQuery) {
+    return { matches: true, score: 0 };
+  }
+
+  const normalizedQuery = normalizeCode(trimmedQuery);
+  const loweredQuery = normalizeText(trimmedQuery);
+  const normalizedCode = getRecordNormalizedCode(record);
+  const normalizedDisplayCode = normalizeCode(record.code);
+  const displayCode = (record.code ?? "").toUpperCase().trim();
+  const displayQuery = trimmedQuery.toUpperCase();
+  const isShortNumericPrefixQuery = /^\d{1,3}$/.test(normalizedQuery);
+  const technicalPrefix = getTechnicalPrefix(normalizedQuery);
+
+  if (!normalizedQuery && loweredQuery.length < 4) {
+    return { matches: false, score: 0 };
+  }
+
+  if (isShortNumericPrefixQuery) {
+    return normalizedCode.startsWith(normalizedQuery)
+      ? { matches: true, score: normalizedCode === normalizedQuery ? 10000 : 8200 }
+      : { matches: false, score: 0 };
+  }
+
+  if (normalizedCode === normalizedQuery || normalizedDisplayCode === normalizedQuery) {
+    return { matches: true, score: 10000 };
+  }
+
+  if (normalizedCode.startsWith(normalizedQuery)) {
+    return { matches: true, score: 8600 };
+  }
+
+  if (normalizedDisplayCode.startsWith(normalizedQuery) || displayCode.startsWith(displayQuery)) {
+    return { matches: true, score: 8200 };
+  }
+
+  const numericSeriesPrefix = getNumericSeriesPrefix(normalizedQuery, normalizedCode);
+  if (numericSeriesPrefix) {
+    return { matches: true, score: numericSeriesPrefix.length === 3 ? 3600 : 3200 };
+  }
+
+  if (technicalPrefix) {
+    return { matches: false, score: 0 };
+  }
+
+  if (normalizedQuery.length >= 4 && (normalizedCode.includes(normalizedQuery) || normalizedDisplayCode.includes(normalizedQuery))) {
+    return { matches: true, score: 2400 };
+  }
+
+  if (loweredQuery.length >= 4 && textParts.some((part) => normalizeText(part).includes(loweredQuery))) {
+    return { matches: true, score: 700 };
+  }
+
+  return { matches: false, score: 0 };
+}
+
+function parseDimensionsFromCode(code: string | undefined): DimensionValues {
+  const match = (code ?? "").match(/(?:^|[^0-9])(\d+(?:[,.]\d+)?)\s*[xX]\s*(\d+(?:[,.]\d+)?)\s*[xX]\s*(\d+(?:[,.]\d+)?)(?:[^0-9]|$)/);
+
+  if (!match) {
+    return { inner: null, outer: null, width: null };
+  }
+
+  return {
+    inner: parseDimension(match[1]),
+    outer: parseDimension(match[2]),
+    width: parseDimension(match[3]),
+  };
+}
+
+function getRecordDimensions(record: GroupRecord): DimensionValues {
+  const parsedCodeDimensions = parseDimensionsFromCode(record.code);
+  const explicitInner = getNumericField(record, ["d1_mm", "dMm", "d_mm", "innerDiameterMm"]);
+
+  return {
+    inner: explicitInner ?? parsedCodeDimensions.inner ?? getNumericField(record, ["boreMm"]),
+    outer: getNumericField(record, ["outerDiameterMm", "outsideDiameterMm", "DMm", "D_mm"]) ?? parsedCodeDimensions.outer,
+    width: getNumericField(record, ["widthMm", "thicknessMm", "bMm", "B_T_mm"]) ?? parsedCodeDimensions.width,
+  };
+}
+
+function scoreDimensionMatch(actual: DimensionValues, expected: DimensionValues): QueryMatch {
+  const checks = [
+    { actual: actual.inner, expected: expected.inner },
+    { actual: actual.outer, expected: expected.outer },
+    { actual: actual.width, expected: expected.width },
+  ];
+
+  let score = 0;
+
+  for (const check of checks) {
+    if (check.expected === null) {
+      continue;
+    }
+
+    if (check.actual === null || Math.abs(check.actual - check.expected) > DIMENSION_TOLERANCE_MM) {
+      return { matches: false, score: 0 };
+    }
+
+    score += 1200;
+  }
+
+  return { matches: true, score };
 }
 
 function resolveInitialGroup(param: string | null, filterOptions: FilterOptions | null) {
@@ -362,15 +562,79 @@ export function SkfSearchQuoteExperience() {
     };
   }, [filterOptions, groupDataBySlug, hasDimensionInput, selectedGroup]);
 
+  const allGroupData = useMemo(() => Object.values(groupDataBySlug).flat(), [groupDataBySlug]);
+
+  const availableSubCategoryOptions = useMemo(() => {
+    if (!filterOptions) {
+      return [];
+    }
+
+    if (!selectedGroup) {
+      return filterOptions.subCategories;
+    }
+
+    return buildFilterOptionsFromRecords(
+      groupDataBySlug[selectedGroup] ?? [],
+      (record) => (record.subCategory ? [record.subCategory] : []),
+      filterOptions.subCategories,
+    );
+  }, [filterOptions, groupDataBySlug, selectedGroup]);
+
+  const availableApplicationOptions = useMemo(() => {
+    if (!filterOptions) {
+      return [];
+    }
+
+    if (!selectedGroup && !selectedSubCategory) {
+      return filterOptions.applications;
+    }
+
+    const records = selectedGroup ? groupDataBySlug[selectedGroup] ?? [] : codeIndex ?? allGroupData;
+    const scopedRecords = records.filter((record) => {
+      return (
+        (!selectedGroup || record.productGroup === selectedGroup) &&
+        (!selectedSubCategory || record.subCategory === selectedSubCategory)
+      );
+    });
+
+    return buildFilterOptionsFromRecords(scopedRecords, getApplicationValues, filterOptions.applications);
+  }, [allGroupData, codeIndex, filterOptions, groupDataBySlug, selectedGroup, selectedSubCategory]);
+
+  useEffect(() => {
+    if (!selectedSubCategory || availableSubCategoryOptions.length === 0) {
+      return;
+    }
+
+    if (!hasFilterOption(availableSubCategoryOptions, selectedSubCategory)) {
+      setSelectedSubCategory("");
+      setSelectedApplication("");
+    }
+  }, [availableSubCategoryOptions, selectedSubCategory]);
+
+  useEffect(() => {
+    if (!selectedApplication || (!selectedGroup && !selectedSubCategory) || availableApplicationOptions.length === 0) {
+      return;
+    }
+
+    if (!hasFilterOption(availableApplicationOptions, selectedApplication)) {
+      setSelectedApplication("");
+    }
+  }, [availableApplicationOptions, selectedApplication, selectedGroup, selectedSubCategory]);
+
+  const parsedInnerDiameter = parseDimension(innerDiameter);
+  const parsedOuterDiameter = parseDimension(outerDiameter);
+  const parsedWidth = parseDimension(width);
+  const dimensionWarning =
+    parsedInnerDiameter !== null && parsedOuterDiameter !== null && parsedOuterDiameter <= parsedInnerDiameter
+      ? "Đường kính ngoài D phải lớn hơn trục trong d."
+      : "";
+
   useEffect(() => {
     const rawQuery = deferredQuery.trim();
-    const normalizedQuery = normalizeCode(rawQuery);
-    const loweredQuery = normalizeText(rawQuery);
-    const expectedInner = parseDimension(innerDiameter);
-    const expectedOuter = parseDimension(outerDiameter);
-    const expectedWidth = parseDimension(width);
+    const expectedInner = parsedInnerDiameter;
+    const expectedOuter = parsedOuterDiameter;
+    const expectedWidth = parsedWidth;
     const hasParsedDimension = expectedInner !== null || expectedOuter !== null || expectedWidth !== null;
-    const allGroupData = Object.values(groupDataBySlug).flat();
     const sourceData = selectedGroup
       ? groupDataBySlug[selectedGroup] ?? null
       : hasParsedDimension && allGroupData.length
@@ -378,6 +642,12 @@ export function SkfSearchQuoteExperience() {
         : codeIndex;
 
     if (!sourceData) {
+      setResults([]);
+      setTotalMatches(0);
+      return;
+    }
+
+    if (dimensionWarning) {
       setResults([]);
       setTotalMatches(0);
       return;
@@ -398,59 +668,67 @@ export function SkfSearchQuoteExperience() {
       return;
     }
 
-    let matchCount = 0;
-    const nextResults: SearchRecord[] = [];
+    const expectedDimensions = {
+      inner: expectedInner,
+      outer: expectedOuter,
+      width: expectedWidth,
+    };
+    const matchedResults: Array<SearchRecord & { searchScore: number }> = [];
 
     for (const record of sourceData) {
       const applicationTextResolved = getApplicationText(record);
       const industriesText = getIndustriesText(record);
       const machineGroupsText = getMachineGroupsText(record);
+      const queryMatch = scoreQueryMatch(record, rawQuery, [
+        record.name ?? "",
+        record.productGroupLabel ?? "",
+        record.subCategory ?? "",
+        applicationTextResolved,
+        industriesText,
+        machineGroupsText,
+      ]);
 
-      const matchesQuery =
-        !rawQuery ||
-        normalizeText(record.code).includes(loweredQuery) ||
-        normalizeText(record.name).includes(loweredQuery) ||
-        normalizeText(record.productGroupLabel).includes(loweredQuery) ||
-        normalizeText(record.subCategory).includes(loweredQuery) ||
-        normalizeText(applicationTextResolved).includes(loweredQuery) ||
-        normalizeCode(record.code).includes(normalizedQuery) ||
-        normalizeCode(record.normalizedCode ?? "").includes(normalizedQuery);
-
+      const actualDimensions = getRecordDimensions(record);
+      const dimensionMatch = scoreDimensionMatch(actualDimensions, expectedDimensions);
       const matchesGroup = !selectedGroup || record.productGroup === selectedGroup;
       const matchesSubCategory = !selectedSubCategory || record.subCategory === selectedSubCategory;
       const matchesApplication = !selectedApplication || normalizeText(applicationTextResolved).includes(normalizeText(selectedApplication));
       const matchesIndustry = !selectedIndustry || normalizeText(industriesText).includes(normalizeText(selectedIndustry));
       const matchesMachineGroup = !selectedMachineGroup || normalizeText(machineGroupsText).includes(normalizeText(selectedMachineGroup));
       const matchesPriority = !selectedPriority || record.priority === selectedPriority;
-      const actualInner = getNumericField(record, ["boreMm", "innerDiameterMm", "dMm", "d_mm"]);
-      const actualOuter = getNumericField(record, ["outerDiameterMm", "outsideDiameterMm", "DMm", "D_mm"]);
-      const actualWidth = getNumericField(record, ["widthMm", "thicknessMm", "bMm", "B_T_mm"]);
-      const matchesDimensions =
-        matchesDimensionFilter(actualInner, expectedInner) &&
-        matchesDimensionFilter(actualOuter, expectedOuter) &&
-        matchesDimensionFilter(actualWidth, expectedWidth);
 
-      if (!matchesQuery || !matchesGroup || !matchesSubCategory || !matchesApplication || !matchesIndustry || !matchesMachineGroup || !matchesPriority || !matchesDimensions) {
+      if (!queryMatch.matches || !matchesGroup || !matchesSubCategory || !matchesApplication || !matchesIndustry || !matchesMachineGroup || !matchesPriority || !dimensionMatch.matches) {
         continue;
       }
 
-      matchCount += 1;
-
-      if (nextResults.length < 50) {
-        nextResults.push({
-          ...record,
-          applicationTextResolved,
-          industriesText,
-          machineGroupsText,
-        });
-      }
+      matchedResults.push({
+        ...record,
+        applicationTextResolved,
+        industriesText,
+        machineGroupsText,
+        searchScore: queryMatch.score + dimensionMatch.score,
+      });
     }
 
+    const nextResults = matchedResults
+      .sort((first, second) => {
+        const scoreDiff = second.searchScore - first.searchScore;
+        if (scoreDiff !== 0) {
+          return scoreDiff;
+        }
+
+        return getRecordNormalizedCode(first).localeCompare(getRecordNormalizedCode(second));
+      })
+      .slice(0, 50)
+      .map(({ searchScore, ...record }) => record);
+
     setResults(nextResults);
-    setTotalMatches(matchCount);
+    setTotalMatches(matchedResults.length);
   }, [
+    allGroupData,
     codeIndex,
     deferredQuery,
+    dimensionWarning,
     groupDataBySlug,
     selectedApplication,
     selectedGroup,
@@ -458,14 +736,12 @@ export function SkfSearchQuoteExperience() {
     selectedMachineGroup,
     selectedPriority,
     selectedSubCategory,
-    innerDiameter,
-    outerDiameter,
-    width,
+    parsedInnerDiameter,
+    parsedOuterDiameter,
+    parsedWidth,
   ]);
 
-  const quickSuggestions = Array.from(
-    new Set([...DEFAULT_QUICK_SUGGESTIONS, ...(filterOptions?.suggestedQueries ?? [])]),
-  );
+  const quickSuggestions = DEFAULT_QUICK_SUGGESTIONS;
 
   const hasActiveSearch =
     Boolean(query.trim()) ||
@@ -496,6 +772,17 @@ export function SkfSearchQuoteExperience() {
   function handleQuickSuggestion(suggestion: string) {
     setQuery(suggestion);
     scrollToResults();
+  }
+
+  function handleGroupChange(value: string | null) {
+    setSelectedGroup(value ?? "");
+    setSelectedSubCategory("");
+    setSelectedApplication("");
+  }
+
+  function handleSubCategoryChange(value: string | null) {
+    setSelectedSubCategory(value ?? "");
+    setSelectedApplication("");
   }
 
   function resetFilters() {
@@ -655,6 +942,7 @@ export function SkfSearchQuoteExperience() {
                   />
                 </div>
               </div>
+              {dimensionWarning ? <p className="text-xs font-medium text-red-600">{dimensionWarning}</p> : null}
             </form>
 
             <div className="space-y-2">
@@ -689,7 +977,7 @@ export function SkfSearchQuoteExperience() {
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               <div className="space-y-2">
                 <Label>Nhóm sản phẩm</Label>
-                <Select value={selectedGroup} onValueChange={(value) => setSelectedGroup(value ?? "")}>
+                <Select value={selectedGroup} onValueChange={handleGroupChange}>
                   <SelectTrigger className="h-11 w-full bg-white">
                     <SelectValue placeholder="Chọn nhóm sản phẩm" />
                   </SelectTrigger>
@@ -705,12 +993,12 @@ export function SkfSearchQuoteExperience() {
 
               <div className="space-y-2">
                 <Label>Loại sản phẩm</Label>
-                <Select value={selectedSubCategory} onValueChange={(value) => setSelectedSubCategory(value ?? "")}>
+                <Select value={selectedSubCategory} onValueChange={handleSubCategoryChange}>
                   <SelectTrigger className="h-11 w-full bg-white">
                     <SelectValue placeholder="Chọn loại sản phẩm" />
                   </SelectTrigger>
                   <SelectContent>
-                    {(filterOptions?.subCategories ?? []).map((option) => (
+                    {availableSubCategoryOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
@@ -726,7 +1014,7 @@ export function SkfSearchQuoteExperience() {
                     <SelectValue placeholder="Chọn ứng dụng" />
                   </SelectTrigger>
                   <SelectContent>
-                    {(filterOptions?.applications ?? []).map((option) => (
+                    {availableApplicationOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>

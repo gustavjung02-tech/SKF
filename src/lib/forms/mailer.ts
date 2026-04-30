@@ -1,7 +1,7 @@
 import { siteConfig } from "@/config/site";
 
 const DEFAULT_INTERNAL_RECIPIENT = "khuongbinh.info@gmail.com";
-const DEFAULT_FROM = "THL B2B <onboarding@resend.dev>";
+const DEFAULT_FROM = "SKF Công Nghiệp <onboarding@resend.dev>";
 const DEFAULT_ASSET_BASE_URL = `https://${siteConfig.domain}`;
 
 type SendMailInput = {
@@ -60,32 +60,14 @@ export function getMailAssetBaseUrl() {
 
 export function buildMailBrandHeaderHtml() {
   const baseUrl = getMailAssetBaseUrl();
-  const ntnLogo = `${baseUrl}/images/brands/ntn-logo.png`;
-  const tsubakiLogo = `${baseUrl}/images/brands/tsubaki-logo.png`;
-  const koyoLogo = `${baseUrl}/images/brands/koyo-logo.png`;
-  const nokLogo = `${baseUrl}/images/brands/nok-corporation.png`;
-  const sohoLogo = `${baseUrl}/images/brands/soho-logo-transparent.png`;
+  const logo = `${baseUrl}/images/logo-skf-cong-nghiep-header.png`;
 
   return `
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:560px;margin:0 0 18px 0;">
       <tr>
         <td style="padding:14px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;">
-          <div style="margin:0 0 10px 0;padding:10px;border:1px solid #cbd5e1;border-radius:10px;background:#ffffff;text-align:center;">
-            <img src="${ntnLogo}" alt="NTN" style="height:34px;width:auto;max-width:180px;display:inline-block;" />
-          </div>
-          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;">
-            <div style="padding:6px;border:1px solid #e2e8f0;border-radius:8px;background:#ffffff;text-align:center;">
-              <img src="${tsubakiLogo}" alt="Tsubaki" style="height:18px;width:auto;max-width:96px;display:inline-block;" />
-            </div>
-            <div style="padding:6px;border:1px solid #e2e8f0;border-radius:8px;background:#ffffff;text-align:center;">
-              <img src="${koyoLogo}" alt="Koyo" style="height:18px;width:auto;max-width:96px;display:inline-block;" />
-            </div>
-            <div style="padding:6px;border:1px solid #e2e8f0;border-radius:8px;background:#ffffff;text-align:center;">
-              <img src="${nokLogo}" alt="NOK" style="height:18px;width:auto;max-width:96px;display:inline-block;" />
-            </div>
-            <div style="padding:6px;border:1px solid #e2e8f0;border-radius:8px;background:#ffffff;text-align:center;">
-              <img src="${sohoLogo}" alt="Soho" style="height:18px;width:auto;max-width:96px;display:inline-block;" />
-            </div>
+          <div style="padding:10px;border:1px solid #cbd5e1;border-radius:10px;background:#ffffff;text-align:center;">
+            <img src="${logo}" alt="SKF Công Nghiệp" style="height:42px;width:auto;max-width:220px;display:inline-block;" />
           </div>
         </td>
       </tr>

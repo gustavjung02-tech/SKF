@@ -36,11 +36,11 @@ function CoreBrandMarks({ compact = false, brands }: { compact?: boolean; brands
     return (
       <span className="inline-flex items-center">
         <Image
-          src="/images/branding/logo-skf.png"
-          alt="SKF B2B Industrial"
-          width={140}
-          height={44}
-          className={cn("h-9 w-auto object-contain", compact ? "h-8" : "h-9")}
+          src="/images/logo-skf-cong-nghiep-header.png"
+          alt="SKF Công Nghiệp"
+          width={260}
+          height={80}
+          className={cn("h-10 w-auto object-contain", compact ? "lg:h-10" : "lg:h-[54px]")}
           priority
         />
       </span>
@@ -79,8 +79,8 @@ export function SiteHeaderClient({ coreBrands }: SiteHeaderClientProps) {
 
   return (
     <header className="sticky top-0 z-50 border-b border-[#DDE7F3] bg-white/95 backdrop-blur">
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Link href="/" className="flex min-w-0 items-center gap-2">
+      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6 lg:h-20">
+        <Link href="/" className="flex min-w-0 shrink-0 items-center">
           <CoreBrandMarks brands={coreBrands} />
           <span className="sr-only">{siteConfig.brandName}</span>
         </Link>

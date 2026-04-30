@@ -32,7 +32,7 @@ const productGroupCards: ProductGroupCard[] = [
     name: "Vòng bi SKF",
     shortDescription: "Đối chiếu mã vòng bi theo tải, tốc độ và môi trường vận hành.",
     detailDescription: "Phù hợp cho motor, bơm, quạt, hộp số và các cụm quay cần độ ổn định cao.",
-    image: getProductVisual("ntn").image,
+    image: getProductVisual("vong-bi-skf").image,
     imageAlt: "Vòng bi SKF trong ứng dụng công nghiệp",
     popularApplications: ["Motor", "Bơm", "Quạt", "Hộp số", "Con lăn"],
   },
@@ -41,7 +41,7 @@ const productGroupCards: ProductGroupCard[] = [
     name: "Gối đỡ SKF",
     shortDescription: "Khoanh nhanh nhóm gối đỡ theo loại trục và không gian lắp.",
     detailDescription: "Tối ưu cho băng tải, trục truyền động và các cụm máy chạy liên tục theo ca.",
-    image: getProductVisual("koyo").image,
+    image: getProductVisual("goi-do-skf").image,
     imageAlt: "Gối đỡ SKF cho cụm trục công nghiệp",
     popularApplications: ["Băng tải", "Trục truyền", "Quạt", "Máy đóng gói"],
   },
@@ -50,16 +50,16 @@ const productGroupCards: ProductGroupCard[] = [
     name: "Phớt SKF",
     shortDescription: "Tra mã phớt theo kích thước cốt, vỏ và điều kiện làm kín.",
     detailDescription: "Phù hợp cụm trục, hộp số, bơm và vị trí cần kiểm soát dầu, bụi, độ ẩm.",
-    image: getProductVisual("nok").image,
+    image: getProductVisual("phot-skf").image,
     imageAlt: "Phớt SKF cho cụm làm kín",
     popularApplications: ["Hộp số", "Cụm trục", "Máy bơm", "Cụm thủy lực"],
   },
   {
     slug: "boi-tron-skf-lincoln",
-    name: "Bôi trơn SKF/Lincoln",
+    name: "Mỡ & hệ thống bôi trơn SKF/Lincoln",
     shortDescription: "Mỡ công nghiệp và hệ thống bôi trơn cho vận hành ổn định.",
     detailDescription: "Áp dụng cho dây chuyền tải liên tục, điểm bôi trơn khó tiếp cận và bảo trì theo chu kỳ.",
-    image: "/images/backgrounds/he-sinh-thai-home.jpeg",
+    image: getProductVisual("boi-tron-skf-lincoln").image,
     imageAlt: "Mỡ và hệ thống bôi trơn SKF Lincoln",
     popularApplications: ["Băng tải", "Trục quay", "Cụm chịu tải", "Bảo trì định kỳ"],
   },
@@ -68,7 +68,7 @@ const productGroupCards: ProductGroupCard[] = [
     name: "Dụng cụ bảo trì SKF",
     shortDescription: "Hỗ trợ tháo lắp, căn chỉnh và kiểm tra thiết bị quay.",
     detailDescription: "Giúp đội bảo trì giảm thời gian dừng máy và chuẩn hóa thao tác kỹ thuật tại hiện trường.",
-    image: "/images/giai-phap-khach-hang-hero.png",
+    image: getProductVisual("dung-cu-bao-tri-skf").image,
     imageAlt: "Dụng cụ bảo trì SKF cho nhà máy",
     popularApplications: ["Căn chỉnh", "Tháo lắp", "Kiểm tra", "Bảo trì nhanh"],
   },
@@ -77,7 +77,7 @@ const productGroupCards: ProductGroupCard[] = [
     name: "Truyền động SKF",
     shortDescription: "Nhóm truyền động cho hệ băng tải và cụm quay công nghiệp.",
     detailDescription: "Hỗ trợ khoanh nhóm theo vị trí máy, tải chạy và điều kiện vận hành thực tế.",
-    image: getProductVisual("tsubaki").image,
+    image: getProductVisual("truyen-dong-skf").image,
     imageAlt: "Nhóm truyền động SKF cho dây chuyền",
     popularApplications: ["Băng tải", "Dây chuyền", "Cụm truyền", "Máy sản xuất"],
   },
@@ -199,7 +199,7 @@ export default function ProductsPage() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/50 via-slate-950/12 to-transparent" />
                   <div className="absolute bottom-4 left-4 right-4 rounded-lg border border-white/20 bg-slate-950/65 px-4 py-3 backdrop-blur">
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-100">SKF B2B</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-100">SKF Công Nghiệp</p>
                     <p className="mt-2 text-sm leading-relaxed text-white/90">
                       Tra mã, tư vấn và tiếp nhận yêu cầu báo giá sản phẩm SKF cho nhà máy công nghiệp.
                     </p>

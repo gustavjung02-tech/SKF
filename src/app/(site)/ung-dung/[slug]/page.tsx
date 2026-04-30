@@ -10,10 +10,7 @@ import { StructuredData } from "@/components/shared/structured-data";
 import { Button } from "@/components/ui/button";
 
 function sanitizeBrandText(value: string) {
-  return value
-    .replace(/NTN\/Koyo/gi, "SKF")
-    .replace(/Koyo\/JTEKT/gi, "SKF")
-    .replace(/\b(NTN|Tsubaki|Koyo|NOK|Soho)\b/gi, "SKF");
+  return value;
 }
 
 const applicationBenefits = [
