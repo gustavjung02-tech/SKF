@@ -106,6 +106,32 @@ const QUICK_SUGGESTION_GROUPS = [
   { label: "Bôi trơn", codes: ["LGHP 2", "LGMT 3"] },
 ] as const;
 const BEARING_FOCUSED_SUGGESTIONS = ["6205", "6206", "6218", "6308", "22212", "NU308"];
+const STANDARD_BEARING_SERIES = ["60", "62", "63", "68", "69"] as const;
+const COMMON_BEARING_BORE_CODES = [
+  "00", "01", "02", "03", "04", "05", "06", "07", "08", "09",
+  "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
+  "20", "22", "24", "26", "28", "30", "32", "34", "36",
+] as const;
+const KNOWN_BEARING_DIMENSIONS: Record<string, DimensionValues> = {
+  "6005": { inner: 25, outer: 47, width: 12 },
+  "6205": { inner: 25, outer: 52, width: 15 },
+  "6305": { inner: 25, outer: 62, width: 17 },
+  "6805": { inner: 25, outer: 37, width: 7 },
+  "6905": { inner: 25, outer: 42, width: 9 },
+  "6006": { inner: 30, outer: 55, width: 13 },
+  "6206": { inner: 30, outer: 62, width: 16 },
+  "6306": { inner: 30, outer: 72, width: 19 },
+  "6208": { inner: 40, outer: 80, width: 18 },
+  "6308": { inner: 40, outer: 90, width: 23 },
+  "6018": { inner: 90, outer: 140, width: 24 },
+  "6218": { inner: 90, outer: 160, width: 30 },
+  "6318": { inner: 90, outer: 190, width: 43 },
+  "6818": { inner: 90, outer: 115, width: 13 },
+  "6918": { inner: 90, outer: 125, width: 18 },
+  "NU308": { inner: 40, outer: 90, width: 23 },
+  "NJ308": { inner: 40, outer: 90, width: 23 },
+  "NUP308": { inner: 40, outer: 90, width: 23 },
+};
 const RESULT_CARD_IMAGES = {
   bearings: "/images/cards/product-vong-bi.webp",
   housings: "/images/cards/product-goi-do.webp",
@@ -365,14 +391,68 @@ function parseDimensionsFromCode(code: string | undefined): DimensionValues {
   };
 }
 
+function boreCodeToInnerMm(boreCode: string) {
+  if (boreCode === "00") return 10;
+  if (boreCode === "01") return 12;
+  if (boreCode === "02") return 15;
+  if (boreCode === "03") return 17;
+
+  const parsed = Number(boreCode);
+  return Number.isFinite(parsed) ? parsed * 5 : null;
+}
+
+function innerMmToBearingBoreCode(innerMm: number | null) {
+  if (innerMm === null) return null;
+
+  const specialCodes = new Map([
+    [10, "00"],
+    [12, "01"],
+    [15, "02"],
+    [17, "03"],
+  ]);
+  const roundedInner = Math.round(innerMm);
+  const specialCode = specialCodes.get(roundedInner);
+  if (specialCode) return specialCode;
+
+  if (Math.abs(innerMm % 5) > DIMENSION_TOLERANCE_MM) {
+    return null;
+  }
+
+  const boreNumber = Math.round(innerMm / 5);
+  return boreNumber >= 4 ? String(boreNumber).padStart(2, "0") : null;
+}
+
+function inferBearingDimensionsFromCode(code: string | undefined): DimensionValues | null {
+  const normalizedCode = normalizeCode(code ?? "");
+  const knownCode = Object.keys(KNOWN_BEARING_DIMENSIONS).find((candidate) => normalizedCode.startsWith(candidate));
+  if (knownCode) {
+    return KNOWN_BEARING_DIMENSIONS[knownCode];
+  }
+
+  const standardMatch = normalizedCode.match(/^(60|62|63|68|69)(\d{2})(?:[A-Z0-9]*)$/);
+  if (standardMatch) {
+    const inner = boreCodeToInnerMm(standardMatch[2]);
+    return inner === null ? null : { inner, outer: null, width: null };
+  }
+
+  const cylindricalMatch = normalizedCode.match(/^(NU|NJ|NUP)(\d)(\d{2})(?:[A-Z0-9]*)$/);
+  if (cylindricalMatch) {
+    const inner = boreCodeToInnerMm(cylindricalMatch[3]);
+    return inner === null ? null : { inner, outer: null, width: null };
+  }
+
+  return null;
+}
+
 function getRecordDimensions(record: GroupRecord): DimensionValues {
   const parsedCodeDimensions = parseDimensionsFromCode(record.code);
+  const inferredBearingDimensions = inferBearingDimensionsFromCode(record.normalizedCode ?? record.code);
   const explicitInner = getNumericField(record, ["d1_mm", "dMm", "d_mm", "innerDiameterMm"]);
 
   return {
-    inner: explicitInner ?? parsedCodeDimensions.inner ?? getNumericField(record, ["boreMm"]),
-    outer: getNumericField(record, ["outerDiameterMm", "outsideDiameterMm", "DMm", "D_mm"]) ?? parsedCodeDimensions.outer,
-    width: getNumericField(record, ["widthMm", "thicknessMm", "bMm", "B_T_mm"]) ?? parsedCodeDimensions.width,
+    inner: explicitInner ?? parsedCodeDimensions.inner ?? getNumericField(record, ["boreMm"]) ?? inferredBearingDimensions?.inner ?? null,
+    outer: getNumericField(record, ["outerDiameterMm", "outsideDiameterMm", "DMm", "D_mm"]) ?? parsedCodeDimensions.outer ?? inferredBearingDimensions?.outer ?? null,
+    width: getNumericField(record, ["widthMm", "thicknessMm", "bMm", "B_T_mm"]) ?? parsedCodeDimensions.width ?? inferredBearingDimensions?.width ?? null,
   };
 }
 
@@ -454,6 +534,86 @@ function buildSpecsSummary(record: GroupRecord) {
   }
 
   return parts.join(" | ");
+}
+
+function createVirtualBearingRecord(code: string): GroupRecord {
+  return {
+    id: `virtual-bearing-${normalizeCode(code)}`,
+    brand: "SKF",
+    code,
+    normalizedCode: normalizeCode(code),
+    name: code,
+    productGroup: "vong-bi-skf",
+    productGroupSlug: "vong-bi-skf",
+    productGroupLabel: "Vòng bi SKF",
+    subCategory: code.startsWith("NU") || code.startsWith("NJ") || code.startsWith("NUP") ? "Vòng bi đũa trụ" : "Vòng bi cầu 1 dãy",
+    applications: ["Bảo trì thiết bị quay", "Thay thế vòng bi theo mã SKF"],
+    industries: ["Nhà máy sản xuất"],
+    machineGroups: ["Motor", "Bơm", "Quạt"],
+    priority: "high",
+  };
+}
+
+function buildVirtualBearingRecords(
+  rawQuery: string,
+  expectedDimensions: DimensionValues,
+  selectedGroup: string,
+  existingRecords: GroupRecord[],
+) {
+  if (selectedGroup && selectedGroup !== "vong-bi-skf") {
+    return [];
+  }
+
+  const normalizedQuery = normalizeCode(rawQuery.trim());
+  const hasExpectedDimension = expectedDimensions.inner !== null || expectedDimensions.outer !== null || expectedDimensions.width !== null;
+  if (!normalizedQuery && !hasExpectedDimension) {
+    return [];
+  }
+
+  const isNumericBearingQuery = /^\d{0,5}$/.test(normalizedQuery) && (normalizedQuery === "" || normalizedQuery.startsWith("6"));
+  const isCylindricalQuery = /^(NU|NJ|NUP)/.test(normalizedQuery);
+
+  if (!isNumericBearingQuery && !isCylindricalQuery) {
+    return [];
+  }
+
+  const existingCodes = new Set(existingRecords.map((record) => getRecordNormalizedCode(record)));
+  const candidateCodes = new Set<string>();
+  const expectedBoreCode = innerMmToBearingBoreCode(expectedDimensions.inner);
+
+  if (isNumericBearingQuery) {
+    const boreCodes = expectedBoreCode ? [expectedBoreCode] : [...COMMON_BEARING_BORE_CODES];
+    for (const series of STANDARD_BEARING_SERIES) {
+      for (const boreCode of boreCodes) {
+        const baseCode = `${series}${boreCode}`;
+        if (!normalizedQuery || baseCode.startsWith(normalizedQuery) || normalizedQuery.startsWith(baseCode)) {
+          candidateCodes.add(baseCode);
+          if (normalizedQuery.length >= 4 && normalizedQuery.startsWith(baseCode)) {
+            candidateCodes.add(`${baseCode}-2Z`);
+            candidateCodes.add(`${baseCode}-2RS1`);
+          }
+        }
+      }
+    }
+  }
+
+  if (isCylindricalQuery) {
+    const technicalPrefixes = ["NU", "NJ", "NUP"];
+    const boreCodes = expectedBoreCode ? [expectedBoreCode] : ["08", "12", "18"];
+    for (const prefix of technicalPrefixes) {
+      for (const boreCode of boreCodes) {
+        const baseCode = `${prefix}3${boreCode}`;
+        const displayCode = `${prefix} 3${boreCode}`;
+        if (normalizeCode(displayCode).startsWith(normalizedQuery) || normalizedQuery.startsWith(baseCode)) {
+          candidateCodes.add(displayCode);
+        }
+      }
+    }
+  }
+
+  return Array.from(candidateCodes)
+    .filter((code) => !existingCodes.has(normalizeCode(code)))
+    .map(createVirtualBearingRecord);
 }
 
 function scoreDimensionMatch(actual: DimensionValues, expected: DimensionValues): QueryMatch {
@@ -788,9 +948,11 @@ export function SkfSearchQuoteExperience() {
       outer: expectedOuter,
       width: expectedWidth,
     };
+    const virtualBearingRecords = buildVirtualBearingRecords(rawQuery, expectedDimensions, selectedGroup, sourceData);
+    const candidateData = [...sourceData, ...virtualBearingRecords];
     const matchedResults: Array<SearchRecord & { searchScore: number }> = [];
 
-    for (const record of sourceData) {
+    for (const record of candidateData) {
       const applicationTextResolved = getApplicationText(record);
       const industriesText = getIndustriesText(record);
       const machineGroupsText = getMachineGroupsText(record);
@@ -1264,7 +1426,11 @@ export function SkfSearchQuoteExperience() {
           <div>
             <h3 className="font-heading text-xl font-bold text-slate-950">Kết quả tra mã SKF</h3>
             <p className="text-sm text-slate-600">
-              {totalMatches > 0 ? `Tìm thấy ${totalMatches} kết quả phù hợp.` : "Nhập mã hoặc chọn nhóm để bắt đầu."}
+              {totalMatches > 0
+                ? `Tìm thấy ${totalMatches} kết quả phù hợp.`
+                : hasActiveSearch
+                  ? "Không có kết quả phù hợp với điều kiện hiện tại."
+                  : "Nhập mã hoặc chọn nhóm để bắt đầu."}
             </p>
           </div>
 
