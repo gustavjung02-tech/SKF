@@ -1,10 +1,9 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, ClipboardCheck } from "lucide-react";
+import { ArrowRight, CheckCircle2, ClipboardCheck, MessageCircle } from "lucide-react";
 import { industryApplications } from "@/data/industry-applications";
 import { createPageMetadata } from "@/lib/seo";
-import { SectionTitle } from "@/components/shared/section-title";
-import { Button } from "@/components/ui/button";
+import { SitePageHero } from "@/components/shared/site-page-hero";
 import { Card, CardContent } from "@/components/ui/card";
 
 function sanitizeBrandText(value: string) {
@@ -20,23 +19,33 @@ export const metadata = createPageMetadata({
 export default function IndustryApplicationsPage() {
   return (
     <div className="bg-white">
-      <section className="section-block border-b border-[#DDE7F3]">
-        <div className="page-shell grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
-          <SectionTitle
-            eyebrow="Ứng dụng ngành"
-            title="Khoanh nhóm sản phẩm SKF theo loại máy và điều kiện vận hành"
-            description="Mỗi cụm máy có tải, tốc độ, môi trường và tiêu chuẩn lắp khác nhau. Tra theo ứng dụng giúp rút ngắn thời gian chọn nhóm mã phù hợp."
+      <section className="section-block pb-6">
+        <div className="page-shell">
+          <SitePageHero
+            badge="ỨNG DỤNG THEO NGÀNH"
+            title="Giải pháp SKF theo từng môi trường vận hành"
+            highlightText="môi trường vận hành"
+            description="Gợi ý nhóm sản phẩm phù hợp cho ngành gỗ, thực phẩm, bao bì, xi măng, cơ khí và nhiều lĩnh vực sản xuất khác."
+            primaryCta={{
+              label: "Xem ứng dụng ngành",
+              href: "#danh-sach-ung-dung",
+              icon: <ClipboardCheck className="mr-2 size-4" />,
+              tone: "blue",
+            }}
+            secondaryCta={{
+              label: "Nhờ tư vấn",
+              href: "/lien-he",
+              icon: <MessageCircle className="mr-2 size-4" />,
+              tone: "outline",
+            }}
+            imageSrc="/images/industry/hero-ung-dung-nganh-skf.png"
+            imageAlt="Giải pháp SKF theo từng môi trường vận hành"
+            imagePriority
           />
-          <Button asChild className="w-fit bg-[#0050A4] hover:bg-[#003d7d]">
-            <Link href="/tra-ma-bao-gia">
-              <ClipboardCheck className="mr-2 size-4" />
-              Tra mã SKF
-            </Link>
-          </Button>
         </div>
       </section>
 
-      <section className="section-block bg-slate-50">
+      <section id="danh-sach-ung-dung" className="section-block bg-slate-50">
         <div className="page-shell grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {industryApplications.map((app) => (
             <Link key={app.slug} href={`/ung-dung/${app.slug}`} className="group">

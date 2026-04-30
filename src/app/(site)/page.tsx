@@ -8,9 +8,9 @@ import { createPageMetadata } from "@/lib/seo";
 import { createBreadcrumbSchema, createOrganizationSchema, createWebPageSchema, createWebSiteSchema } from "@/lib/schema";
 import { StructuredData } from "@/components/shared/structured-data";
 import { SectionTitle } from "@/components/shared/section-title";
+import { SitePageHero } from "@/components/shared/site-page-hero";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 
 export const metadata = createPageMetadata({
   title: "SKF Công Nghiệp",
@@ -112,8 +112,6 @@ const applicationCards = [
   },
 ] as const;
 
-const searchExamples = ["22212", "6225", "6379", "IR 90X100X26", "UCP208", "60X90X10"] as const;
-
 export default function Home() {
   const pageSchema = createWebPageSchema({
     title: homepageTitle,
@@ -128,86 +126,30 @@ export default function Home() {
       <StructuredData data={[createOrganizationSchema(), createWebSiteSchema(), pageSchema, breadcrumbSchema]} />
 
       <div className="overflow-x-hidden bg-slate-50">
-        <section className="relative isolate overflow-hidden bg-slate-950 text-white">
-          <Image
-            src="/images/giai-phap-khach-hang-hero.png"
-            alt="Tra mã và tư vấn sản phẩm SKF cho nhà máy công nghiệp"
-            fill
-            priority
-            sizes="100vw"
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-slate-950/74" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,80,164,0.25),transparent_34%),linear-gradient(135deg,rgba(15,23,42,0.95),rgba(15,23,42,0.72))]" />
-
-          <div className="page-shell relative grid gap-8 py-16 lg:grid-cols-[1.02fr_0.98fr] lg:items-center lg:py-20">
-            <div className="max-w-3xl space-y-6">
-              <p className="inline-flex rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-blue-100 backdrop-blur">
-                SKF cho nhà máy công nghiệp
-              </p>
-              <div className="space-y-4">
-                <h1 className="font-heading text-balance text-4xl font-bold leading-tight sm:text-5xl lg:text-[3.3rem]">
-                  SKF Công Nghiệp
-                </h1>
-                <p className="max-w-2xl text-sm leading-7 text-slate-200 sm:text-base">
-                  Tra mã, tư vấn và tiếp nhận yêu cầu báo giá sản phẩm SKF cho nhà máy công nghiệp. Cung cấp và tư vấn sản phẩm SKF theo mã,
-                  ứng dụng và điều kiện vận hành.
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <Button asChild className="h-11 bg-[#0050A4] px-5 text-white hover:bg-[#003d7d]">
-                  <Link href="/tra-ma-bao-gia">
-                    <Search className="mr-2 size-4" />
-                    Tra mã SKF
-                  </Link>
-                </Button>
-                <Button asChild className="h-11 bg-[#E30613] px-5 text-white hover:bg-[#c80511]">
-                  <a href={siteConfig.zaloLink} target="_blank" rel="noreferrer">
-                    <MessageCircle className="mr-2 size-4" />
-                    Gửi Zalo
-                  </a>
-                </Button>
-                <Button asChild variant="outline" className="h-11 border-white/30 bg-white/10 px-5 text-white hover:bg-white hover:text-slate-950">
-                  <Link href="/lien-he">
-                    <PhoneCall className="mr-2 size-4" />
-                    Liên hệ
-                  </Link>
-                </Button>
-              </div>
-            </div>
-
-            <div className="rounded-3xl border border-white/12 bg-white/10 p-4 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.95)] backdrop-blur-md sm:p-6">
-              <div className="rounded-[1.5rem] border border-white/12 bg-slate-950/70 p-5 sm:p-6">
-                <div className="space-y-2">
-                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-blue-100">Tra mã SKF</p>
-                  <h2 className="font-heading text-2xl font-bold text-white">Nhập mã để chuyển nhanh sang trang tra mã chi tiết</h2>
-                  <p className="text-sm leading-6 text-slate-300">Giữ thao tác ngắn gọn: nhập mã, mở trang tra mã, xử lý yêu cầu báo giá.</p>
-                </div>
-
-                <form action="/tra-ma-bao-gia" className="mt-5 space-y-3">
-                  <Input
-                    name="q"
-                    type="text"
-                    placeholder="6205, 6308, NU308, LGHP 2"
-                    className="h-12 border-white/10 bg-white text-slate-950 placeholder:text-slate-400"
-                    aria-label="Tra mã nhanh SKF"
-                  />
-                  <Button type="submit" className="h-11 w-full bg-[#0050A4] text-white hover:bg-[#003d7d]">
-                    <Search className="mr-2 size-4" />
-                    Mở trang tra mã SKF
-                  </Button>
-                </form>
-
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {searchExamples.map((example) => (
-                    <span key={example} className="rounded-full border border-white/12 bg-white/6 px-3 py-1 text-xs text-slate-200">
-                      {example}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
+        <section className="section-block pb-6">
+          <div className="page-shell">
+            <SitePageHero
+              badge="SKF CHO NHÀ MÁY CÔNG NGHIỆP"
+              title="Giải pháp SKF công nghiệp cho nhà máy hiện đại"
+              highlightText="SKF công nghiệp"
+              description="Tra mã, chọn nhóm sản phẩm và gửi yêu cầu báo giá nhanh cho nhu cầu bảo trì, thay thế và vận hành."
+              primaryCta={{
+                label: "Tra mã SKF",
+                href: "/tra-ma-bao-gia",
+                icon: <Search className="mr-2 size-4" />,
+                tone: "blue",
+              }}
+              secondaryCta={{
+                label: "Gửi Zalo",
+                href: siteConfig.zaloLink,
+                external: true,
+                icon: <MessageCircle className="mr-2 size-4" />,
+                tone: "red",
+              }}
+              imageSrc="/images/heroes/home/hero-home-skf-main.png"
+              imageAlt="Giải pháp SKF công nghiệp cho nhà máy hiện đại"
+              imagePriority
+            />
           </div>
         </section>
 

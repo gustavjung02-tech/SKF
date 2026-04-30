@@ -7,6 +7,7 @@ import { createPageMetadata } from "@/lib/seo";
 import { createBreadcrumbSchema, createWebPageSchema } from "@/lib/schema";
 import { StructuredData } from "@/components/shared/structured-data";
 import { SectionTitle } from "@/components/shared/section-title";
+import { SitePageHero } from "@/components/shared/site-page-hero";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -24,6 +25,13 @@ type ProductGroupCard = {
   image: string;
   imageAlt: string;
   popularApplications: string[];
+};
+
+type ProductMiniCard = {
+  slug: string;
+  label: string;
+  image: string;
+  imageAlt: string;
 };
 
 const productGroupCards: ProductGroupCard[] = [
@@ -82,6 +90,47 @@ const productGroupCards: ProductGroupCard[] = [
     popularApplications: ["Băng tải", "Dây chuyền", "Cụm truyền", "Máy sản xuất"],
   },
 ];
+
+const productMiniCards: ProductMiniCard[] = [
+  {
+    slug: "vong-bi-skf",
+    label: "Vòng bi SKF",
+    image: getProductVisual("vong-bi-skf").image,
+    imageAlt: "Vòng bi SKF",
+  },
+  {
+    slug: "goi-do-skf",
+    label: "Gối đỡ SKF",
+    image: getProductVisual("goi-do-skf").image,
+    imageAlt: "Gối đỡ SKF",
+  },
+  {
+    slug: "phot-skf",
+    label: "Phớt SKF",
+    image: getProductVisual("phot-skf").image,
+    imageAlt: "Phớt SKF",
+  },
+  {
+    slug: "boi-tron-skf-lincoln",
+    label: "Bôi trơn SKF",
+    image: getProductVisual("boi-tron-skf-lincoln").image,
+    imageAlt: "Bôi trơn SKF",
+  },
+  {
+    slug: "dung-cu-bao-tri-skf",
+    label: "Dụng cụ bảo trì",
+    image: getProductVisual("dung-cu-bao-tri-skf").image,
+    imageAlt: "Dụng cụ bảo trì SKF",
+  },
+  {
+    slug: "truyen-dong-skf",
+    label: "Truyền động SKF",
+    image: getProductVisual("truyen-dong-skf").image,
+    imageAlt: "Truyền động SKF",
+  },
+];
+
+const productMiniCardsLoop = [...productMiniCards, ...productMiniCards];
 
 function ProductCard({ item }: { item: ProductGroupCard }) {
   return (
@@ -167,50 +216,67 @@ export default function ProductsPage() {
     <>
       <StructuredData data={[pageSchema, breadcrumbSchema]} />
       <div className="bg-white">
-        <section className="section-block border-b border-[#DDE7F3]">
+        <section className="section-block pb-6">
           <div className="page-shell">
-            <div className="overflow-hidden rounded-lg border border-[#DDE7F3] bg-white shadow-[0_16px_36px_-30px_rgba(15,23,42,0.28)]">
-              <div className="grid gap-0 lg:grid-cols-[1.02fr_0.98fr] lg:items-stretch">
-                <div className="space-y-6 p-6 sm:p-8 lg:p-10">
-                  <SectionTitle
-                    eyebrow="Sản phẩm SKF"
-                    title="Danh mục sản phẩm SKF cho nhà máy công nghiệp"
-                    description="Cấu trúc gọn theo nhóm sản phẩm chính để tra nhanh, lọc nhanh và gửi yêu cầu nhanh."
-                  />
-                  <p className="max-w-2xl text-sm leading-relaxed text-slate-700 sm:text-base">
-                    Cung cấp và tư vấn sản phẩm SKF theo mã, ứng dụng và điều kiện vận hành. Toàn bộ CTA ưu tiên tra mã và xử lý qua
-                    Zalo cho đội kỹ thuật.
-                  </p>
-                  <Button asChild className="w-fit bg-[#0050A4] hover:bg-[#003d7d]">
-                    <Link href="/tra-ma-bao-gia">
-                      <Search className="mr-2 size-4" />
-                      Mở Tra mã SKF
-                    </Link>
-                  </Button>
-                </div>
+            <SitePageHero
+              badge="DANH MỤC SẢN PHẨM SKF"
+              title="Sản phẩm SKF theo từng nhóm ứng dụng"
+              highlightText="SKF"
+              primaryCta={{
+                label: "Xem nhóm sản phẩm",
+                href: "#nhom-san-pham",
+                icon: <ArrowRight className="mr-2 size-4" />,
+                tone: "blue",
+              }}
+              secondaryCta={{
+                label: "Liên hệ tư vấn",
+                href: "/lien-he",
+                icon: <MessageCircle className="mr-2 size-4" />,
+                tone: "outline",
+              }}
+              imageSrc="/images/brands/hero-san-pham-skf.png"
+              imageAlt="Sản phẩm SKF theo từng nhóm ứng dụng"
+              imagePriority
+              imageContainerClassName="min-h-[220px] lg:min-h-[300px]"
+            />
 
-                <div className="relative min-h-72 bg-slate-100">
-                  <Image
-                    src="/images/backgrounds/he-sinh-thai-home.jpeg"
-                    alt="Danh mục sản phẩm SKF cho nhà máy công nghiệp"
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 560px"
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/50 via-slate-950/12 to-transparent" />
-                  <div className="absolute bottom-4 left-4 right-4 rounded-lg border border-white/20 bg-slate-950/65 px-4 py-3 backdrop-blur">
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-100">SKF Công Nghiệp</p>
-                    <p className="mt-2 text-sm leading-relaxed text-white/90">
-                      Tra mã, tư vấn và tiếp nhận yêu cầu báo giá sản phẩm SKF cho nhà máy công nghiệp.
-                    </p>
-                  </div>
+            <div className="mt-4 rounded-lg border border-[#DDE7F3] bg-white px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#0050A4]">Nhóm sản phẩm chính</p>
+              <div className="relative mt-3 overflow-hidden">
+                <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-6 bg-gradient-to-r from-white to-transparent" />
+                <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-6 bg-gradient-to-l from-white to-transparent" />
+                <div className="group/marquee flex w-max gap-3 [animation:product-mini-marquee_26s_linear_infinite]">
+                  {productMiniCardsLoop.map((item, index) => (
+                    <Link
+                      key={`${item.slug}-${index}`}
+                      href={`#${item.slug}`}
+                      className="group"
+                    >
+                      <div className="flex aspect-square w-[94px] shrink-0 flex-col overflow-hidden rounded-xl border border-[#DDE7F3] bg-slate-50 transition hover:-translate-y-0.5 hover:border-[#0050A4]/40 hover:bg-[#EEF4FB] sm:w-[112px] lg:w-[128px]">
+                        <div className="relative h-[62%] w-full overflow-hidden border-b border-[#DDE7F3] bg-white">
+                          <Image
+                            src={item.image}
+                            alt={item.imageAlt}
+                            fill
+                            sizes="(max-width: 640px) 94px, (max-width: 1024px) 112px, 128px"
+                            className="object-cover transition duration-300 group-hover:scale-105"
+                          />
+                        </div>
+                        <div className="flex h-[38%] items-center justify-center px-2 text-center">
+                          <span className="text-[11px] font-semibold leading-tight text-slate-700 sm:text-xs">
+                            {item.label}
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="section-block bg-slate-50">
+        <section id="nhom-san-pham" className="section-block bg-slate-50">
           <div className="page-shell space-y-5">
             <SectionTitle
               eyebrow="6 nhóm chính"
@@ -225,6 +291,19 @@ export default function ProductsPage() {
           </div>
         </section>
       </div>
+      <style>{`
+        @keyframes product-mini-marquee {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(-50%);
+          }
+        }
+        .group\\/marquee:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
     </>
   );
 }
