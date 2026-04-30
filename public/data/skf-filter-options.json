@@ -1,1025 +1,207 @@
 {
   "productGroups": [
-    {
-      "value": "vong-bi-skf",
-      "label": "Vòng bi SKF",
-      "count": 7999
-    },
-    {
-      "value": "goi-do-skf",
-      "label": "Gối đỡ SKF",
-      "count": 4755
-    },
-    {
-      "value": "phot-skf",
-      "label": "Phớt SKF",
-      "count": 7509
-    },
-    {
-      "value": "mo-boi-tron-skf",
-      "label": "Mỡ bôi trơn SKF",
-      "count": 91
-    },
-    {
-      "value": "he-thong-boi-tron-skf",
-      "label": "Hệ thống bôi trơn SKF/Lincoln",
-      "count": 265
-    },
-    {
-      "value": "dung-cu-bao-tri-skf",
-      "label": "Dụng cụ bảo trì SKF",
-      "count": 125
-    },
-    {
-      "value": "truyen-dong-skf",
-      "label": "Truyền động SKF",
-      "count": 13636
-    }
+    "dung-cu-bao-tri-skf",
+    "goi-do-skf",
+    "he-thong-boi-tron-skf",
+    "mo-boi-tron-skf",
+    "phot-skf",
+    "truyen-dong-skf",
+    "vong-bi-skf"
   ],
   "subCategories": [
-    {
-      "value": "Dây đai / dây curoa SKF",
-      "label": "Dây đai / dây curoa SKF",
-      "count": 8000
-    },
-    {
-      "value": "Phớt chặn dầu SKF",
-      "label": "Phớt chặn dầu SKF",
-      "count": 5071
-    },
-    {
-      "value": "Vòng bi tiếp xúc góc 1 dãy",
-      "label": "Vòng bi tiếp xúc góc 1 dãy",
-      "count": 4433
-    },
-    {
-      "value": "Đĩa xích SKF",
-      "label": "Đĩa xích SKF",
-      "count": 2349
-    },
-    {
-      "value": "Pulley SKF",
-      "label": "Pulley SKF",
-      "count": 1809
-    },
-    {
-      "value": "Vòng bi tang trống tự lựa",
-      "label": "Vòng bi tang trống tự lựa",
-      "count": 1664
-    },
-    {
-      "value": "Gối đỡ UCP SKF",
-      "label": "Gối đỡ UCP SKF",
-      "count": 1432
-    },
-    {
-      "value": "Xích công nghiệp SKF",
-      "label": "Xích công nghiệp SKF",
-      "count": 1428
-    },
-    {
-      "value": "Phớt thủy lực piston SKF",
-      "label": "Phớt thủy lực piston SKF",
-      "count": 1335
-    },
-    {
-      "value": "Gối đỡ SAF/SAW SKF",
-      "label": "Gối đỡ SAF/SAW SKF",
-      "count": 1088
-    },
-    {
-      "value": "Gối đỡ UCF SKF",
-      "label": "Gối đỡ UCF SKF",
-      "count": 893
-    },
-    {
-      "value": "Vòng bi đũa kim",
-      "label": "Vòng bi đũa kim",
-      "count": 589
-    },
-    {
-      "value": "Phớt thủy lực rod SKF",
-      "label": "Phớt thủy lực rod SKF",
-      "count": 579
-    },
-    {
-      "value": "Gối đỡ SNL SKF",
-      "label": "Gối đỡ SNL SKF",
-      "count": 575
-    },
-    {
-      "value": "Phớt cho gối đỡ SKF",
-      "label": "Phớt cho gối đỡ SKF",
-      "count": 435
-    },
-    {
-      "value": "Vòng bi đũa côn",
-      "label": "Vòng bi đũa côn",
-      "count": 283
-    },
-    {
-      "value": "Vành chặn cho gối đỡ",
-      "label": "Vành chặn cho gối đỡ",
-      "count": 219
-    },
-    {
-      "value": "Gối đỡ UCT SKF",
-      "label": "Gối đỡ UCT SKF",
-      "count": 215
-    },
-    {
-      "value": "HỆ THỐNG BÔI TRƠN",
-      "label": "HỆ THỐNG BÔI TRƠN",
-      "count": 211
-    },
-    {
-      "value": "Vòng bi Track roller",
-      "label": "Vòng bi Track roller",
-      "count": 189
-    },
-    {
-      "value": "Gối FNL",
-      "label": "Gối FNL",
-      "count": 150
-    },
-    {
-      "value": "Vòng bi Rod End",
-      "label": "Vòng bi Rod End",
-      "count": 130
-    },
-    {
-      "value": "Vòng bi đũa trụ tỳ",
-      "label": "Vòng bi đũa trụ tỳ",
-      "count": 117
-    },
-    {
-      "value": "Vòng bi GE",
-      "label": "Vòng bi GE",
-      "count": 107
-    },
-    {
-      "value": "Vòng bi cầu 1 dãy",
-      "label": "Vòng bi cầu 1 dãy",
-      "count": 106
-    },
-    {
-      "value": "Vòng bi cầu tự lựa",
-      "label": "Vòng bi cầu tự lựa",
-      "count": 105
-    },
-    {
-      "value": "Mỡ bôi trơn SKF",
-      "label": "Mỡ bôi trơn SKF",
-      "count": 91
-    },
-    {
-      "value": "Vòng bi đũa trụ",
-      "label": "Vòng bi đũa trụ",
-      "count": 77
-    },
-    {
-      "value": "Nắp bị đầu trục cho gối",
-      "label": "Nắp bị đầu trục cho gối",
-      "count": 67
-    },
-    {
-      "value": "Gối SONL",
-      "label": "Gối SONL",
-      "count": 67
-    },
-    {
-      "value": "Vòng bi cầu tỳ",
-      "label": "Vòng bi cầu tỳ",
-      "count": 65
-    },
-    {
-      "value": "Phớt gạt bụi / wiper SKF",
-      "label": "Phớt gạt bụi / wiper SKF",
-      "count": 55
-    },
-    {
-      "value": "Vòng bi tiếp xúc góc 2 dãy",
-      "label": "Vòng bi tiếp xúc góc 2 dãy",
-      "count": 54
-    },
-    {
-      "value": "Cảo vòng bi",
-      "label": "Cảo vòng bi",
-      "count": 54
-    },
-    {
-      "value": "Truyền động công nghiệp SKF",
-      "label": "Truyền động công nghiệp SKF",
-      "count": 50
-    },
-    {
-      "value": "Bộ gối PF",
-      "label": "Bộ gối PF",
-      "count": 48
-    },
-    {
-      "value": "Spherical roller thrust",
-      "label": "Spherical roller thrust",
-      "count": 36
-    },
-    {
-      "value": "Vòng bi kim tỳ",
-      "label": "Vòng bi kim tỳ",
-      "count": 31
-    },
-    {
-      "value": "Dụng cụ bôi trơn",
-      "label": "Dụng cụ bôi trơn",
-      "count": 21
-    },
-    {
-      "value": "Máy gia nhiệt vòng bi",
-      "label": "Máy gia nhiệt vòng bi",
-      "count": 19
-    },
-    {
-      "value": "Phụ kiện bơm mỡ SKF",
-      "label": "Phụ kiện bơm mỡ SKF",
-      "count": 18
-    },
-    {
-      "value": "PHỚT",
-      "label": "PHỚT",
-      "count": 16
-    },
-    {
-      "value": "Bơm dầu mỡ SKF",
-      "label": "Bơm dầu mỡ SKF",
-      "count": 12
-    },
-    {
-      "value": "Vòng bi tiếp xúc góc 4 dãy",
-      "label": "Vòng bi tiếp xúc góc 4 dãy",
-      "count": 11
-    },
-    {
-      "value": "Thiết bị kiểm tra máy",
-      "label": "Thiết bị kiểm tra máy",
-      "count": 11
-    },
-    {
-      "value": "Miếng chêm máy móc SKF",
-      "label": "Miếng chêm máy móc SKF",
-      "count": 11
-    },
-    {
-      "value": "Ống lót sửa trục",
-      "label": "Ống lót sửa trục",
-      "count": 10
-    },
-    {
-      "value": "Phớt thủy lực Buffer Seal",
-      "label": "Phớt thủy lực Buffer Seal",
-      "count": 8
-    },
-    {
-      "value": "Chìa vặn đai ốc",
-      "label": "Chìa vặn đai ốc",
-      "count": 8
-    },
-    {
-      "value": "Đèn chớp và Súng bắn nhiệt độ",
-      "label": "Đèn chớp và Súng bắn nhiệt độ",
-      "count": 8
-    },
-    {
-      "value": "Thiết bị phân tích",
-      "label": "Thiết bị phân tích",
-      "count": 8
-    },
-    {
-      "value": "SẢN PHẨM BẢO TRÌ",
-      "label": "SẢN PHẨM BẢO TRÌ",
-      "count": 6
-    },
-    {
-      "value": "Bơm mỡ Lincoln",
-      "label": "Bơm mỡ Lincoln",
-      "count": 2
-    },
-    {
-      "value": "Vòng bi tỳ",
-      "label": "Vòng bi tỳ",
-      "count": 1
-    },
-    {
-      "value": "Vòng đệm cao su cho vòng bi",
-      "label": "Vòng đệm cao su cho vòng bi",
-      "count": 1
-    },
-    {
-      "value": "Nắp bịt đầu trục",
-      "label": "Nắp bịt đầu trục",
-      "count": 1
-    },
-    {
-      "value": "Bộ chia mỡ Lincoln",
-      "label": "Bộ chia mỡ Lincoln",
-      "count": 1
-    }
+    "Bộ chia mỡ Lincoln",
+    "Bộ gối PF",
+    "Bơm dầu mỡ SKF",
+    "Bơm mỡ Lincoln",
+    "Cảo vòng bi",
+    "Chìa vặn đai ốc",
+    "Dây đai / dây curoa SKF",
+    "Dụng cụ bôi trơn",
+    "Đèn chớp và Súng bắn nhiệt độ",
+    "Đĩa xích SKF",
+    "Gối đỡ SAF/SAW SKF",
+    "Gối đỡ SNL SKF",
+    "Gối đỡ UCF SKF",
+    "Gối đỡ UCP SKF",
+    "Gối đỡ UCT SKF",
+    "Gối FNL",
+    "Gối SONL",
+    "HỆ THỐNG BÔI TRƠN",
+    "Máy gia nhiệt vòng bi",
+    "Miếng chêm máy móc SKF",
+    "Mỡ bôi trơn SKF",
+    "Nắp bị đầu trục cho gối",
+    "Nắp bịt đầu trục",
+    "Ống lót sửa trục",
+    "PHỚT",
+    "Phớt chặn dầu SKF",
+    "Phớt cho gối đỡ SKF",
+    "Phớt gạt bụi / wiper SKF",
+    "Phớt thủy lực Buffer Seal",
+    "Phớt thủy lực piston SKF",
+    "Phớt thủy lực rod SKF",
+    "Phụ kiện bơm mỡ SKF",
+    "Pulley SKF",
+    "SẢN PHẨM BẢO TRÌ",
+    "Spherical roller thrust",
+    "Thiết bị kiểm tra máy",
+    "Thiết bị phân tích",
+    "Truyền động công nghiệp SKF",
+    "Vành chặn cho gối đỡ",
+    "Vòng bi cầu 1 dãy",
+    "Vòng bi cầu tự lựa",
+    "Vòng bi cầu tỳ",
+    "Vòng bi đũa côn",
+    "Vòng bi đũa kim",
+    "Vòng bi đũa trụ",
+    "Vòng bi đũa trụ tỳ",
+    "Vòng bi GE",
+    "Vòng bi kim tỳ",
+    "Vòng bi Rod End",
+    "Vòng bi tang trống tự lựa",
+    "Vòng bi tiếp xúc góc 1 dãy",
+    "Vòng bi tiếp xúc góc 2 dãy",
+    "Vòng bi tiếp xúc góc 4 dãy",
+    "Vòng bi Track roller",
+    "Vòng bi tỳ",
+    "Vòng đệm cao su cho vòng bi",
+    "Xích công nghiệp SKF"
   ],
   "applications": [
-    {
-      "value": "Băng tải",
-      "label": "Băng tải",
-      "count": 18391
-    },
-    {
-      "value": "Truyền động cơ khí",
-      "label": "Truyền động cơ khí",
-      "count": 13636
-    },
-    {
-      "value": "Dây chuyền sản xuất",
-      "label": "Dây chuyền sản xuất",
-      "count": 13636
-    },
-    {
-      "value": "Truyền động dây đai",
-      "label": "Truyền động dây đai",
-      "count": 8003
-    },
-    {
-      "value": "Quạt / bơm / máy đóng gói",
-      "label": "Quạt / bơm / máy đóng gói",
-      "count": 8003
-    },
-    {
-      "value": "Bảo trì thiết bị quay",
-      "label": "Bảo trì thiết bị quay",
-      "count": 7999
-    },
-    {
-      "value": "Thay thế vòng bi theo mã SKF",
-      "label": "Thay thế vòng bi theo mã SKF",
-      "count": 7999
-    },
-    {
-      "value": "Làm kín trục quay",
-      "label": "Làm kín trục quay",
-      "count": 7509
-    },
-    {
-      "value": "Chặn dầu / chặn bụi",
-      "label": "Chặn dầu / chặn bụi",
-      "count": 7509
-    },
-    {
-      "value": "Bảo vệ vòng bi và hộp số",
-      "label": "Bảo vệ vòng bi và hộp số",
-      "count": 7509
-    },
-    {
-      "value": "Máy đóng gói",
-      "label": "Máy đóng gói",
-      "count": 6475
-    },
-    {
-      "value": "Quạt công nghiệp",
-      "label": "Quạt công nghiệp",
-      "count": 4912
-    },
-    {
-      "value": "Đỡ trục quay",
-      "label": "Đỡ trục quay",
-      "count": 4755
-    },
-    {
-      "value": "Máy nghiền",
-      "label": "Máy nghiền",
-      "count": 4755
-    },
-    {
-      "value": "Trục truyền động",
-      "label": "Trục truyền động",
-      "count": 4755
-    },
-    {
-      "value": "Trục chính tốc độ cao",
-      "label": "Trục chính tốc độ cao",
-      "count": 4573
-    },
-    {
-      "value": "Cụm spindle",
-      "label": "Cụm spindle",
-      "count": 4573
-    },
-    {
-      "value": "Bơm ly tâm",
-      "label": "Bơm ly tâm",
-      "count": 4573
-    },
-    {
-      "value": "Truyền động xích",
-      "label": "Truyền động xích",
-      "count": 3778
-    },
-    {
-      "value": "Băng tải xích",
-      "label": "Băng tải xích",
-      "count": 3778
-    },
-    {
-      "value": "Băng tải nhẹ và trung bình",
-      "label": "Băng tải nhẹ và trung bình",
-      "count": 2540
-    },
-    {
-      "value": "Trục phụ trợ",
-      "label": "Trục phụ trợ",
-      "count": 2540
-    },
-    {
-      "value": "Truyền động xích - nhông",
-      "label": "Truyền động xích - nhông",
-      "count": 2350
-    },
-    {
-      "value": "Băng tải và máy truyền động",
-      "label": "Băng tải và máy truyền động",
-      "count": 2350
-    },
-    {
-      "value": "Xi lanh thủy lực",
-      "label": "Xi lanh thủy lực",
-      "count": 1977
-    },
-    {
-      "value": "Piston / rod seal",
-      "label": "Piston / rod seal",
-      "count": 1977
-    },
-    {
-      "value": "Thiết bị ép",
-      "label": "Thiết bị ép",
-      "count": 1977
-    },
-    {
-      "value": "Truyền động pulley - dây đai",
-      "label": "Truyền động pulley - dây đai",
-      "count": 1809
-    },
-    {
-      "value": "Điều chỉnh tốc độ truyền",
-      "label": "Điều chỉnh tốc độ truyền",
-      "count": 1809
-    },
-    {
-      "value": "Tải nặng",
-      "label": "Tải nặng",
-      "count": 1767
-    },
-    {
-      "value": "Lệch tâm trục",
-      "label": "Lệch tâm trục",
-      "count": 1761
-    },
-    {
-      "value": "Quạt lớn",
-      "label": "Quạt lớn",
-      "count": 1761
-    },
-    {
-      "value": "Băng tải tải nặng",
-      "label": "Băng tải tải nặng",
-      "count": 1761
-    },
-    {
-      "value": "Cụm gối đỡ tải nặng",
-      "label": "Cụm gối đỡ tải nặng",
-      "count": 1663
-    },
-    {
-      "value": "Dễ bảo trì tháo lắp",
-      "label": "Dễ bảo trì tháo lắp",
-      "count": 1663
-    },
-    {
-      "value": "Cụm truyền động nhỏ gọn",
-      "label": "Cụm truyền động nhỏ gọn",
-      "count": 641
-    },
-    {
-      "value": "Hộp số nhỏ",
-      "label": "Hộp số nhỏ",
-      "count": 641
-    },
-    {
-      "value": "Cơ cấu dao động",
-      "label": "Cơ cấu dao động",
-      "count": 641
-    },
-    {
-      "value": "Làm kín gối đỡ",
-      "label": "Làm kín gối đỡ",
-      "count": 435
-    },
-    {
-      "value": "Bảo vệ gối đỡ tải nặng",
-      "label": "Bảo vệ gối đỡ tải nặng",
-      "count": 435
-    },
-    {
-      "value": "Chịu tải hướng kính và hướng trục",
-      "label": "Chịu tải hướng kính và hướng trục",
-      "count": 411
-    },
-    {
-      "value": "Hộp số",
-      "label": "Hộp số",
-      "count": 411
-    },
-    {
-      "value": "Trục truyền tải",
-      "label": "Trục truyền tải",
-      "count": 411
-    },
-    {
-      "value": "Khớp cầu",
-      "label": "Khớp cầu",
-      "count": 326
-    },
-    {
-      "value": "Liên kết xi lanh",
-      "label": "Liên kết xi lanh",
-      "count": 326
-    },
-    {
-      "value": "Cơ cấu lắc",
-      "label": "Cơ cấu lắc",
-      "count": 326
-    },
-    {
-      "value": "Bôi trơn tự động",
-      "label": "Bôi trơn tự động",
-      "count": 265
-    },
-    {
-      "value": "Cấp mỡ tập trung",
-      "label": "Cấp mỡ tập trung",
-      "count": 265
-    },
-    {
-      "value": "Giảm dừng máy bảo trì",
-      "label": "Giảm dừng máy bảo trì",
-      "count": 265
-    },
-    {
-      "value": "Chịu tải dọc trục",
-      "label": "Chịu tải dọc trục",
-      "count": 250
-    },
-    {
-      "value": "Trục đứng",
-      "label": "Trục đứng",
-      "count": 250
-    },
-    {
-      "value": "Bàn xoay",
-      "label": "Bàn xoay",
-      "count": 250
-    },
-    {
-      "value": "Tải hướng kính cao",
-      "label": "Tải hướng kính cao",
-      "count": 197
-    },
-    {
-      "value": "Motor công suất lớn",
-      "label": "Motor công suất lớn",
-      "count": 197
-    },
-    {
-      "value": "Hộp số công nghiệp",
-      "label": "Hộp số công nghiệp",
-      "count": 197
-    },
-    {
-      "value": "Motor điện",
-      "label": "Motor điện",
-      "count": 157
-    },
-    {
-      "value": "Bơm công nghiệp",
-      "label": "Bơm công nghiệp",
-      "count": 157
-    },
-    {
-      "value": "Lắp / tháo vòng bi",
-      "label": "Lắp / tháo vòng bi",
-      "count": 125
-    },
-    {
-      "value": "Gia nhiệt vòng bi",
-      "label": "Gia nhiệt vòng bi",
-      "count": 125
-    },
-    {
-      "value": "Căn chỉnh và kiểm tra thiết bị quay",
-      "label": "Căn chỉnh và kiểm tra thiết bị quay",
-      "count": 125
-    },
-    {
-      "value": "Bôi trơn vòng bi",
-      "label": "Bôi trơn vòng bi",
-      "count": 91
-    },
-    {
-      "value": "Bảo trì motor / bơm / quạt",
-      "label": "Bảo trì motor / bơm / quạt",
-      "count": 91
-    },
-    {
-      "value": "Giảm ma sát và nhiệt",
-      "label": "Giảm ma sát và nhiệt",
-      "count": 91
-    },
-    {
-      "value": "Tháo vòng bi / pulley / bánh răng",
-      "label": "Tháo vòng bi / pulley / bánh răng",
-      "count": 54
-    },
-    {
-      "value": "Đo kiểm tình trạng máy",
-      "label": "Đo kiểm tình trạng máy",
-      "count": 50
-    },
-    {
-      "value": "Theo dõi nhiệt / rung",
-      "label": "Theo dõi nhiệt / rung",
-      "count": 50
-    },
-    {
-      "value": "Lắp vòng bi bằng gia nhiệt cảm ứng",
-      "label": "Lắp vòng bi bằng gia nhiệt cảm ứng",
-      "count": 20
-    },
-    {
-      "value": "Va đập",
-      "label": "Va đập",
-      "count": 6
-    },
-    {
-      "value": "Ổ lăn tải cao",
-      "label": "Ổ lăn tải cao",
-      "count": 6
-    },
-    {
-      "value": "Motor điện tốc độ cao",
-      "label": "Motor điện tốc độ cao",
-      "count": 6
-    },
-    {
-      "value": "Quạt và bơm yêu cầu ổn định",
-      "label": "Quạt và bơm yêu cầu ổn định",
-      "count": 6
-    },
-    {
-      "value": "Ứng dụng thực phẩm",
-      "label": "Ứng dụng thực phẩm",
-      "count": 4
-    },
-    {
-      "value": "Khu vực cần mỡ an toàn thực phẩm",
-      "label": "Khu vực cần mỡ an toàn thực phẩm",
-      "count": 4
-    }
+    "Bàn xoay",
+    "Bảo trì motor / bơm / quạt",
+    "Bảo trì thiết bị quay",
+    "Bảo vệ gối đỡ tải nặng",
+    "Bảo vệ vòng bi và hộp số",
+    "Băng tải",
+    "Băng tải nhẹ và trung bình",
+    "Băng tải tải nặng",
+    "Băng tải xích",
+    "Bôi trơn tự động",
+    "Bôi trơn vòng bi",
+    "Bơm công nghiệp",
+    "Bơm ly tâm",
+    "Căn chỉnh và kiểm tra thiết bị quay",
+    "Cấp mỡ tập trung",
+    "Chặn dầu / chặn bụi",
+    "Chịu tải dọc trục",
+    "Chịu tải hướng kính và hướng trục",
+    "Cơ cấu dao động",
+    "Cơ cấu lắc",
+    "Cụm gối đỡ tải nặng",
+    "Cụm spindle",
+    "Cụm truyền động nhỏ gọn",
+    "Dây chuyền sản xuất",
+    "Điều chỉnh tốc độ truyền",
+    "Đo kiểm tình trạng máy",
+    "Đỡ trục quay",
+    "Gia nhiệt vòng bi",
+    "Giảm dừng máy bảo trì",
+    "Giảm ma sát và nhiệt",
+    "Hộp số",
+    "Hộp số công nghiệp",
+    "Hộp số nhỏ",
+    "Khớp cầu",
+    "Khu vực cần mỡ an toàn thực phẩm",
+    "Làm kín gối đỡ",
+    "Làm kín trục quay",
+    "Lắp / tháo vòng bi",
+    "Lắp vòng bi bằng gia nhiệt cảm ứng",
+    "Lệch tâm trục",
+    "Liên kết xi lanh",
+    "Máy đóng gói",
+    "Máy nghiền",
+    "Motor công suất lớn",
+    "Motor điện",
+    "Motor điện tốc độ cao",
+    "Ổ lăn tải cao",
+    "Piston / rod seal",
+    "Quạt / bơm / máy đóng gói",
+    "Quạt công nghiệp",
+    "Quạt lớn",
+    "Quạt và bơm yêu cầu ổn định",
+    "Tải hướng kính cao",
+    "Tải nặng",
+    "Tháo vòng bi / pulley / bánh răng",
+    "Thay thế vòng bi theo mã SKF",
+    "Theo dõi nhiệt / rung",
+    "Thiết bị ép",
+    "Trục chính tốc độ cao",
+    "Trục đứng",
+    "Trục truyền động",
+    "Trục truyền tải",
+    "Truyền động cơ khí",
+    "Truyền động dây đai",
+    "Truyền động pulley - dây đai",
+    "Truyền động xích",
+    "Ứng dụng thực phẩm",
+    "Va đập",
+    "Xi lanh thủy lực"
   ],
   "industries": [
-    {
-      "value": "Nhà máy sản xuất",
-      "label": "Nhà máy sản xuất",
-      "count": 29235
-    },
-    {
-      "value": "Thực phẩm",
-      "label": "Thực phẩm",
-      "count": 18813
-    },
-    {
-      "value": "Bao bì",
-      "label": "Bao bì",
-      "count": 18548
-    },
-    {
-      "value": "Gỗ",
-      "label": "Gỗ",
-      "count": 18391
-    },
-    {
-      "value": "Cơ khí chế tạo",
-      "label": "Cơ khí chế tạo",
-      "count": 9933
-    },
-    {
-      "value": "HVAC",
-      "label": "HVAC",
-      "count": 8166
-    },
-    {
-      "value": "Thủy lực",
-      "label": "Thủy lực",
-      "count": 7835
-    },
-    {
-      "value": "Cơ khí",
-      "label": "Cơ khí",
-      "count": 7509
-    },
-    {
-      "value": "Xi măng",
-      "label": "Xi măng",
-      "count": 7418
-    },
-    {
-      "value": "Khai khoáng",
-      "label": "Khai khoáng",
-      "count": 7222
-    },
-    {
-      "value": "Cơ khí chính xác",
-      "label": "Cơ khí chính xác",
-      "count": 5207
-    },
-    {
-      "value": "CNC",
-      "label": "CNC",
-      "count": 4573
-    },
-    {
-      "value": "Máy công cụ",
-      "label": "Máy công cụ",
-      "count": 4573
-    },
-    {
-      "value": "Giấy",
-      "label": "Giấy",
-      "count": 3885
-    },
-    {
-      "value": "Dệt may",
-      "label": "Dệt may",
-      "count": 2540
-    },
-    {
-      "value": "Thép",
-      "label": "Thép",
-      "count": 2222
-    },
-    {
-      "value": "Ép nhựa",
-      "label": "Ép nhựa",
-      "count": 1977
-    },
-    {
-      "value": "Máy đóng gói",
-      "label": "Máy đóng gói",
-      "count": 641
-    },
-    {
-      "value": "Cơ khí nặng",
-      "label": "Cơ khí nặng",
-      "count": 411
-    },
-    {
-      "value": "Ô tô - thiết bị di động",
-      "label": "Ô tô - thiết bị di động",
-      "count": 411
-    },
-    {
-      "value": "Thiết bị nâng hạ",
-      "label": "Thiết bị nâng hạ",
-      "count": 326
-    },
-    {
-      "value": "Bảo trì nhà máy",
-      "label": "Bảo trì nhà máy",
-      "count": 125
-    },
-    {
-      "value": "Bảo trì công nghiệp",
-      "label": "Bảo trì công nghiệp",
-      "count": 91
-    },
-    {
-      "value": "Bảo trì dự đoán",
-      "label": "Bảo trì dự đoán",
-      "count": 50
-    },
-    {
-      "value": "Thực phẩm - đồ uống",
-      "label": "Thực phẩm - đồ uống",
-      "count": 4
-    }
+    "Bao bì",
+    "Bảo trì công nghiệp",
+    "Bảo trì dự đoán",
+    "Bảo trì nhà máy",
+    "CNC",
+    "Cơ khí",
+    "Cơ khí chế tạo",
+    "Cơ khí chính xác",
+    "Cơ khí nặng",
+    "Ép nhựa",
+    "Giấy",
+    "Gỗ",
+    "HVAC",
+    "Khai khoáng",
+    "Máy công cụ",
+    "Máy đóng gói",
+    "Nhà máy sản xuất",
+    "Ô tô - thiết bị di động",
+    "Thép",
+    "Thiết bị nâng hạ",
+    "Thủy lực",
+    "Thực phẩm",
+    "Thực phẩm - đồ uống",
+    "Xi măng"
   ],
   "machineGroups": [
-    {
-      "value": "Bơm",
-      "label": "Bơm",
-      "count": 29360
-    },
-    {
-      "value": "Quạt",
-      "label": "Quạt",
-      "count": 26606
-    },
-    {
-      "value": "Băng tải",
-      "label": "Băng tải",
-      "count": 20423
-    },
-    {
-      "value": "Motor",
-      "label": "Motor",
-      "count": 17533
-    },
-    {
-      "value": "Máy đóng gói",
-      "label": "Máy đóng gói",
-      "count": 16176
-    },
-    {
-      "value": "Pulley",
-      "label": "Pulley",
-      "count": 9812
-    },
-    {
-      "value": "Hộp số",
-      "label": "Hộp số",
-      "count": 8115
-    },
-    {
-      "value": "Motor kéo",
-      "label": "Motor kéo",
-      "count": 8003
-    },
-    {
-      "value": "Xi lanh thủy lực",
-      "label": "Xi lanh thủy lực",
-      "count": 7509
-    },
-    {
-      "value": "Trục truyền",
-      "label": "Trục truyền",
-      "count": 4755
-    },
-    {
-      "value": "CNC",
-      "label": "CNC",
-      "count": 4573
-    },
-    {
-      "value": "Spindle",
-      "label": "Spindle",
-      "count": 4573
-    },
-    {
-      "value": "Bơm ly tâm",
-      "label": "Bơm ly tâm",
-      "count": 4573
-    },
-    {
-      "value": "Xích tải",
-      "label": "Xích tải",
-      "count": 3778
-    },
-    {
-      "value": "Máy nghiền",
-      "label": "Máy nghiền",
-      "count": 3695
-    },
-    {
-      "value": "Nhông xích",
-      "label": "Nhông xích",
-      "count": 2350
-    },
-    {
-      "value": "Máy ép",
-      "label": "Máy ép",
-      "count": 1977
-    },
-    {
-      "value": "Quạt công nghiệp",
-      "label": "Quạt công nghiệp",
-      "count": 1761
-    },
-    {
-      "value": "Băng tải tải nặng",
-      "label": "Băng tải tải nặng",
-      "count": 1663
-    },
-    {
-      "value": "Hộp số nhỏ",
-      "label": "Hộp số nhỏ",
-      "count": 641
-    },
-    {
-      "value": "Cụm cam",
-      "label": "Cụm cam",
-      "count": 641
-    },
-    {
-      "value": "Gối đỡ SNL/SAF",
-      "label": "Gối đỡ SNL/SAF",
-      "count": 435
-    },
-    {
-      "value": "Trục tải",
-      "label": "Trục tải",
-      "count": 411
-    },
-    {
-      "value": "Xi lanh",
-      "label": "Xi lanh",
-      "count": 326
-    },
-    {
-      "value": "Cơ cấu khớp",
-      "label": "Cơ cấu khớp",
-      "count": 326
-    },
-    {
-      "value": "Dây chuyền sản xuất",
-      "label": "Dây chuyền sản xuất",
-      "count": 265
-    },
-    {
-      "value": "Trục đứng",
-      "label": "Trục đứng",
-      "count": 250
-    },
-    {
-      "value": "Bàn xoay",
-      "label": "Bàn xoay",
-      "count": 250
-    },
-    {
-      "value": "Motor lớn",
-      "label": "Motor lớn",
-      "count": 197
-    },
-    {
-      "value": "Máy cán",
-      "label": "Máy cán",
-      "count": 197
-    },
-    {
-      "value": "Đội bảo trì",
-      "label": "Đội bảo trì",
-      "count": 125
-    },
-    {
-      "value": "Vòng bi",
-      "label": "Vòng bi",
-      "count": 91
-    },
-    {
-      "value": "Cụm trục",
-      "label": "Cụm trục",
-      "count": 54
-    },
-    {
-      "value": "Thiết bị quay",
-      "label": "Thiết bị quay",
-      "count": 50
-    },
-    {
-      "value": "Vòng bi lớn",
-      "label": "Vòng bi lớn",
-      "count": 20
-    },
-    {
-      "value": "Motor điện",
-      "label": "Motor điện",
-      "count": 6
-    },
-    {
-      "value": "Máy thực phẩm",
-      "label": "Máy thực phẩm",
-      "count": 4
-    }
+    "Bàn xoay",
+    "Băng tải",
+    "Băng tải tải nặng",
+    "Bơm",
+    "CNC",
+    "Cơ cấu khớp",
+    "Cụm cam",
+    "Cụm trục",
+    "Dây chuyền sản xuất",
+    "Đội bảo trì",
+    "Gối đỡ SNL/SAF",
+    "Hộp số",
+    "Hộp số nhỏ",
+    "Máy đóng gói",
+    "Máy ép",
+    "Máy nghiền",
+    "Máy thực phẩm",
+    "Motor",
+    "Motor điện",
+    "Motor lớn",
+    "Pulley",
+    "Quạt",
+    "Spindle",
+    "Thiết bị quay",
+    "Trục đứng",
+    "Trục tải",
+    "Trục truyền",
+    "Vòng bi",
+    "Vòng bi lớn",
+    "Xi lanh",
+    "Xi lanh thủy lực",
+    "Xích tải"
   ],
   "priorities": [
-    {
-      "value": "high",
-      "label": "high",
-      "count": 24183
-    },
-    {
-      "value": "medium",
-      "label": "medium",
-      "count": 9988
-    },
-    {
-      "value": "low",
-      "label": "low",
-      "count": 209
-    }
+    "high",
+    "low",
+    "medium"
   ],
   "suggestedQueries": [
     "6205",
