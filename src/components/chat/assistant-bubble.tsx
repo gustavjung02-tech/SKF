@@ -5,7 +5,7 @@ import { siteConfig } from "@/config/site";
 
 export function AssistantBubble() {
   return (
-    <div className="fixed bottom-[calc(6.2rem+env(safe-area-inset-bottom))] right-4 z-50 lg:bottom-6 lg:right-5">
+    <div className="fixed bottom-[calc(7.8rem+env(safe-area-inset-bottom))] left-4 z-50 lg:bottom-8 lg:left-5">
       <a
         href={siteConfig.zaloLink}
         target="_blank"

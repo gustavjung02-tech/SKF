@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Fragment, type FormEvent, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { FileSpreadsheet, FileText, MessageCircle, Search, SlidersHorizontal, Loader2, RotateCcw, X } from "lucide-react";
+import { MessageCircle, Search, SlidersHorizontal, Loader2, RotateCcw, X } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { LeadForm } from "@/components/forms/lead-form";
@@ -11,6 +11,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  buildQuoteRequest,
+  buildZaloQuoteMessage,
+  exportQuoteRequestJson,
+  saveQuoteRequestDraft,
+  type QuoteRequestCustomerForm,
+} from "@/lib/quote-request";
 
 type FilterOption = {
   value: string;
@@ -91,7 +99,10 @@ type DimensionValues = {
 
 type SelectedQuoteItem = {
   code: string;
-  name?: string;
+  normalizedCode: string;
+  name: string;
+  productGroup: string;
+  productGroupLabel?: string;
 };
 
 const FILTER_OPTIONS_URL = "/data/skf-filter-options.json";
@@ -140,6 +151,21 @@ const RESULT_CARD_IMAGES = {
   maintenance: "/images/heroes/home/hero-home-skf-main.png",
   transmission: "/images/industry/hero-ung-dung-nganh-skf.png",
   fallback: "/images/brands/hero-san-pham-skf.png",
+};
+const RFQ_ZALO_FALLBACK_LINK = "https://zalo.me/0969155751";
+
+type QuoteItemDraft = {
+  quantity: string;
+  customerNote: string;
+};
+
+const EMPTY_CUSTOMER_FORM: QuoteRequestCustomerForm = {
+  name: "",
+  phone: "",
+  zalo: "",
+  company: "",
+  province: "",
+  note: "",
 };
 
 function FacebookMarkIcon({ className }: { className?: string }) {
@@ -689,10 +715,24 @@ export function SkfSearchQuoteExperience() {
   const [totalMatches, setTotalMatches] = useState(0);
   const [selectedQuoteItems, setSelectedQuoteItems] = useState<SelectedQuoteItem[]>([]);
   const [copyNotice, setCopyNotice] = useState("");
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+  const [quoteFormError, setQuoteFormError] = useState("");
+  const [customerForm, setCustomerForm] = useState<QuoteRequestCustomerForm>(EMPTY_CUSTOMER_FORM);
+  const [quoteItemDrafts, setQuoteItemDrafts] = useState<Record<string, QuoteItemDraft>>({});
 
   useEffect(() => {
     setQuery(initialQuery);
   }, [initialQuery]);
+
+  useEffect(() => {
+    setQuoteItemDrafts((current) => {
+      const next: Record<string, QuoteItemDraft> = {};
+      for (const item of selectedQuoteItems) {
+        next[item.code] = current[item.code] ?? { quantity: "1", customerNote: "" };
+      }
+      return next;
+    });
+  }, [selectedQuoteItems]);
 
   useEffect(() => {
     let cancelled = false;
@@ -1071,7 +1111,7 @@ export function SkfSearchQuoteExperience() {
     setError("");
   }
 
-  function toggleQuoteItem(item: Pick<GroupRecord, "code" | "name" | "subCategory" | "productGroupLabel">) {
+  function toggleQuoteItem(item: Pick<GroupRecord, "code" | "normalizedCode" | "name" | "subCategory" | "productGroup" | "productGroupLabel">) {
     setSelectedQuoteItems((current) => {
       const exists = current.some((selectedItem) => selectedItem.code === item.code);
 
@@ -1083,138 +1123,13 @@ export function SkfSearchQuoteExperience() {
         ...current,
         {
           code: item.code,
-          name: item.name ?? item.subCategory ?? item.productGroupLabel,
+          normalizedCode: normalizeCode(item.normalizedCode || item.code),
+          name: item.name ?? item.subCategory ?? item.productGroupLabel ?? item.code,
+          productGroup: item.productGroup ?? "",
+          productGroupLabel: item.productGroupLabel,
         },
       ];
     });
-  }
-
-  function buildQuoteMessage() {
-    const itemLines = selectedQuoteItems.map((item, index) => {
-      return `${index + 1}. ${item.code}${item.name ? ` - ${item.name}` : ""}`;
-    });
-
-    const dimensionLines = [
-      innerDiameter.trim() ? `d: ${innerDiameter.trim()} mm` : "",
-      outerDiameter.trim() ? `D: ${outerDiameter.trim()} mm` : "",
-      width.trim() ? `B/T: ${width.trim()} mm` : "",
-    ].filter(Boolean);
-
-    return [
-      "Tôi cần báo giá các mã SKF:",
-      ...itemLines,
-      "",
-      "Vui lòng kiểm tra hàng, giá và thời gian giao.",
-      ...(dimensionLines.length ? ["", "Thông số tìm kiếm:", ...dimensionLines] : []),
-    ].join("\n");
-  }
-
-  function buildQuoteFileTimestamp() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = `${now.getMonth() + 1}`.padStart(2, "0");
-    const date = `${now.getDate()}`.padStart(2, "0");
-    const hours = `${now.getHours()}`.padStart(2, "0");
-    const minutes = `${now.getMinutes()}`.padStart(2, "0");
-    return `${year}${month}${date}-${hours}${minutes}`;
-  }
-
-  function escapeCsvCell(value: string) {
-    const normalized = value.replace(/"/g, "\"\"");
-    return /[",\n]/.test(normalized) ? `"${normalized}"` : normalized;
-  }
-
-  function downloadBlob(filename: string, blob: Blob) {
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = filename;
-    anchor.click();
-    window.setTimeout(() => URL.revokeObjectURL(url), 1500);
-  }
-
-  function toPdfAscii(value: string) {
-    return value
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[đĐ]/g, (match) => (match === "Đ" ? "D" : "d"))
-      .replace(/[^\x20-\x7E]/g, "");
-  }
-
-  function escapePdfText(value: string) {
-    return value.replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
-  }
-
-  function buildQuoteCsvContent() {
-    const header = ["STT", "Mã sản phẩm", "Mô tả"];
-    const rows = selectedQuoteItems.map((item, index) => [String(index + 1), item.code, item.name ?? ""]);
-    const dimensionRows = [
-      innerDiameter.trim() ? ["", "d", innerDiameter.trim()] : null,
-      outerDiameter.trim() ? ["", "D", outerDiameter.trim()] : null,
-      width.trim() ? ["", "B/T", width.trim()] : null,
-    ].filter((row): row is string[] => Boolean(row));
-
-    const csvRows = [header, ...rows, [], ["Thông số tìm kiếm", "", ""], ...dimensionRows];
-    return csvRows.map((row) => row.map((cell) => escapeCsvCell(cell)).join(",")).join("\r\n");
-  }
-
-  function buildQuotePdfBlob() {
-    const lines = [
-      "SKF QUOTE REQUEST",
-      `Timestamp: ${new Date().toLocaleString("vi-VN")}`,
-      "",
-      ...selectedQuoteItems.map((item, index) => `${index + 1}. ${item.code}${item.name ? ` - ${item.name}` : ""}`),
-      "",
-      "Search dimensions:",
-      innerDiameter.trim() ? `d = ${innerDiameter.trim()} mm` : "d = (empty)",
-      outerDiameter.trim() ? `D = ${outerDiameter.trim()} mm` : "D = (empty)",
-      width.trim() ? `B/T = ${width.trim()} mm` : "B/T = (empty)",
-    ];
-
-    const content = lines
-      .slice(0, 40)
-      .map((line, index) => {
-        const yPosition = 790 - index * 18;
-        return `BT\n/F1 11 Tf\n50 ${yPosition} Td\n(${escapePdfText(toPdfAscii(line))}) Tj\nET`;
-      })
-      .join("\n");
-
-    const objects = [
-      "1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n",
-      "2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n",
-      "3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>\nendobj\n",
-      `4 0 obj\n<< /Length ${content.length} >>\nstream\n${content}\nendstream\nendobj\n`,
-      "5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n",
-    ];
-
-    const encoder = new TextEncoder();
-    let pdf = "%PDF-1.4\n";
-    const offsets: number[] = [0];
-
-    for (const objectContent of objects) {
-      offsets.push(encoder.encode(pdf).length);
-      pdf += objectContent;
-    }
-
-    const xrefOffset = encoder.encode(pdf).length;
-    pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
-
-    for (let index = 1; index <= objects.length; index += 1) {
-      pdf += `${offsets[index].toString().padStart(10, "0")} 00000 n \n`;
-    }
-
-    pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
-    return new Blob([pdf], { type: "application/pdf" });
-  }
-
-  function exportQuoteDocuments() {
-    const timestamp = buildQuoteFileTimestamp();
-    const csvContent = buildQuoteCsvContent();
-    const csvBlob = new Blob([`\uFEFF${csvContent}`], { type: "text/csv;charset=utf-8;" });
-    const pdfBlob = buildQuotePdfBlob();
-
-    downloadBlob(`bao-gia-skf-${timestamp}.csv`, csvBlob);
-    downloadBlob(`bao-gia-skf-${timestamp}.pdf`, pdfBlob);
   }
 
   async function tryCopyQuoteMessage(message: string) {
@@ -1230,32 +1145,89 @@ export function SkfSearchQuoteExperience() {
     }
   }
 
-  function buildZaloHref(message: string) {
-    const zaloPhone = siteConfig.phoneHref.replace(/[^0-9]/g, "");
-    if (zaloPhone) {
-      return `https://chat.zalo.me/?phone=${zaloPhone}&text=${encodeURIComponent(message)}`;
-    }
-
-    const separator = siteConfig.zaloLink.includes("?") ? "&" : "?";
-    return `${siteConfig.zaloLink}${separator}text=${encodeURIComponent(message)}`;
+  function updateCustomerForm<K extends keyof QuoteRequestCustomerForm>(key: K, value: QuoteRequestCustomerForm[K]) {
+    setCustomerForm((current) => ({ ...current, [key]: value }));
   }
 
-  function handleSendZalo() {
+  function updateQuoteItemDraft(code: string, nextPatch: Partial<QuoteItemDraft>) {
+    setQuoteItemDrafts((current) => ({
+      ...current,
+      [code]: {
+        quantity: current[code]?.quantity ?? "1",
+        customerNote: current[code]?.customerNote ?? "",
+        ...nextPatch,
+      },
+    }));
+  }
+
+  function openQuoteModal() {
     if (selectedQuoteItems.length === 0) {
+      setQuoteFormError("Vui lòng chọn ít nhất 1 mã trước khi gửi yêu cầu báo giá.");
       return;
     }
 
-    const quoteMessage = buildQuoteMessage();
-    exportQuoteDocuments();
-    void tryCopyQuoteMessage(quoteMessage).then((copied) => {
-      setCopyNotice(
-        copied
-          ? "Đã xuất CSV/PDF và sao chép nội dung mã. Mở Zalo, dán tin nhắn rồi gửi."
-          : "Đã xuất CSV/PDF. Trình duyệt chặn sao chép tự động, vui lòng copy thủ công trước khi gửi Zalo.",
-      );
-      window.setTimeout(() => setCopyNotice(""), 5500);
+    setQuoteFormError("");
+    setIsQuoteModalOpen(true);
+  }
+
+  async function handleCreateQuoteRequest(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (selectedQuoteItems.length === 0) {
+      setQuoteFormError("Vui lòng chọn ít nhất 1 mã trước khi gửi yêu cầu báo giá.");
+      return;
+    }
+
+    if (!customerForm.name.trim() || !customerForm.phone.trim()) {
+      setQuoteFormError("Vui lòng nhập tối thiểu Họ tên và SĐT/Zalo.");
+      return;
+    }
+
+    const rfqItems = selectedQuoteItems.map((item) => {
+      const draft = quoteItemDrafts[item.code] ?? { quantity: "1", customerNote: "" };
+      const parsedQuantity = Number.parseInt(draft.quantity, 10);
+      return {
+        code: item.code,
+        normalizedCode: item.normalizedCode,
+        name: item.name,
+        productGroup: item.productGroup,
+        quantity: Number.isFinite(parsedQuantity) && parsedQuantity > 0 ? parsedQuantity : 0,
+        unit: "cai",
+        customerNote: draft.customerNote,
+      };
     });
-    window.open(buildZaloHref(quoteMessage), "_blank", "noopener,noreferrer");
+
+    if (rfqItems.some((item) => item.quantity <= 0)) {
+      setQuoteFormError("Số lượng từng mã phải lớn hơn 0.");
+      return;
+    }
+
+    const rfq = buildQuoteRequest(rfqItems, {
+      ...customerForm,
+      zalo: customerForm.zalo.trim() || customerForm.phone.trim(),
+    });
+
+    const rfqJson = exportQuoteRequestJson(rfq);
+    if (/"priceVnd"|"priceText"|"sellPrice"|"costPrice"/.test(rfqJson)) {
+      setQuoteFormError("RFQ không hợp lệ vì có trường giá.");
+      return;
+    }
+
+    saveQuoteRequestDraft(rfq);
+
+    const quoteMessage = buildZaloQuoteMessage(rfq);
+    await tryCopyQuoteMessage(quoteMessage);
+
+    setCopyNotice("Đã tạo phiếu yêu cầu báo giá và copy nội dung Zalo.");
+    window.setTimeout(() => setCopyNotice(""), 5500);
+    setIsQuoteModalOpen(false);
+    setQuoteFormError("");
+    window.open(siteConfig.zaloLink || RFQ_ZALO_FALLBACK_LINK, "_blank", "noopener,noreferrer");
+  }
+
+  function closeQuoteModal() {
+    setIsQuoteModalOpen(false);
+    setQuoteFormError("");
   }
 
   const selectedQuoteCodes = selectedQuoteItems.map((item) => item.code);
@@ -1530,11 +1502,9 @@ export function SkfSearchQuoteExperience() {
               {copyNotice ? <p className="mt-1 text-xs font-medium text-emerald-700">{copyNotice}</p> : null}
             </div>
             <div className="grid gap-2 sm:flex">
-              <Button type="button" className="bg-blue-800 text-white hover:bg-blue-900" onClick={handleSendZalo}>
+              <Button type="button" className="bg-blue-800 text-white hover:bg-blue-900" onClick={openQuoteModal}>
                 <MessageCircle className="mr-2 size-4" />
-                <FileSpreadsheet className="mr-1 size-4" />
-                <FileText className="mr-2 size-4" />
-                Gửi Zalo
+                Gửi yêu cầu báo giá
               </Button>
               <Button asChild type="button" variant="outline" className="border-[#D9E6FB] text-[#1877F2] hover:bg-[#EEF4FF]">
                 <a href={FACEBOOK_PAGE_URL} target="_blank" rel="noreferrer">
@@ -1555,6 +1525,129 @@ export function SkfSearchQuoteExperience() {
                 Xóa chọn
               </Button>
             </div>
+          </div>
+        </div>
+      ) : null}
+
+      {isQuoteModalOpen ? (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/50 p-3">
+          <div className="max-h-[92vh] w-full max-w-3xl overflow-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl sm:p-5">
+            <div className="mb-4 flex items-start justify-between gap-3">
+              <div>
+                <h3 className="font-heading text-xl font-bold text-slate-950">Phiếu yêu cầu báo giá</h3>
+                <p className="mt-1 text-sm text-slate-600">Nhập nhanh thông tin khách và số lượng theo từng mã đã chọn.</p>
+              </div>
+              <Button type="button" variant="outline" className="border-slate-200 text-slate-600" onClick={closeQuoteModal}>
+                <X className="mr-1 size-4" />
+                Đóng
+              </Button>
+            </div>
+
+            <form className="space-y-4" onSubmit={handleCreateQuoteRequest}>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <Label htmlFor="rfq-customer-name">Họ tên</Label>
+                  <Input
+                    id="rfq-customer-name"
+                    value={customerForm.name}
+                    onChange={(event) => updateCustomerForm("name", event.target.value)}
+                    placeholder="Nguyen Van A"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="rfq-customer-phone">SĐT/Zalo</Label>
+                  <Input
+                    id="rfq-customer-phone"
+                    value={customerForm.phone}
+                    onChange={(event) => {
+                      const nextPhone = event.target.value;
+                      updateCustomerForm("phone", nextPhone);
+                      if (!customerForm.zalo.trim()) {
+                        updateCustomerForm("zalo", nextPhone);
+                      }
+                    }}
+                    placeholder="0969 155 751"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="rfq-customer-company">Công ty/đơn vị</Label>
+                  <Input
+                    id="rfq-customer-company"
+                    value={customerForm.company}
+                    onChange={(event) => updateCustomerForm("company", event.target.value)}
+                    placeholder="Ten nha may"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="rfq-customer-province">Tỉnh/thành</Label>
+                  <Input
+                    id="rfq-customer-province"
+                    value={customerForm.province}
+                    onChange={(event) => updateCustomerForm("province", event.target.value)}
+                    placeholder="TP.HCM"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="rfq-customer-note">Ghi chú chung</Label>
+                <Textarea
+                  id="rfq-customer-note"
+                  rows={3}
+                  value={customerForm.note}
+                  onChange={(event) => updateCustomerForm("note", event.target.value)}
+                  placeholder="Yeu cau giao nhanh, hoa don VAT..."
+                />
+              </div>
+
+              <div className="space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <p className="text-sm font-semibold text-slate-900">Mã đã chọn ({selectedQuoteItems.length})</p>
+                <div className="space-y-2">
+                  {selectedQuoteItems.map((item) => {
+                    const draft = quoteItemDrafts[item.code] ?? { quantity: "1", customerNote: "" };
+                    return (
+                      <div key={`rfq-item-${item.code}`} className="rounded-lg border border-slate-200 bg-white p-3">
+                        <p className="text-sm font-semibold text-slate-900">{item.code}</p>
+                        <p className="text-xs text-slate-500">{item.name}</p>
+                        <div className="mt-2 grid gap-2 sm:grid-cols-[140px_1fr]">
+                          <div className="space-y-1">
+                            <Label htmlFor={`rfq-qty-${item.code}`}>Số lượng</Label>
+                            <Input
+                              id={`rfq-qty-${item.code}`}
+                              inputMode="numeric"
+                              value={draft.quantity}
+                              onChange={(event) => updateQuoteItemDraft(item.code, { quantity: event.target.value.replace(/[^0-9]/g, "") })}
+                              placeholder="1"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label htmlFor={`rfq-note-${item.code}`}>Ghi chú riêng</Label>
+                            <Input
+                              id={`rfq-note-${item.code}`}
+                              value={draft.customerNote}
+                              onChange={(event) => updateQuoteItemDraft(item.code, { customerNote: event.target.value })}
+                              placeholder="Vi du: can hang chinh hang, giao truoc thu 6"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {quoteFormError ? <p className="text-sm font-medium text-red-600">{quoteFormError}</p> : null}
+
+              <div className="flex flex-wrap items-center gap-2">
+                <Button type="submit" className="bg-blue-800 text-white hover:bg-blue-900">
+                  <MessageCircle className="mr-2 size-4" />
+                  Gửi yêu cầu báo giá
+                </Button>
+                <Button type="button" variant="outline" className="border-slate-200 text-slate-600" onClick={closeQuoteModal}>
+                  Hủy
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
       ) : null}
