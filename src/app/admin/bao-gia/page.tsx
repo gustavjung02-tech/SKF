@@ -8,6 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { getAdminCookieName, getVerifiedAdminSession } from "@/lib/admin/auth";
 import { ADMIN_RFQ_STATUSES, getAdminStatusLabel, type AdminRfqListItem } from "@/lib/admin/quote";
 import { listAdminRfqs } from "@/lib/admin/sheet-webhook";
+import { getAdminQuoteSourceLabel, getAdminQuoteStatusLabel } from "@/lib/admin/proactive-quote";
+import { listProactiveQuotes } from "@/lib/admin/proactive-quote-store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -48,6 +50,7 @@ export default async function AdminBaoGiaPage({
   const query = searchParams?.q ?? "";
   const status = searchParams?.status ?? "all";
   let rfqs: AdminRfqListItem[] = [];
+  let proactiveQuotes = await listProactiveQuotes();
   let loadError = "";
 
   try {
@@ -65,11 +68,16 @@ export default async function AdminBaoGiaPage({
       title="Admin báo giá SKF"
       description="Đọc RFQ đã lưu, mở chi tiết và xử lý báo giá nội bộ mà không public bảng giá cho khách."
       actions={
-        <form action="/api/admin/auth/logout" method="post">
-          <Button type="submit" variant="outline">
-            Đăng xuất
+        <div className="flex items-center gap-2">
+          <Button asChild type="button" className="bg-blue-800 text-white hover:bg-blue-900">
+            <Link href="/admin/bao-gia/tao-moi">Tạo báo giá chủ động</Link>
           </Button>
-        </form>
+          <form action="/api/admin/auth/logout" method="post">
+            <Button type="submit" variant="outline">
+              Đăng xuất
+            </Button>
+          </form>
+        </div>
       }
     >
         <Card className="border-slate-200 bg-white shadow-sm">
@@ -146,6 +154,46 @@ export default async function AdminBaoGiaPage({
           </div>
 
           {visibleRfqs.length === 0 ? <div className="border-t border-slate-200 px-4 py-6 text-sm text-slate-600">Chưa có RFQ nào phù hợp với bộ lọc hiện tại.</div> : null}
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="border-b border-slate-200 px-4 py-3">
+            <h2 className="font-heading text-lg font-bold text-slate-950">Báo giá chủ động gần đây</h2>
+            <p className="mt-1 text-sm text-slate-600">Danh sách quote do sales/admin tự tạo, không phụ thuộc RFQ.</p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full border-collapse text-sm">
+              <thead className="bg-slate-50 text-left text-slate-600">
+                <tr>
+                  <th className="px-4 py-3 font-semibold">Mã quote</th>
+                  <th className="px-4 py-3 font-semibold">Ngày tạo</th>
+                  <th className="px-4 py-3 font-semibold">Khách</th>
+                  <th className="px-4 py-3 font-semibold">Nguồn</th>
+                  <th className="px-4 py-3 font-semibold">Trạng thái</th>
+                  <th className="px-4 py-3 font-semibold">Tổng cộng</th>
+                  <th className="px-4 py-3 font-semibold"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {proactiveQuotes.slice(0, 20).map((quote) => (
+                  <tr key={quote.quote_id} className="border-t border-slate-200">
+                    <td className="px-4 py-3 font-semibold text-slate-900">{quote.quote_id}</td>
+                    <td className="px-4 py-3 text-slate-600">{new Date(quote.created_at).toLocaleString("vi-VN")}</td>
+                    <td className="px-4 py-3 text-slate-900">{quote.customer.name || "Khách lẻ"}</td>
+                    <td className="px-4 py-3 text-slate-600">{getAdminQuoteSourceLabel(quote.source_type)}</td>
+                    <td className="px-4 py-3"><Badge variant="outline">{getAdminQuoteStatusLabel(quote.status)}</Badge></td>
+                    <td className="px-4 py-3 font-semibold text-slate-900">{new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(quote.total)}</td>
+                    <td className="px-4 py-3 text-right">
+                      <Button asChild type="button" variant="outline">
+                        <Link href={`/admin/bao-gia/${encodeURIComponent(quote.quote_id)}`}>Mở chi tiết</Link>
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {proactiveQuotes.length === 0 ? <div className="border-t border-slate-200 px-4 py-6 text-sm text-slate-600">Chưa có báo giá chủ động nào.</div> : null}
         </div>
     </AdminShell>
   );

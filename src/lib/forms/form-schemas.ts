@@ -46,7 +46,18 @@ export type RecruitmentSubmitValues = z.infer<typeof recruitmentSubmitSchema>;
 
 const quoteRequestCustomerSchema = z.object({
   name: z.string().trim().min(2, "Vui lòng nhập họ tên").max(120, "Họ tên quá dài"),
-  phone: z.string().trim().min(8, "Vui lòng nhập số điện thoại").max(40, "Số điện thoại quá dài"),
+  email: z
+    .string()
+    .trim()
+    .max(200, "Email quá dài")
+    .optional()
+    .refine((value) => !value || z.string().email().safeParse(value).success, "Vui lòng nhập email hợp lệ"),
+  phone: z
+    .string()
+    .trim()
+    .max(40, "Số điện thoại quá dài")
+    .optional()
+    .refine((value) => !value || value.length >= 8, "Vui lòng nhập số điện thoại hợp lệ"),
   zalo: z.string().trim().max(40, "Zalo quá dài"),
   company: z.string().trim().max(160, "Tên công ty quá dài"),
   province: z.string().trim().max(160, "Tỉnh/thành quá dài"),
@@ -67,6 +78,7 @@ export const quoteRequestSubmitSchema = z.object({
   id: z.string().trim().min(1, "Thiếu mã RFQ").max(80, "Mã RFQ quá dài"),
   createdAt: z.string().datetime("Thời gian tạo không hợp lệ"),
   source: z.literal("website-tra-ma-bao-gia"),
+  channel: z.enum(["zalo", "email"]),
   status: z.literal("new"),
   customer: quoteRequestCustomerSchema,
   items: z.array(quoteRequestItemSchema).min(1, "Vui lòng chọn ít nhất 1 mã cần báo giá"),

@@ -38,7 +38,15 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    await createRemoteQuoteRequest(parsed.data);
+    const rfqData = {
+      ...parsed.data,
+      customer: {
+        ...parsed.data.customer,
+        email: parsed.data.customer.email ?? "",
+        phone: parsed.data.customer.phone ?? "",
+      },
+    };
+    await createRemoteQuoteRequest(rfqData);
     return NextResponse.json({ ok: true, message: "Đã tiếp nhận phiếu yêu cầu báo giá." });
   } catch (error) {
     return NextResponse.json(

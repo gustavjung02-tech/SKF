@@ -1,5 +1,6 @@
 export type QuoteRequestCustomerForm = {
   name: string;
+  email: string;
   phone: string;
   zalo: string;
   company: string;
@@ -31,9 +32,11 @@ export type QuoteRequest = {
   id: string;
   createdAt: string;
   source: "website-tra-ma-bao-gia";
+  channel: "zalo" | "email";
   status: "new";
   customer: {
     name: string;
+    email: string;
     phone: string;
     zalo: string;
     company: string;
@@ -59,15 +62,21 @@ function createRfqId(now: Date) {
   return `RFQ-SKF-${date}-${time}`;
 }
 
-export function buildQuoteRequest(selectedItems: QuoteRequestInputItem[], customerForm: QuoteRequestCustomerForm): QuoteRequest {
+export function buildQuoteRequest(
+  selectedItems: QuoteRequestInputItem[],
+  customerForm: QuoteRequestCustomerForm,
+  channel: QuoteRequest["channel"],
+): QuoteRequest {
   const now = new Date();
   return {
     id: createRfqId(now),
     createdAt: now.toISOString(),
     source: "website-tra-ma-bao-gia",
+    channel,
     status: "new",
     customer: {
       name: customerForm.name.trim(),
+      email: customerForm.email.trim(),
       phone: customerForm.phone.trim(),
       zalo: customerForm.zalo.trim(),
       company: customerForm.company.trim(),
@@ -102,6 +111,7 @@ export function buildZaloQuoteMessage(rfq: QuoteRequest) {
     "",
     "Thong tin khach hang:",
     `- Ho ten: ${rfq.customer.name}`,
+    `- Email: ${rfq.customer.email || "(khong co)"}`,
     `- SDT/Zalo: ${rfq.customer.phone}`,
     `- Cong ty: ${rfq.customer.company || "(khong co)"}`,
     `- Tinh thanh: ${rfq.customer.province || "(khong co)"}`,
@@ -110,6 +120,36 @@ export function buildZaloQuoteMessage(rfq: QuoteRequest) {
     "Danh sach ma can bao gia:",
     ...itemLines,
   ].join("\n");
+}
+
+export function buildEmailQuoteMessage(rfq: QuoteRequest) {
+  const itemLines = rfq.items.map((item, index) => {
+    const notePart = item.customerNote ? ` | Ghi chu: ${item.customerNote}` : "";
+    return `${index + 1}. ${item.code} | SL: ${item.quantity} ${item.unit}${notePart}`;
+  });
+
+  const subject = `[${rfq.id}] Yeu cau bao gia SKF`;
+  const body = [
+    `Ma yeu cau: ${rfq.id}`,
+    `Kenh tiep nhan: ${rfq.channel}`,
+    `Thoi gian: ${rfq.createdAt}`,
+    "",
+    "Thong tin khach hang:",
+    `- Ho ten: ${rfq.customer.name}`,
+    `- Email: ${rfq.customer.email || "(khong co)"}`,
+    `- SDT/Zalo: ${rfq.customer.phone || rfq.customer.zalo || "(khong co)"}`,
+    `- Cong ty: ${rfq.customer.company || "(khong co)"}`,
+    `- Tinh thanh: ${rfq.customer.province || "(khong co)"}`,
+    `- Ghi chu chung: ${rfq.customer.note || "(khong co)"}`,
+    "",
+    "Danh sach ma can bao gia:",
+    ...itemLines,
+  ].join("\n");
+
+  return {
+    subject,
+    body,
+  };
 }
 
 export function saveQuoteRequestDraft(rfq: QuoteRequest) {

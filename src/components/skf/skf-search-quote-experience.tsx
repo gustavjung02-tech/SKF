@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Fragment, type FormEvent, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { type FormEvent, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { MessageCircle, Search, SlidersHorizontal, Loader2, RotateCcw, X } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { siteConfig } from "@/config/site";
@@ -13,10 +13,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  buildEmailQuoteMessage,
   buildQuoteRequest,
   buildZaloQuoteMessage,
   exportQuoteRequestJson,
   saveQuoteRequestDraft,
+  type QuoteRequest,
   type QuoteRequestCustomerForm,
 } from "@/lib/quote-request";
 
@@ -34,6 +36,18 @@ type FilterOptions = {
   machineGroups: FilterOption[];
   priorities: FilterOption[];
   suggestedQueries: string[];
+};
+
+type RawFilterOption = string | { value?: unknown; label?: unknown; count?: unknown };
+
+type RawFilterOptions = {
+  productGroups?: RawFilterOption[];
+  subCategories?: RawFilterOption[];
+  applications?: RawFilterOption[];
+  industries?: RawFilterOption[];
+  machineGroups?: RawFilterOption[];
+  priorities?: RawFilterOption[];
+  suggestedQueries?: unknown[];
 };
 
 type ProductSpecs = {
@@ -152,6 +166,31 @@ const RESULT_CARD_IMAGES = {
   fallback: "/images/brands/hero-san-pham-skf.png",
 };
 const CODE_VARIANT_PATTERN = /^(Z|ZZ|2Z|RS|RS1|2RS|2RS1|RSH|2RSH|C3|C4|TN9|E|N|NR)$/;
+const SKF_VARIANT_SUFFIXES = ["2RS1", "2RSH", "2RS", "RS1", "RSH", "ECP", "TN9", "W33", "ZZ", "2Z", "RS", "C4", "C3", "P6", "P5", "MA", "CC", "CA", "K", "Z", "E", "N"] as const;
+const PRODUCT_GROUP_LABELS: Record<string, string> = {
+  "dung-cu-bao-tri-skf": "Dụng cụ bảo trì SKF",
+  "goi-do-skf": "Gối đỡ SKF",
+  "he-thong-boi-tron-skf": "Hệ thống bôi trơn SKF",
+  "mo-boi-tron-skf": "Mỡ bôi trơn SKF",
+  "phot-skf": "Phớt SKF",
+  "truyen-dong-skf": "Truyền động SKF",
+  "vong-bi-skf": "Vòng bi SKF",
+};
+
+type VariantCodeInfo = {
+  baseCode: string;
+  variantSuffixes: string[];
+  variantLabel: string;
+  variantGroupKey: string;
+  isVariantFamily: boolean;
+};
+
+type SearchResultGroup = {
+  key: string;
+  primary: SearchRecord;
+  variants: SearchRecord[];
+  variantInfo: VariantCodeInfo;
+};
 
 type QuoteItemDraft = {
   quantity: string;
@@ -160,6 +199,7 @@ type QuoteItemDraft = {
 
 const EMPTY_CUSTOMER_FORM: QuoteRequestCustomerForm = {
   name: "",
+  email: "",
   phone: "",
   zalo: "",
   company: "",
@@ -300,6 +340,109 @@ function hasFilterOption(options: FilterOption[], value: string) {
 
 function getRecordNormalizedCode(record: GroupRecord) {
   return normalizeCode(record.normalizedCode || record.code);
+}
+
+function toReadableLabel(value: string) {
+  const normalizedValue = normalizeGroupKey(value);
+  if (PRODUCT_GROUP_LABELS[normalizedValue]) {
+    return PRODUCT_GROUP_LABELS[normalizedValue];
+  }
+
+  return value
+    .replace(/[-_]+/g, " ")
+    .replace(/\bskf\b/gi, "SKF")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function toFilterOption(
+  rawOption: RawFilterOption,
+  resolveLabel: (value: string, label?: string) => string = (value, label) => label ?? value,
+): FilterOption | null {
+  if (typeof rawOption === "string") {
+    const value = rawOption.trim();
+    if (!value) {
+      return null;
+    }
+
+    return {
+      value,
+      label: resolveLabel(value),
+    };
+  }
+
+  if (!rawOption || typeof rawOption !== "object") {
+    return null;
+  }
+
+  const value = typeof rawOption.value === "string" ? rawOption.value.trim() : "";
+  if (!value) {
+    return null;
+  }
+
+  const label = typeof rawOption.label === "string" ? rawOption.label.trim() : "";
+  const count = typeof rawOption.count === "number" && Number.isFinite(rawOption.count)
+    ? rawOption.count
+    : undefined;
+
+  return {
+    value,
+    label: resolveLabel(value, label || undefined),
+    count,
+  };
+}
+
+function normalizeFilterOptionList(
+  rawOptions: RawFilterOption[] | undefined,
+  resolveLabel?: (value: string, label?: string) => string,
+) {
+  const optionsByValue = new Map<string, FilterOption>();
+
+  for (const rawOption of rawOptions ?? []) {
+    const option = toFilterOption(rawOption, resolveLabel);
+    if (!option) {
+      continue;
+    }
+
+    const key = normalizeText(option.value).trim();
+    if (!key) {
+      continue;
+    }
+
+    optionsByValue.set(key, option);
+  }
+
+  return Array.from(optionsByValue.values()).sort((a, b) => a.label.localeCompare(b.label, "vi"));
+}
+
+function normalizeSuggestedQueries(rawQueries: unknown[] | undefined) {
+  const uniqueQueries = new Set<string>();
+  for (const rawQuery of rawQueries ?? []) {
+    if (typeof rawQuery !== "string") {
+      continue;
+    }
+
+    const value = rawQuery.trim();
+    if (!value) {
+      continue;
+    }
+
+    uniqueQueries.add(value);
+  }
+
+  return Array.from(uniqueQueries);
+}
+
+function normalizeFilterOptions(rawData: RawFilterOptions): FilterOptions {
+  return {
+    productGroups: normalizeFilterOptionList(rawData.productGroups, (value, label) => label ?? toReadableLabel(value)),
+    subCategories: normalizeFilterOptionList(rawData.subCategories),
+    applications: normalizeFilterOptionList(rawData.applications),
+    industries: normalizeFilterOptionList(rawData.industries),
+    machineGroups: normalizeFilterOptionList(rawData.machineGroups),
+    priorities: normalizeFilterOptionList(rawData.priorities),
+    suggestedQueries: normalizeSuggestedQueries(rawData.suggestedQueries),
+  };
 }
 
 function normalizeGroupKey(value: string | undefined) {
@@ -553,19 +696,99 @@ function buildSpecsSummary(record: GroupRecord) {
   return parts.join(" | ");
 }
 
-function extractCodeVariants(code: string) {
-  const tokens = String(code || "")
-    .toUpperCase()
-    .split(/[^A-Z0-9]+/)
-    .map((token) => token.trim())
-    .filter(Boolean);
-
-  if (tokens.length <= 1) {
+function splitVariantSuffixes(rawSuffix: string) {
+  const normalizedSuffix = normalizeCode(rawSuffix);
+  if (!normalizedSuffix) {
     return [];
   }
 
-  const variants = tokens.slice(1).filter((token) => CODE_VARIANT_PATTERN.test(token));
-  return Array.from(new Set(variants));
+  const tokens: string[] = [];
+  let cursor = normalizedSuffix;
+  const knownSuffixes = [...SKF_VARIANT_SUFFIXES].sort((first, second) => second.length - first.length);
+
+  while (cursor.length > 0) {
+    const matchedSuffix = knownSuffixes.find((suffix) => cursor.startsWith(suffix));
+    if (!matchedSuffix) {
+      return [];
+    }
+
+    tokens.push(matchedSuffix);
+    cursor = cursor.slice(matchedSuffix.length);
+  }
+
+  return Array.from(new Set(tokens));
+}
+
+function getVariantCodeInfo(record: GroupRecord): VariantCodeInfo {
+  const normalizedCode = getRecordNormalizedCode(record);
+  const normalizedGroup = normalizeGroupKey(record.productGroupSlug ?? record.productGroup ?? record.productGroupLabel ?? "skf");
+
+  const numericBearingMatch = normalizedCode.match(/^(60|62|63|64|68|69)(\d{2})(.*)$/);
+  if (numericBearingMatch) {
+    const baseCode = `${numericBearingMatch[1]}${numericBearingMatch[2]}`;
+    const variantSuffixes = splitVariantSuffixes(numericBearingMatch[3]);
+    return {
+      baseCode,
+      variantSuffixes,
+      variantLabel: variantSuffixes.join(", "),
+      variantGroupKey: `${normalizedGroup}:${baseCode}`,
+      isVariantFamily: true,
+    };
+  }
+
+  const cylindricalBearingMatch = normalizedCode.match(/^(NU|NJ|NUP)(\d{3,4})(.*)$/);
+  if (cylindricalBearingMatch) {
+    const baseCode = `${cylindricalBearingMatch[1]}${cylindricalBearingMatch[2]}`;
+    const variantSuffixes = splitVariantSuffixes(cylindricalBearingMatch[3]);
+    return {
+      baseCode,
+      variantSuffixes,
+      variantLabel: variantSuffixes.join(", "),
+      variantGroupKey: `${normalizedGroup}:${baseCode}`,
+      isVariantFamily: true,
+    };
+  }
+
+  return {
+    baseCode: normalizedCode,
+    variantSuffixes: [],
+    variantLabel: "",
+    variantGroupKey: `${normalizedGroup}:${normalizedCode}`,
+    isVariantFamily: false,
+  };
+}
+
+function formatVariantDisplayCode(record: GroupRecord, variantInfo: VariantCodeInfo) {
+  if (!variantInfo.variantSuffixes.length) {
+    return record.code;
+  }
+
+  return `${variantInfo.baseCode} ${variantInfo.variantSuffixes.join("/")}`;
+}
+
+function sortVariantRecords(first: SearchRecord, second: SearchRecord) {
+  const firstInfo = getVariantCodeInfo(first);
+  const secondInfo = getVariantCodeInfo(second);
+
+  if (firstInfo.variantSuffixes.length === 0 && secondInfo.variantSuffixes.length > 0) {
+    return -1;
+  }
+
+  if (secondInfo.variantSuffixes.length === 0 && firstInfo.variantSuffixes.length > 0) {
+    return 1;
+  }
+
+  const suffixCountDiff = firstInfo.variantSuffixes.length - secondInfo.variantSuffixes.length;
+  if (suffixCountDiff !== 0) {
+    return suffixCountDiff;
+  }
+
+  const variantDiff = firstInfo.variantLabel.localeCompare(secondInfo.variantLabel, "vi");
+  if (variantDiff !== 0) {
+    return variantDiff;
+  }
+
+  return first.code.localeCompare(second.code, "vi");
 }
 
 function createVirtualBearingRecord(code: string): GroupRecord {
@@ -731,8 +954,11 @@ export function SkfSearchQuoteExperience() {
   const [isQuoteResultModalOpen, setIsQuoteResultModalOpen] = useState(false);
   const [latestQuoteMessage, setLatestQuoteMessage] = useState("");
   const [latestQuoteJson, setLatestQuoteJson] = useState("");
+  const [latestSubmitChannel, setLatestSubmitChannel] = useState<QuoteRequest["channel"]>("zalo");
   const [clipboardAvailable, setClipboardAvailable] = useState(true);
   const [isSubmittingQuoteRequest, setIsSubmittingQuoteRequest] = useState(false);
+  const [expandedVariantGroups, setExpandedVariantGroups] = useState<Record<string, boolean>>({});
+  const [isQuickSuggestionsExpanded, setIsQuickSuggestionsExpanded] = useState(false);
 
   useEffect(() => {
     setQuery(initialQuery);
@@ -754,7 +980,8 @@ export function SkfSearchQuoteExperience() {
     async function loadFilterOptions() {
       try {
         setLoadingOptions(true);
-        const data = await fetchJson<FilterOptions>(FILTER_OPTIONS_URL);
+        const rawData = await fetchJson<RawFilterOptions>(FILTER_OPTIONS_URL);
+        const data = normalizeFilterOptions(rawData);
         if (cancelled) {
           return;
         }
@@ -867,7 +1094,7 @@ export function SkfSearchQuoteExperience() {
 
       const missingGroups = filterOptions.productGroups
         .map((option) => option.value)
-        .filter((slug) => !groupDataBySlug[slug]);
+        .filter((slug) => slug.trim().length > 0 && !groupDataBySlug[slug]);
 
       if (missingGroups.length === 0) {
         return;
@@ -959,6 +1186,20 @@ export function SkfSearchQuoteExperience() {
       ? "Đường kính ngoài D phải lớn hơn trục trong d."
       : "";
 
+  function doesRecordMatchSupplementaryFilters(record: GroupRecord) {
+    const applicationTextResolved = getApplicationText(record);
+    const industriesText = getIndustriesText(record);
+    const machineGroupsText = getMachineGroupsText(record);
+
+    const matchesGroup = !selectedGroup || doesRecordMatchGroup(record, selectedGroup);
+    const matchesApplication = !selectedApplication || normalizeText(applicationTextResolved).includes(normalizeText(selectedApplication));
+    const matchesIndustry = !selectedIndustry || normalizeText(industriesText).includes(normalizeText(selectedIndustry));
+    const matchesMachineGroup = !selectedMachineGroup || normalizeText(machineGroupsText).includes(normalizeText(selectedMachineGroup));
+    const matchesPriority = !selectedPriority || record.priority === selectedPriority;
+
+    return matchesGroup && matchesApplication && matchesIndustry && matchesMachineGroup && matchesPriority;
+  }
+
   useEffect(() => {
     const rawQuery = deferredQuery.trim();
     const expectedInner = parsedInnerDiameter;
@@ -1040,17 +1281,54 @@ export function SkfSearchQuoteExperience() {
       });
     }
 
-    const nextResults = matchedResults
-      .sort((first, second) => {
-        const scoreDiff = second.searchScore - first.searchScore;
-        if (scoreDiff !== 0) {
-          return scoreDiff;
+    const sortedMatches = matchedResults.sort((first, second) => {
+      const scoreDiff = second.searchScore - first.searchScore;
+      if (scoreDiff !== 0) {
+        return scoreDiff;
+      }
+
+      return getRecordNormalizedCode(first).localeCompare(getRecordNormalizedCode(second));
+    });
+
+    const nextResultsMap = new Map<string, SearchRecord>();
+    const variantGroupKeys = new Set<string>();
+
+    for (const { searchScore, ...record } of sortedMatches.slice(0, 50)) {
+      nextResultsMap.set(record.id, record);
+      const variantInfo = getVariantCodeInfo(record);
+      if (variantInfo.isVariantFamily) {
+        variantGroupKeys.add(variantInfo.variantGroupKey);
+      }
+    }
+
+    if (variantGroupKeys.size > 0) {
+      for (const sibling of candidateData) {
+        if (!doesRecordMatchSupplementaryFilters(sibling)) {
+          continue;
         }
 
-        return getRecordNormalizedCode(first).localeCompare(getRecordNormalizedCode(second));
-      })
-      .slice(0, 50)
-      .map(({ searchScore, ...record }) => record);
+        const siblingVariantInfo = getVariantCodeInfo(sibling);
+        if (variantGroupKeys.has(siblingVariantInfo.variantGroupKey)) {
+          nextResultsMap.set(sibling.id, {
+            ...sibling,
+            applicationTextResolved: getApplicationText(sibling),
+            industriesText: getIndustriesText(sibling),
+            machineGroupsText: getMachineGroupsText(sibling),
+          });
+        }
+      }
+    }
+
+    const nextResults = Array.from(nextResultsMap.values()).sort((first, second) => {
+      const firstInfo = getVariantCodeInfo(first);
+      const secondInfo = getVariantCodeInfo(second);
+      const groupDiff = firstInfo.variantGroupKey.localeCompare(secondInfo.variantGroupKey, "vi");
+      if (groupDiff !== 0) {
+        return groupDiff;
+      }
+
+      return sortVariantRecords(first, second);
+    });
 
     setResults(nextResults);
     setTotalMatches(matchedResults.length);
@@ -1070,6 +1348,46 @@ export function SkfSearchQuoteExperience() {
     parsedWidth,
   ]);
 
+  const groupedResults = useMemo<SearchResultGroup[]>(() => {
+    const groups = new Map<string, SearchResultGroup>();
+
+    for (const record of results) {
+      const variantInfo = getVariantCodeInfo(record);
+      const current = groups.get(variantInfo.variantGroupKey);
+
+      if (!current) {
+        groups.set(variantInfo.variantGroupKey, {
+          key: variantInfo.variantGroupKey,
+          primary: record,
+          variants: [record],
+          variantInfo,
+        });
+        continue;
+      }
+
+      current.variants.push(record);
+      const currentPrimaryInfo = getVariantCodeInfo(current.primary);
+      if (currentPrimaryInfo.variantSuffixes.length > 0 && variantInfo.variantSuffixes.length === 0) {
+        current.primary = record;
+        current.variantInfo = variantInfo;
+      }
+    }
+
+    return Array.from(groups.values()).map((group) => ({
+      ...group,
+      variants: [...group.variants].sort(sortVariantRecords),
+      primary: [...group.variants].sort(sortVariantRecords)[0],
+      variantInfo: getVariantCodeInfo([...group.variants].sort(sortVariantRecords)[0]),
+    }));
+  }, [results]);
+
+  function toggleVariantGroup(groupKey: string) {
+    setExpandedVariantGroups((current) => ({
+      ...current,
+      [groupKey]: !current[groupKey],
+    }));
+  }
+
   const quickSuggestionGroups = useMemo(() => {
     if (selectedGroup === "vong-bi-skf") {
       return [{ label: "Vòng bi", codes: BEARING_FOCUSED_SUGGESTIONS }];
@@ -1077,6 +1395,14 @@ export function SkfSearchQuoteExperience() {
 
     return QUICK_SUGGESTION_GROUPS;
   }, [selectedGroup]);
+
+  const quickSuggestionItems = useMemo(
+    () => quickSuggestionGroups.flatMap((group) => group.codes.map((code) => ({ key: `${group.label}-${code}`, label: group.label, code }))),
+    [quickSuggestionGroups],
+  );
+
+  const hasMoreQuickSuggestions = quickSuggestionItems.length > 8;
+  const visibleQuickSuggestionCount = isQuickSuggestionsExpanded ? quickSuggestionItems.length : 8;
 
   const hasActiveSearch =
     Boolean(query.trim()) ||
@@ -1205,6 +1531,16 @@ export function SkfSearchQuoteExperience() {
     window.open(siteConfig.zaloLink, "_blank", "noopener,noreferrer");
   }
 
+  function openZaloWithMessage(message: string) {
+    const shareUrl = `https://zalo.me/share?text=${encodeURIComponent(message)}`;
+    window.open(shareUrl, "_blank", "noopener,noreferrer");
+  }
+
+  function openEmailComposer(subject: string, body: string) {
+    const mailtoUrl = `${siteConfig.emailHref}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoUrl;
+  }
+
   function updateCustomerForm<K extends keyof QuoteRequestCustomerForm>(key: K, value: QuoteRequestCustomerForm[K]) {
     setCustomerForm((current) => ({ ...current, [key]: value }));
   }
@@ -1232,16 +1568,29 @@ export function SkfSearchQuoteExperience() {
     setIsQuoteModalOpen(true);
   }
 
-  async function handleCreateQuoteRequest(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
+  async function handleCreateQuoteRequest(channel: QuoteRequest["channel"]) {
     if (selectedQuoteItems.length === 0) {
       setQuoteFormError("Vui lòng chọn ít nhất 1 mã trước khi gửi yêu cầu báo giá.");
       return;
     }
 
-    if (!customerForm.name.trim() || !customerForm.phone.trim()) {
-      setQuoteFormError("Vui lòng nhập tối thiểu Họ tên và SĐT/Zalo.");
+    const customerName = customerForm.name.trim();
+    const customerPhone = customerForm.phone.trim();
+    const customerEmail = customerForm.email.trim();
+    const customerZalo = customerForm.zalo.trim() || customerPhone;
+
+    if (!customerName) {
+      setQuoteFormError("Vui lòng nhập họ tên người liên hệ.");
+      return;
+    }
+
+    if (channel === "zalo" && !customerZalo) {
+      setQuoteFormError("Gửi Zalo cần có SĐT/Zalo để liên hệ.");
+      return;
+    }
+
+    if (channel === "email" && !customerEmail && !customerPhone) {
+      setQuoteFormError("Gửi email cần tối thiểu Email hoặc SĐT.");
       return;
     }
 
@@ -1264,10 +1613,17 @@ export function SkfSearchQuoteExperience() {
       return;
     }
 
-    const rfq = buildQuoteRequest(rfqItems, {
-      ...customerForm,
-      zalo: customerForm.zalo.trim() || customerForm.phone.trim(),
-    });
+    const rfq = buildQuoteRequest(
+      rfqItems,
+      {
+        ...customerForm,
+        name: customerName,
+        email: customerEmail,
+        phone: customerPhone,
+        zalo: customerZalo,
+      },
+      channel,
+    );
 
     const rfqJson = exportQuoteRequestJson(rfq);
     if (/"priceVnd"|"priceText"|"sellPrice"|"costPrice"/.test(rfqJson)) {
@@ -1275,29 +1631,44 @@ export function SkfSearchQuoteExperience() {
       return;
     }
 
-    const quoteMessage = buildZaloQuoteMessage(rfq);
+    const zaloMessage = buildZaloQuoteMessage(rfq);
+    const emailMessage = buildEmailQuoteMessage(rfq);
+    const messageForClipboard = channel === "email" ? `${emailMessage.subject}\n\n${emailMessage.body}` : zaloMessage;
+
     setIsSubmittingQuoteRequest(true);
 
     try {
       await submitQuoteRequest(rfqJson);
-      const copied = await tryCopyQuoteMessage(quoteMessage);
+      const copied = await tryCopyQuoteMessage(messageForClipboard);
 
-      setCopyNotice("Đã gửi phiếu yêu cầu báo giá vào hệ thống và copy nội dung Zalo.");
-      window.setTimeout(() => setCopyNotice(""), 5500);
-      setLatestQuoteMessage(quoteMessage);
+      if (channel === "zalo") {
+        openZaloWithMessage(zaloMessage);
+      } else {
+        openEmailComposer(emailMessage.subject, emailMessage.body);
+      }
+
+      setCopyNotice(
+        channel === "zalo"
+          ? "Đã lưu admin và mở Zalo. Nếu máy không tự điền đủ nội dung, hãy bấm Copy lại rồi dán gửi."
+          : "Đã lưu admin và mở email soạn sẵn nội dung gửi khách.",
+      );
+      window.setTimeout(() => setCopyNotice(""), 6000);
+      setLatestQuoteMessage(messageForClipboard);
       setLatestQuoteJson(rfqJson);
+      setLatestSubmitChannel(channel);
       setClipboardAvailable(copied);
       setIsQuoteModalOpen(false);
       setIsQuoteResultModalOpen(true);
       setQuoteFormError("");
     } catch (error) {
       saveQuoteRequestDraft(rfq);
-      const copied = await tryCopyQuoteMessage(quoteMessage);
+      const copied = await tryCopyQuoteMessage(messageForClipboard);
 
-      setCopyNotice("Không gửi được lên hệ thống, đã lưu bản backup tạm trên máy và copy nội dung Zalo.");
+      setCopyNotice("Không gửi được lên hệ thống, đã lưu bản backup tạm trên máy và copy nội dung.");
       window.setTimeout(() => setCopyNotice(""), 6500);
-      setLatestQuoteMessage(quoteMessage);
+      setLatestQuoteMessage(messageForClipboard);
       setLatestQuoteJson(rfqJson);
+      setLatestSubmitChannel(channel);
       setClipboardAvailable(copied);
       setIsQuoteModalOpen(false);
       setIsQuoteResultModalOpen(true);
@@ -1327,65 +1698,70 @@ export function SkfSearchQuoteExperience() {
   const selectedQuoteText = selectedQuoteCodes.join(", ");
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 rounded-3xl bg-[radial-gradient(120%_100%_at_50%_0%,#13365A_0%,#0B2440_45%,#071A2E_100%)] p-3 text-[#EAF2FB] sm:p-4">
       <section id="tra-ma-skf" className="scroll-mt-20 space-y-4">
-        <div className="rounded-2xl border border-[#C9DBF4] bg-white p-4 shadow-[0_18px_40px_-32px_rgba(0,80,164,0.55)] sm:p-5">
+        <div className="rounded-2xl border border-[#2D567F] bg-[#0D2744]/95 p-4 shadow-[0_20px_44px_-28px_rgba(4,12,25,0.8)] sm:p-5">
           <div className="mb-3 flex items-center justify-between gap-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#0050A4]">Nhập mã</p>
-            <span className="rounded-full bg-[#E30613]/10 px-2.5 py-1 text-[11px] font-semibold text-[#C80511]">Công cụ tra mã</span>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8EC6FF]">Nhập mã</p>
+            <span className="rounded-full border border-[#4F7CA8] bg-[#163A5F] px-2.5 py-1 text-[11px] font-semibold text-[#D8EBFF]">Công cụ tra mã</span>
           </div>
 
           <form className="space-y-3" onSubmit={handleSearchSubmit}>
-            <Label htmlFor="skf-code-search" className="text-sm font-semibold text-slate-800">Mã sản phẩm SKF</Label>
+            <Label htmlFor="skf-code-search" className="text-sm font-semibold text-[#EAF2FB]">Mã sản phẩm SKF</Label>
             <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
               <div className="relative">
-                <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-[#0050A4]" />
+                <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-[#8EC6FF]" />
                 <Input
                   id="skf-code-search"
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                   placeholder="Nhập mã SKF, ví dụ: 6205, 6205 2Z, NU308..."
-                  className="h-12 rounded-xl border-slate-300 bg-white pl-11 font-medium text-slate-900 focus-visible:border-[#0050A4] focus-visible:ring-[#0050A4]/40"
+                  className="h-12 rounded-xl border-[#3F6998] bg-[#0A223B] pl-11 font-semibold text-[#F4F9FF] placeholder:text-[#8BAECC] focus-visible:border-[#1FB6FF] focus-visible:ring-[#1FB6FF]/45"
                 />
               </div>
-              <Button type="submit" className="h-12 rounded-xl bg-[#0050A4] px-5 text-white hover:bg-[#003D7D]">
+              <Button type="submit" className="h-12 rounded-xl bg-[#1D72C9] px-5 text-white hover:bg-[#1159A6]">
                 <Search className="mr-2 size-4" />
                 Tra mã
               </Button>
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-white px-3 py-2">
-              <p className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Gợi ý nhanh</p>
-              <div className="space-y-1">
-                {quickSuggestionGroups.map((group) => (
-                  <div key={group.label} className="flex flex-wrap items-center gap-x-1.5 text-[12px] leading-5">
-                    <span className="font-semibold text-slate-600">{group.label}:</span>
-                    {group.codes.map((suggestion, index) => (
-                      <Fragment key={suggestion}>
-                        <button
-                          type="button"
-                          onClick={() => handleQuickSuggestion(suggestion)}
-                          className="font-semibold text-[#0050A4] transition hover:text-[#003D7D] hover:underline"
-                        >
-                          {suggestion}
-                        </button>
-                        {index < group.codes.length - 1 ? <span className="text-slate-400">·</span> : null}
-                      </Fragment>
-                    ))}
-                  </div>
+            <div className="rounded-xl border border-[#315B84] bg-[#0A223B] px-3 py-2">
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#90B9DF]">Gợi ý nhanh</p>
+                {hasMoreQuickSuggestions ? (
+                  <button
+                    type="button"
+                    onClick={() => setIsQuickSuggestionsExpanded((current) => !current)}
+                    className="text-[11px] font-semibold text-[#78C6FF] hover:text-[#A6DCFF]"
+                  >
+                    {isQuickSuggestionsExpanded ? "Thu gọn" : "Xem thêm"}
+                  </button>
+                ) : null}
+              </div>
+              <div className="flex gap-2 overflow-x-auto whitespace-nowrap pb-1 sm:grid sm:grid-cols-4 sm:gap-2 sm:overflow-visible sm:whitespace-normal sm:pb-0">
+                {quickSuggestionItems.slice(0, visibleQuickSuggestionCount).map((suggestion) => (
+                  <button
+                    key={suggestion.key}
+                    type="button"
+                    onClick={() => handleQuickSuggestion(suggestion.code)}
+                    className="inline-flex h-8 items-center gap-1.5 rounded-full border border-[#406C99] bg-[#123454] px-3 text-xs font-semibold text-[#DDEEFF] transition hover:border-[#6DBDFF] hover:bg-[#17466F] hover:text-white"
+                  >
+                    <span className="text-[#89B8E2]">{suggestion.label}:</span>
+                    <span>{suggestion.code}</span>
+                  </button>
                 ))}
               </div>
             </div>
           </form>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+        <div className="rounded-2xl border border-[#2D567F] bg-[#0D2744]/95 p-4 shadow-[0_20px_44px_-28px_rgba(4,12,25,0.8)] sm:p-5">
           <div className="mb-4 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-              <SlidersHorizontal className="size-4 text-[#0050A4]" />
+            <div className="flex items-center gap-2 text-sm font-semibold text-[#EAF2FB]">
+              <SlidersHorizontal className="size-4 text-[#8EC6FF]" />
               Lọc theo nhóm và kích thước d/D/B-T
             </div>
-            <Button type="button" variant="outline" size="sm" className="border-slate-300 bg-white" onClick={resetFilters}>
+            <Button type="button" variant="outline" size="sm" className="border-[#406C99] bg-[#123454] text-[#DDEEFF] hover:bg-[#17466F]" onClick={resetFilters}>
               <RotateCcw className="mr-1 size-3.5" />
               Reset
             </Button>
@@ -1393,9 +1769,9 @@ export function SkfSearchQuoteExperience() {
 
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
             <div className="space-y-1.5 xl:col-span-2">
-              <Label className="text-xs font-semibold text-slate-700">Nhóm sản phẩm</Label>
+              <Label className="text-xs font-semibold text-[#B6D4F1]">Nhóm sản phẩm</Label>
               <Select value={selectedGroup} onValueChange={handleGroupChange}>
-                <SelectTrigger className="h-11 w-full rounded-xl border-slate-300 bg-white focus-visible:border-[#0050A4] focus-visible:ring-[#0050A4]/40">
+                <SelectTrigger className="h-11 w-full rounded-xl border-[#3F6998] bg-[#0A223B] text-[#EAF2FB] focus-visible:border-[#1FB6FF] focus-visible:ring-[#1FB6FF]/45">
                   <SelectValue placeholder="Chọn nhóm sản phẩm">{selectedGroupLabel || undefined}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
@@ -1409,9 +1785,9 @@ export function SkfSearchQuoteExperience() {
             </div>
 
             <div className="space-y-1.5 xl:col-span-1">
-              <Label className="text-xs font-semibold text-slate-700">Ứng dụng</Label>
+              <Label className="text-xs font-semibold text-[#B6D4F1]">Ứng dụng</Label>
               <Select value={selectedApplication} onValueChange={(value) => setSelectedApplication(value ?? "")}>
-                <SelectTrigger className="h-11 w-full rounded-xl border-slate-300 bg-white focus-visible:border-[#0050A4] focus-visible:ring-[#0050A4]/40">
+                <SelectTrigger className="h-11 w-full rounded-xl border-[#3F6998] bg-[#0A223B] text-[#EAF2FB] focus-visible:border-[#1FB6FF] focus-visible:ring-[#1FB6FF]/45">
                   <SelectValue placeholder="Chọn ứng dụng" />
                 </SelectTrigger>
                 <SelectContent>
@@ -1425,83 +1801,82 @@ export function SkfSearchQuoteExperience() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="skf-inner-diameter" className="text-xs font-semibold text-slate-700">d (trong)</Label>
+              <Label htmlFor="skf-inner-diameter" className="text-xs font-semibold text-[#B6D4F1]">d (trong)</Label>
               <Input
                 id="skf-inner-diameter"
                 inputMode="decimal"
                 value={innerDiameter}
                 onChange={(event) => setInnerDiameter(event.target.value)}
                 placeholder="20"
-                className="h-11 rounded-xl border-slate-300 bg-white font-medium focus-visible:border-[#0050A4] focus-visible:ring-[#0050A4]/40"
+                className="h-11 rounded-xl border-[#3F6998] bg-[#0A223B] font-semibold text-[#F4F9FF] placeholder:text-[#8BAECC] focus-visible:border-[#1FB6FF] focus-visible:ring-[#1FB6FF]/45"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="skf-outer-diameter" className="text-xs font-semibold text-slate-700">D (ngoài)</Label>
+              <Label htmlFor="skf-outer-diameter" className="text-xs font-semibold text-[#B6D4F1]">D (ngoài)</Label>
               <Input
                 id="skf-outer-diameter"
                 inputMode="decimal"
                 value={outerDiameter}
                 onChange={(event) => setOuterDiameter(event.target.value)}
                 placeholder="52"
-                className="h-11 rounded-xl border-slate-300 bg-white font-medium focus-visible:border-[#0050A4] focus-visible:ring-[#0050A4]/40"
+                className="h-11 rounded-xl border-[#3F6998] bg-[#0A223B] font-semibold text-[#F4F9FF] placeholder:text-[#8BAECC] focus-visible:border-[#1FB6FF] focus-visible:ring-[#1FB6FF]/45"
               />
             </div>
 
             <div className="space-y-1.5 xl:col-span-1">
-              <Label htmlFor="skf-width" className="text-xs font-semibold text-slate-700">B/T (dày)</Label>
+              <Label htmlFor="skf-width" className="text-xs font-semibold text-[#B6D4F1]">B/T (dày)</Label>
               <Input
                 id="skf-width"
                 inputMode="decimal"
                 value={width}
                 onChange={(event) => setWidth(event.target.value)}
                 placeholder="15"
-                className="h-11 rounded-xl border-slate-300 bg-white font-medium focus-visible:border-[#0050A4] focus-visible:ring-[#0050A4]/40"
+                className="h-11 rounded-xl border-[#3F6998] bg-[#0A223B] font-semibold text-[#F4F9FF] placeholder:text-[#8BAECC] focus-visible:border-[#1FB6FF] focus-visible:ring-[#1FB6FF]/45"
               />
             </div>
           </div>
 
-          {dimensionWarning ? <p className="mt-3 text-xs font-semibold text-[#C80511]">{dimensionWarning}</p> : null}
+          {dimensionWarning ? <p className="mt-3 text-xs font-semibold text-[#FF8A90]">{dimensionWarning}</p> : null}
         </div>
       </section>
 
       <section id="ket-qua-tra-ma" ref={resultsRef} className="scroll-mt-24 space-y-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h3 className="font-heading text-xl font-bold text-slate-950">Kết quả tra mã</h3>
-            <p className="text-sm text-slate-600">
-              {totalMatches > 0
-                ? `Tìm thấy ${totalMatches} kết quả phù hợp.`
-                : hasActiveSearch
-                  ? "Không có kết quả phù hợp với điều kiện hiện tại."
-                  : "Nhập mã hoặc chọn nhóm để bắt đầu."}
-            </p>
+            <h3 className="font-heading text-xl font-bold text-[#F0F7FF]">Kết quả tra mã</h3>
+            {hasActiveSearch ? null : <p className="text-sm text-[#9FBAD6]">Nhập mã hoặc chọn nhóm để bắt đầu.</p>}
           </div>
 
           {loadingOptions || loadingDataset ? (
-            <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-600">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#406C99] bg-[#113250] px-3 py-1.5 text-sm text-[#D6E9FD]">
               <Loader2 className="size-4 animate-spin" />
               {selectedGroup && loadingDataset ? "Đang tải dữ liệu nhóm sản phẩm..." : "Đang tải dữ liệu"}
             </div>
           ) : null}
         </div>
 
-        {error ? <p className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</p> : null}
+        {error ? <p className="rounded-2xl border border-[#7A2B36] bg-[#3E1A21] p-4 text-sm text-[#FFC4CC]">{error}</p> : null}
 
         <div className="grid gap-4">
-          {results.map((item) => {
+          {groupedResults.map((group) => {
+            const item = group.primary;
             const isSelected = selectedQuoteCodes.includes(item.code);
             const applicationSummary = item.applicationTextResolved.split("|")[0]?.trim() || "-";
             const displayName = (item.name || "").trim() || item.subCategory || applicationSummary;
             const specsSummary = buildSpecsSummary(item);
             const thumbnail = resolveResultCardImage(item);
-            const variants = extractCodeVariants(item.code);
+            const groupVariants = group.variants
+              .map((variant) => getVariantCodeInfo(variant).variantLabel)
+              .filter(Boolean);
+            const uniqueGroupVariants = Array.from(new Set(groupVariants));
+            const isVariantExpanded = expandedVariantGroups[group.key] ?? false;
 
             return (
               <Card
-                key={`${item.productGroup}-${item.id}-${item.code}`}
-                className={`border-slate-200 shadow-sm transition ${
-                  isSelected ? "border-[#6EA4E0] bg-[#F2F7FF] ring-1 ring-[#B9D5F6]" : "bg-white"
+                key={group.key}
+                className={`border-[#2F567F] shadow-[0_16px_32px_-24px_rgba(4,12,25,0.9)] transition ${
+                  isSelected ? "border-[#6CB8FF] bg-[#184267] ring-1 ring-[#59AFFF]/60" : "bg-[#0E2A49]"
                 }`}
               >
                 <CardContent className="p-4 sm:p-5">
@@ -1510,36 +1885,45 @@ export function SkfSearchQuoteExperience() {
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => toggleQuoteItem(item)}
-                      className="mt-1 size-4 rounded border-slate-300 text-[#0050A4]"
+                      className="mt-1 size-4 rounded border-[#5584B5] bg-[#0A223B] text-[#2BAFFF]"
                       aria-label={`Chọn ${item.code} để báo giá`}
                     />
 
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="rounded-full border border-[#B9D5F6] bg-[#EEF5FF] px-2.5 py-1 text-[11px] font-semibold text-[#0050A4]">
+                        <span className="rounded-full border border-[#4777A6] bg-[#12395D] px-2.5 py-1 text-[11px] font-semibold text-[#D6E9FD]">
                           {item.productGroupLabel ?? item.productGroup}
                         </span>
                         {item.subCategory ? (
-                          <span className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-600">
+                          <span className="rounded-full border border-[#3B658F] bg-[#102F4D] px-2.5 py-1 text-[11px] font-semibold text-[#A8C7E6]">
                             {item.subCategory}
                           </span>
                         ) : null}
-                        {variants.length > 0 ? (
-                          <span className="rounded-full border border-[#F3B4B9] bg-[#FCECEF] px-2.5 py-1 text-[11px] font-semibold text-[#C80511]">
-                            Biến thể: {variants.join(", ")}
+                        {uniqueGroupVariants.length > 0 ? (
+                          <span className="rounded-full border border-[#8F4E59] bg-[#4C2330] px-2.5 py-1 text-[11px] font-semibold text-[#FFB9C2]">
+                            Đuôi mã: {uniqueGroupVariants.join(", ")}
                           </span>
                         ) : null}
                       </div>
 
                       <div className="mt-2 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
                         <div className="min-w-0">
-                          <p className="truncate text-lg font-bold text-slate-950">{item.code}</p>
-                          <p className="mt-0.5 truncate text-sm font-medium text-slate-700">{displayName}</p>
-                          {specsSummary ? <p className="mt-1 text-xs font-semibold text-slate-500">Thông số: {specsSummary}</p> : null}
+                          <p className="truncate text-lg font-bold text-[#F2F8FF]">{item.code}</p>
+                          <p className="mt-0.5 truncate text-sm font-medium text-[#D2E7FC]">{displayName}</p>
+                          {specsSummary ? <p className="mt-1 text-xs font-semibold text-[#95B7D8]">Thông số: {specsSummary}</p> : null}
+                          {group.variants.length > 1 ? (
+                            <button
+                              type="button"
+                              onClick={() => toggleVariantGroup(group.key)}
+                              className="mt-2 text-xs font-semibold text-[#82CCFF] hover:text-[#AEE0FF] hover:underline"
+                            >
+                              {isVariantExpanded ? "Ẩn mã cùng cỡ" : `Xem mã cùng cỡ (${group.variants.length})`}
+                            </button>
+                          ) : null}
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <div className="relative hidden size-14 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-100 sm:block">
+                          <div className="relative hidden size-14 shrink-0 overflow-hidden rounded-lg border border-[#3B658F] bg-[#102F4D] sm:block">
                             <Image
                               src={thumbnail.src}
                               alt={thumbnail.alt}
@@ -1553,14 +1937,51 @@ export function SkfSearchQuoteExperience() {
                             onClick={() => toggleQuoteItem(item)}
                             className={
                               isSelected
-                                ? "h-9 rounded-lg bg-[#003D7D] px-3 text-white hover:bg-[#003567]"
-                                : "h-9 rounded-lg bg-[#0050A4] px-3 text-white hover:bg-[#003D7D]"
+                                ? "h-9 rounded-lg bg-[#0E5DAA] px-3 text-white hover:bg-[#0C4E8E]"
+                                : "h-9 rounded-lg bg-[#1D72C9] px-3 text-white hover:bg-[#1159A6]"
                             }
                           >
                             {isSelected ? "Đã chọn" : "Chọn báo giá"}
                           </Button>
                         </div>
                       </div>
+
+                      {isVariantExpanded ? (
+                        <div className="mt-3 rounded-xl border border-[#3B658F] bg-[#102F4D] p-3">
+                          <div className="space-y-2">
+                            {group.variants.map((variant) => {
+                              const variantSelected = selectedQuoteCodes.includes(variant.code);
+                              const variantInfo = getVariantCodeInfo(variant);
+                              const variantSpecsSummary = buildSpecsSummary(variant) || specsSummary;
+
+                              return (
+                                <div key={`${group.key}-${variant.id}`} className="flex flex-col gap-2 rounded-lg border border-[#3B658F] bg-[#0C2844] p-3 sm:flex-row sm:items-center sm:justify-between">
+                                  <div className="min-w-0">
+                                    <p className="text-sm font-semibold text-[#F2F8FF]">{formatVariantDisplayCode(variant, variantInfo)}</p>
+                                    {variantSpecsSummary ? (
+                                      <p className="mt-0.5 text-xs font-medium text-[#95B7D8]">
+                                        {buildSpecsSummary(variant) ? `Thông số: ${variantSpecsSummary}` : `Thông số theo mã nền: ${variantSpecsSummary}`}
+                                      </p>
+                                    ) : null}
+                                  </div>
+
+                                  <Button
+                                    type="button"
+                                    onClick={() => toggleQuoteItem(variant)}
+                                    className={
+                                      variantSelected
+                                        ? "h-8 rounded-lg bg-[#0E5DAA] px-3 text-white hover:bg-[#0C4E8E]"
+                                        : "h-8 rounded-lg bg-[#1D72C9] px-3 text-white hover:bg-[#1159A6]"
+                                    }
+                                  >
+                                    {variantSelected ? "Đã chọn" : "Chọn mã này"}
+                                  </Button>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                 </CardContent>
@@ -1568,8 +1989,8 @@ export function SkfSearchQuoteExperience() {
             );
           })}
 
-          {!loadingDataset && !error && results.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-600">
+          {!loadingDataset && !error && groupedResults.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-[#3B658F] bg-[#0E2A49] p-5 text-sm text-[#B7D2EC]">
               Không có kết quả phù hợp.
             </div>
           ) : null}
@@ -1577,22 +1998,22 @@ export function SkfSearchQuoteExperience() {
       </section>
 
       {selectedQuoteItems.length > 0 ? (
-        <div className="fixed inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-50 rounded-2xl border border-blue-200 bg-white/95 p-3 shadow-[0_22px_48px_-26px_rgba(15,23,42,0.55)] backdrop-blur lg:bottom-5 lg:left-auto lg:right-5 lg:w-[520px]">
+        <div className="fixed inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-50 rounded-2xl border border-[#4878A8] bg-[#0C2B49]/95 p-3 shadow-[0_26px_52px_-30px_rgba(4,12,25,0.95)] backdrop-blur lg:bottom-5 lg:left-auto lg:right-5 lg:w-[520px]">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-slate-950">Đã chọn {selectedQuoteItems.length} sản phẩm</p>
-              <p className="truncate text-xs text-slate-500">{selectedQuoteText}</p>
+              <p className="text-sm font-semibold text-[#F0F7FF]">Đã chọn {selectedQuoteItems.length} sản phẩm</p>
+              <p className="truncate text-xs text-[#B7D2EC]">{selectedQuoteText}</p>
               {copyNotice ? <p className="mt-1 text-xs font-medium text-emerald-700">{copyNotice}</p> : null}
             </div>
             <div className="grid gap-2 sm:flex">
-              <Button type="button" className="bg-blue-800 text-white hover:bg-blue-900" onClick={scrollToQuoteFlow}>
+              <Button type="button" className="bg-[#1D72C9] text-white hover:bg-[#1159A6]" onClick={scrollToQuoteFlow}>
                 <MessageCircle className="mr-2 size-4" />
                 Gửi yêu cầu báo giá
               </Button>
               <Button
                 type="button"
                 variant="outline"
-                className="border-slate-200 text-slate-600"
+                className="border-[#406C99] text-[#D6E9FD] hover:bg-[#17466F]"
                 onClick={() => {
                   setSelectedQuoteItems([]);
                   setCopyNotice("");
@@ -1607,29 +2028,29 @@ export function SkfSearchQuoteExperience() {
       ) : null}
 
       <section id="gui-yeu-cau-zalo" ref={quoteFlowRef} className="scroll-mt-24 space-y-4">
-        <div className="rounded-2xl border border-[#C9DBF4] bg-[#F2F7FF] p-4 shadow-sm sm:p-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#0050A4]">Bước gửi báo giá</p>
-          <h3 className="mt-2 font-heading text-lg font-bold text-slate-950 sm:text-xl">Tra mã → Chọn mã → Mở Zalo để gửi</h3>
+        <div className="rounded-2xl border border-[#2D567F] bg-[#0D2744]/95 p-4 shadow-[0_20px_44px_-28px_rgba(4,12,25,0.8)] sm:p-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8EC6FF]">Bước gửi báo giá</p>
+          <h3 className="mt-2 font-heading text-lg font-bold text-[#F0F7FF] sm:text-xl">Tra mã → Chọn mã → Mở Zalo để gửi</h3>
           <div className="mt-3 flex flex-wrap gap-2">
-            <span className="rounded-full border border-[#B9D5F6] bg-white px-3 py-1 text-xs font-semibold text-[#0050A4]">1. Tra mã</span>
-            <span className="rounded-full border border-[#B9D5F6] bg-white px-3 py-1 text-xs font-semibold text-[#0050A4]">2. Chọn mã</span>
-            <span className="rounded-full border border-[#F3B4B9] bg-white px-3 py-1 text-xs font-semibold text-[#C80511]">3. Gửi Zalo</span>
+            <span className="rounded-full border border-[#4B79A8] bg-[#12395D] px-3 py-1 text-xs font-semibold text-[#DDEEFF]">1. Tra mã</span>
+            <span className="rounded-full border border-[#4B79A8] bg-[#12395D] px-3 py-1 text-xs font-semibold text-[#DDEEFF]">2. Chọn mã</span>
+            <span className="rounded-full border border-[#8F4E59] bg-[#4C2330] px-3 py-1 text-xs font-semibold text-[#FFB9C2]">3. Gửi Zalo</span>
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2">
-            <Button type="button" className="bg-blue-800 text-white hover:bg-blue-900" onClick={openQuoteModal}>
+            <Button type="button" className="bg-[#1D72C9] text-white hover:bg-[#1159A6]" onClick={openQuoteModal}>
               <MessageCircle className="mr-2 size-4" />
               {selectedQuoteItems.length > 0 ? "Mở phiếu gửi Zalo" : "Chọn mã trước khi mở phiếu"}
             </Button>
-            <Button type="button" variant="outline" className="border-slate-200 text-slate-700" onClick={scrollToLeadForm}>
+            <Button type="button" variant="outline" className="border-[#406C99] text-[#D6E9FD] hover:bg-[#17466F]" onClick={scrollToLeadForm}>
               Đi tới form phụ
             </Button>
           </div>
 
           {selectedQuoteItems.length > 0 ? (
-            <p className="mt-3 text-sm text-slate-700">Đang chọn {selectedQuoteItems.length} mã: {selectedQuoteText}</p>
+            <p className="mt-3 text-sm text-[#C9DFF6]">Đang chọn {selectedQuoteItems.length} mã: {selectedQuoteText}</p>
           ) : (
-            <p className="mt-3 text-sm text-amber-800">Chưa chọn mã nào. Hãy quay lên phần kết quả và tích ít nhất 1 mã trước khi mở bước gửi Zalo.</p>
+            <p className="mt-3 text-sm text-[#FFD18B]">Chưa chọn mã nào. Hãy quay lên phần kết quả và tích ít nhất 1 mã trước khi mở bước gửi Zalo.</p>
           )}
 
           {quoteFormError && !isQuoteModalOpen ? <p className="mt-3 text-sm font-medium text-red-600">{quoteFormError}</p> : null}
@@ -1650,10 +2071,16 @@ export function SkfSearchQuoteExperience() {
               </Button>
             </div>
 
-            <form className="space-y-4" onSubmit={handleCreateQuoteRequest}>
+            <form
+              className="space-y-4"
+              onSubmit={(event) => {
+                event.preventDefault();
+                void handleCreateQuoteRequest("email");
+              }}
+            >
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label htmlFor="rfq-customer-name">Họ tên</Label>
+                  <Label htmlFor="rfq-customer-name">Họ tên (bắt buộc)</Label>
                   <Input
                     id="rfq-customer-name"
                     value={customerForm.name}
@@ -1677,6 +2104,15 @@ export function SkfSearchQuoteExperience() {
                   />
                 </div>
                 <div className="space-y-1.5">
+                  <Label htmlFor="rfq-customer-email">Email</Label>
+                  <Input
+                    id="rfq-customer-email"
+                    value={customerForm.email}
+                    onChange={(event) => updateCustomerForm("email", event.target.value)}
+                    placeholder="ten@congty.com"
+                  />
+                </div>
+                <div className="space-y-1.5">
                   <Label htmlFor="rfq-customer-company">Công ty/đơn vị</Label>
                   <Input
                     id="rfq-customer-company"
@@ -1685,7 +2121,7 @@ export function SkfSearchQuoteExperience() {
                     placeholder="Ten nha may"
                   />
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 sm:col-span-2">
                   <Label htmlFor="rfq-customer-province">Tỉnh/thành</Label>
                   <Input
                     id="rfq-customer-province"
@@ -1746,14 +2182,27 @@ export function SkfSearchQuoteExperience() {
               {quoteFormError ? <p className="text-sm font-medium text-red-600">{quoteFormError}</p> : null}
 
               <div className="flex flex-wrap items-center gap-2">
-                <Button type="submit" className="bg-blue-800 text-white hover:bg-blue-900" disabled={isSubmittingQuoteRequest}>
+                <Button
+                  type="button"
+                  className="bg-[#1D72C9] text-white hover:bg-[#1159A6]"
+                  disabled={isSubmittingQuoteRequest}
+                  onClick={() => void handleCreateQuoteRequest("zalo")}
+                >
                   <MessageCircle className="mr-2 size-4" />
-                  {isSubmittingQuoteRequest ? "Đang tạo phiếu..." : "Tạo phiếu và copy nội dung"}
+                  {isSubmittingQuoteRequest ? "Đang gửi..." : "Gửi Zalo"}
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-[#0E5DAA] text-white hover:bg-[#0C4E8E]"
+                  disabled={isSubmittingQuoteRequest}
+                >
+                  {isSubmittingQuoteRequest ? "Đang gửi..." : "Gửi Email"}
                 </Button>
                 <Button type="button" variant="outline" className="border-slate-200 text-slate-600" onClick={closeQuoteModal}>
                   Hủy
                 </Button>
               </div>
+              <p className="text-xs text-slate-500">Gửi Email yêu cầu: Họ tên + (Email hoặc SĐT). Gửi Zalo yêu cầu: Họ tên + SĐT/Zalo.</p>
             </form>
           </div>
         </div>
@@ -1766,7 +2215,9 @@ export function SkfSearchQuoteExperience() {
               <div>
                 <h3 className="font-heading text-xl font-bold text-slate-950">Đã tạo phiếu yêu cầu báo giá</h3>
                 <p className="mt-1 text-sm text-slate-600">
-                  Nội dung yêu cầu đã được copy. Anh/chị chỉ cần mở Zalo, dán nội dung và gửi cho SKF Công Nghiệp.
+                  {latestSubmitChannel === "zalo"
+                    ? "Phiếu đã lưu vào admin. Hệ thống đã mở kênh Zalo, nếu nội dung chưa tự điền thì bấm Copy lại rồi dán gửi."
+                    : "Phiếu đã lưu vào admin. Hệ thống đã mở email soạn sẵn nội dung để gửi khách."}
                 </p>
               </div>
               <Button type="button" variant="outline" className="border-slate-200 text-slate-600" onClick={() => setIsQuoteResultModalOpen(false)}>
@@ -1777,7 +2228,11 @@ export function SkfSearchQuoteExperience() {
 
             {!clipboardAvailable ? (
               <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50 p-3">
-                <p className="mb-2 text-sm font-medium text-amber-800">Vui lòng copy nội dung bên dưới rồi dán vào Zalo.</p>
+                <p className="mb-2 text-sm font-medium text-amber-800">
+                  {latestSubmitChannel === "zalo"
+                    ? "Vui lòng copy nội dung bên dưới rồi dán vào Zalo."
+                    : "Vui lòng copy nội dung bên dưới rồi dán vào email nếu cần."}
+                </p>
                 <Textarea
                   ref={rfqMessageTextareaRef}
                   rows={8}
@@ -1789,10 +2244,12 @@ export function SkfSearchQuoteExperience() {
             ) : null}
 
             <div className="flex flex-wrap gap-2">
-              <Button type="button" className="bg-blue-800 text-white hover:bg-blue-900" onClick={openZaloOnly}>
-                <MessageCircle className="mr-2 size-4" />
-                Mở Zalo để dán nội dung
-              </Button>
+              {latestSubmitChannel === "zalo" ? (
+                <Button type="button" className="bg-blue-800 text-white hover:bg-blue-900" onClick={openZaloOnly}>
+                  <MessageCircle className="mr-2 size-4" />
+                  Mở Zalo
+                </Button>
+              ) : null}
               <Button type="button" variant="outline" className="border-slate-200 text-slate-700" onClick={copyLatestQuoteMessageAgain}>
                 Copy lại nội dung
               </Button>
