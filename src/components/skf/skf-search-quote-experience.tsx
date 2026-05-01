@@ -107,7 +107,6 @@ type SelectedQuoteItem = {
 
 const FILTER_OPTIONS_URL = "/data/skf-filter-options.json";
 const CODE_INDEX_URL = "/data/skf-code-index.json";
-const FACEBOOK_PAGE_URL = "https://www.facebook.com/SKF.CongNghiep/";
 const TECHNICAL_CODE_PREFIXES = ["TMFT", "TKSA", "NUP", "UCP", "TIH", "NU", "NJ", "UC", "IR", "LG"];
 const DIMENSION_TOLERANCE_MM = 0.5;
 const QUICK_SUGGESTION_GROUPS = [
@@ -152,8 +151,6 @@ const RESULT_CARD_IMAGES = {
   transmission: "/images/industry/hero-ung-dung-nganh-skf.png",
   fallback: "/images/brands/hero-san-pham-skf.png",
 };
-const RFQ_ZALO_FALLBACK_LINK = "https://zalo.me/0969155751";
-
 type QuoteItemDraft = {
   quantity: string;
   customerNote: string;
@@ -692,6 +689,8 @@ export function SkfSearchQuoteExperience() {
   const initialQuery = searchParams.get("q") ?? "";
   const groupParam = searchParams.get("group") ?? searchParams.get("nhom") ?? "";
   const resultsRef = useRef<HTMLElement | null>(null);
+  const quoteFlowRef = useRef<HTMLElement | null>(null);
+  const leadFormRef = useRef<HTMLElement | null>(null);
   const rfqMessageTextareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const [query, setQuery] = useState(initialQuery);
@@ -1087,6 +1086,18 @@ export function SkfSearchQuoteExperience() {
     });
   }
 
+  function scrollToQuoteFlow() {
+    window.requestAnimationFrame(() => {
+      quoteFlowRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
+  function scrollToLeadForm() {
+    window.requestAnimationFrame(() => {
+      leadFormRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
   function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -1182,7 +1193,7 @@ export function SkfSearchQuoteExperience() {
   }
 
   function openZaloOnly() {
-    window.open(RFQ_ZALO_FALLBACK_LINK, "_blank", "noopener,noreferrer");
+    window.open(siteConfig.zaloLink, "_blank", "noopener,noreferrer");
   }
 
   function updateCustomerForm<K extends keyof QuoteRequestCustomerForm>(key: K, value: QuoteRequestCustomerForm[K]) {
@@ -1203,6 +1214,7 @@ export function SkfSearchQuoteExperience() {
   function openQuoteModal() {
     if (selectedQuoteItems.length === 0) {
       setQuoteFormError("Vui lòng chọn ít nhất 1 mã trước khi gửi yêu cầu báo giá.");
+      scrollToResults();
       return;
     }
 
@@ -1321,15 +1333,7 @@ export function SkfSearchQuoteExperience() {
 
           <div className="space-y-2 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-900">
             <p>Hiển thị 50 kết quả đầu tiên.</p>
-            <a
-              href={FACEBOOK_PAGE_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1877F2] hover:underline"
-            >
-              <FacebookMarkIcon className="size-3.5" />
-              Fanpage SKF Công Nghiệp
-            </a>
+            <p className="text-xs text-blue-800/80">Quy trình chuẩn: tra mã, chọn mã, nhập thông tin rồi mới mở Zalo để gửi.</p>
           </div>
         </div>
 
@@ -1465,7 +1469,7 @@ export function SkfSearchQuoteExperience() {
         </div>
       </section>
 
-      <section ref={resultsRef} className="scroll-mt-24 space-y-4">
+      <section id="ket-qua-tra-ma" ref={resultsRef} className="scroll-mt-24 space-y-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h3 className="font-heading text-xl font-bold text-slate-950">Kết quả tra mã SKF</h3>
@@ -1574,15 +1578,9 @@ export function SkfSearchQuoteExperience() {
               {copyNotice ? <p className="mt-1 text-xs font-medium text-emerald-700">{copyNotice}</p> : null}
             </div>
             <div className="grid gap-2 sm:flex">
-              <Button type="button" className="bg-blue-800 text-white hover:bg-blue-900" onClick={openQuoteModal}>
+              <Button type="button" className="bg-blue-800 text-white hover:bg-blue-900" onClick={scrollToQuoteFlow}>
                 <MessageCircle className="mr-2 size-4" />
-                Gửi yêu cầu báo giá
-              </Button>
-              <Button asChild type="button" variant="outline" className="border-[#D9E6FB] text-[#1877F2] hover:bg-[#EEF4FF]">
-                <a href={FACEBOOK_PAGE_URL} target="_blank" rel="noreferrer">
-                  <FacebookMarkIcon className="mr-2 size-4" />
-                  Fanpage
-                </a>
+                Bước 2: gửi qua Zalo
               </Button>
               <Button
                 type="button"
@@ -1600,6 +1598,45 @@ export function SkfSearchQuoteExperience() {
           </div>
         </div>
       ) : null}
+
+      <section id="gui-yeu-cau-zalo" ref={quoteFlowRef} className="scroll-mt-24 space-y-4">
+        <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">Quy trình gửi Zalo</p>
+          <h3 className="mt-2 font-heading text-xl font-bold text-slate-950">Đi theo đúng 3 bước để không bị nhảy sang nhiều hướng</h3>
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <div className="rounded-2xl border border-blue-100 bg-white p-4">
+              <p className="text-sm font-semibold text-slate-950">1. Tra mã</p>
+              <p className="mt-1 text-sm text-slate-600">Tìm theo mã, nhóm hoặc kích thước để ra đúng danh sách.</p>
+            </div>
+            <div className="rounded-2xl border border-blue-100 bg-white p-4">
+              <p className="text-sm font-semibold text-slate-950">2. Chọn mã</p>
+              <p className="mt-1 text-sm text-slate-600">Tích các mã cần báo giá. Hệ thống sẽ gom lại thành một phiếu duy nhất.</p>
+            </div>
+            <div className="rounded-2xl border border-blue-100 bg-white p-4">
+              <p className="text-sm font-semibold text-slate-950">3. Mở Zalo</p>
+              <p className="mt-1 text-sm text-slate-600">Sau khi tạo phiếu và copy nội dung, mới mở Zalo để dán và gửi.</p>
+            </div>
+          </div>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Button type="button" className="bg-blue-800 text-white hover:bg-blue-900" onClick={openQuoteModal}>
+              <MessageCircle className="mr-2 size-4" />
+              {selectedQuoteItems.length > 0 ? "Bắt đầu bước gửi Zalo" : "Chọn mã trước khi gửi Zalo"}
+            </Button>
+            <Button type="button" variant="outline" className="border-slate-200 text-slate-700" onClick={scrollToLeadForm}>
+              Đi tới form phụ
+            </Button>
+          </div>
+
+          {selectedQuoteItems.length > 0 ? (
+            <p className="mt-3 text-sm text-slate-700">Đang chọn {selectedQuoteItems.length} mã: {selectedQuoteText}</p>
+          ) : (
+            <p className="mt-3 text-sm text-amber-800">Chưa chọn mã nào. Hãy quay lên phần kết quả và tích ít nhất 1 mã trước khi mở bước gửi Zalo.</p>
+          )}
+
+          {quoteFormError && !isQuoteModalOpen ? <p className="mt-3 text-sm font-medium text-red-600">{quoteFormError}</p> : null}
+        </div>
+      </section>
 
       {isQuoteModalOpen ? (
         <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/50 p-3">
@@ -1756,7 +1793,7 @@ export function SkfSearchQuoteExperience() {
             <div className="flex flex-wrap gap-2">
               <Button type="button" className="bg-blue-800 text-white hover:bg-blue-900" onClick={openZaloOnly}>
                 <MessageCircle className="mr-2 size-4" />
-                Mở Zalo
+                Mở Zalo để dán nội dung
               </Button>
               <Button type="button" variant="outline" className="border-slate-200 text-slate-700" onClick={copyLatestQuoteMessageAgain}>
                 Copy lại nội dung
@@ -1766,13 +1803,13 @@ export function SkfSearchQuoteExperience() {
         </div>
       ) : null}
 
-      <section id="lead-form" className="space-y-4">
+      <section id="lead-form" ref={leadFormRef} className="scroll-mt-24 space-y-4">
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <h3 className="font-heading text-xl font-bold text-slate-950">Kênh phụ: form yêu cầu báo giá</h3>
           <p className="mt-2 text-sm text-slate-600">
             {selectedQuoteCodes.length
-              ? `Ưu tiên bấm Gửi Zalo để gửi nhanh ${selectedQuoteCodes.length} mã: ${selectedQuoteText}. Form bên dưới vẫn được điền sẵn nếu cần gửi qua email.`
-              : "Ưu tiên chọn sản phẩm và gửi Zalo. Form bên dưới chỉ dùng khi cần gửi thêm thông tin qua email."}
+              ? `Ưu tiên hoàn tất bước gửi Zalo với ${selectedQuoteCodes.length} mã đã chọn. Form bên dưới chỉ là kênh phụ nếu anh/chị cần gửi thêm thông tin.`
+              : "Form này là kênh phụ. Luồng chính vẫn là tra mã, chọn mã rồi gửi qua Zalo."}
           </p>
         </div>
         <LeadForm initialRequestedCode={selectedQuoteText} />

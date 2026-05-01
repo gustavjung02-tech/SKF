@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { MessageCircle, Search } from "lucide-react";
-import { siteConfig } from "@/config/site";
 import { createPageMetadata } from "@/lib/seo";
 import { StructuredData } from "@/components/shared/structured-data";
 import { createBreadcrumbSchema, createWebPageSchema } from "@/lib/schema";
@@ -44,9 +43,8 @@ export default function QuotePage() {
               tone: "blue",
             }}
             secondaryCta={{
-              label: "Zalo kinh doanh",
-              href: siteConfig.zaloLink,
-              external: true,
+              label: "Xem bước gửi Zalo",
+              href: "#gui-yeu-cau-zalo",
               icon: <MessageCircle className="mr-2 size-4" />,
               tone: "red",
             }}
@@ -67,16 +65,6 @@ export default function QuotePage() {
             </div>
           </Suspense>
         </div>
-
-        <a
-          href={siteConfig.zaloLink}
-          target="_blank"
-          rel="noreferrer"
-          className="fixed bottom-24 right-4 z-30 hidden items-center gap-2 rounded-full border border-blue-200 bg-blue-800 px-4 py-2 text-sm font-semibold text-white shadow-md hover:bg-blue-900 md:flex lg:bottom-6"
-        >
-          <MessageCircle className="size-4" />
-          Zalo kinh doanh
-        </a>
       </div>
     </>
   );
