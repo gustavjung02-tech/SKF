@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdminApiPermission } from "../../../_auth";
 import { normalizeAdminStatus } from "@/lib/admin/quote";
 import { saveAdminStatus } from "@/lib/admin/sheet-webhook";
 
@@ -6,6 +7,11 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+  const permission = await requireAdminApiPermission(request, "quotes:status");
+  if (!permission.ok) {
+    return permission.response;
+  }
+
   let body: unknown;
 
   try {

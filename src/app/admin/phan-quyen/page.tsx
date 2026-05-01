@@ -97,6 +97,10 @@ export default async function AdminPermissionsPage({ searchParams }: AdminPermis
         </div>
       ) : null}
 
+      <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+        Danh sách tài khoản cấp dưới hiện đang lưu bằng file local trong server Node. Khi chạy production serverless, cần chuyển sang DB/KV trước khi mở rộng vận hành nhiều tài khoản.
+      </div>
+
       <div className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
         <Card className="border-slate-200 bg-white shadow-sm">
           <CardHeader>

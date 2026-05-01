@@ -47,7 +47,6 @@ export const ADMIN_PERMISSION_DEFINITIONS: Array<{ value: AdminPermission; label
   { value: "quotes:send", label: "Xác nhận gửi báo giá", description: "Đánh dấu báo giá đã gửi và hoàn tất bước nội bộ." },
   { value: "rfq:assign", label: "Phân công RFQ", description: "Phụ trách điều phối RFQ cho nhân sự xử lý." },
   { value: "mail:send", label: "Gửi mail", description: "Gửi mail thủ công từ admin." },
-  { value: "mail:read", label: "Đọc mail", description: "Dành sẵn cho inbox khi tích hợp đọc mail sau này." },
   { value: "users:create", label: "Tạo tài khoản", description: "Tạo tài khoản admin hoặc nhân viên mới." },
   { value: "users:disable", label: "Khóa tài khoản", description: "Khóa hoặc mở lại tài khoản cấp dưới." },
   { value: "users:manage", label: "Toàn quyền người dùng", description: "Quản trị toàn bộ tài khoản cấp dưới." },

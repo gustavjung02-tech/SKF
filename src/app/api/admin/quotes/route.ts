@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdminApiPermission } from "../_auth";
 import { buildDefaultQuoteDraft, calculateQuoteDraft, hydrateQuoteDraft } from "@/lib/admin/quote";
 import { getAdminRfqDetail, saveAdminQuote } from "@/lib/admin/sheet-webhook";
 
@@ -6,6 +7,11 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
+  const permission = await requireAdminApiPermission(request, "quotes:write");
+  if (!permission.ok) {
+    return permission.response;
+  }
+
   let body: unknown;
 
   try {

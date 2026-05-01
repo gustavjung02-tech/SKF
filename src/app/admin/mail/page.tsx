@@ -36,7 +36,7 @@ export default async function AdminMailPage() {
           <Card className="border-slate-200 bg-white shadow-sm">
             <CardHeader>
               <CardTitle>Trạng thái inbox</CardTitle>
-              <CardDescription>Trang đọc mail chưa bật vì hệ thống hiện mới xử lý luồng gửi mail đi.</CardDescription>
+              <CardDescription>Trang đọc mail chưa bật. Quyền đọc inbox đang được tạm ẩn khỏi màn phân quyền để tránh cấp nhầm.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-slate-600">
               <p>Để đọc mail ngay trong admin, cần thêm một trong các hướng sau:</p>

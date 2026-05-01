@@ -18,7 +18,7 @@ const adminCards = [
   },
   {
     title: "Phân quyền",
-    description: "Xem tài khoản hiện có và tạo mẫu cấu hình ADMIN_USERS_JSON để cấp quyền cho người khác.",
+    description: "Quản lý tài khoản cấp dưới và phân quyền vận hành trực tiếp trong admin.",
     href: "/admin/phan-quyen",
     icon: Users,
   },

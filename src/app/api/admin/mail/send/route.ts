@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdminApiPermission } from "../../_auth";
 import { buildMailBrandHeaderHtml, sendMail, type MailFromKind } from "@/lib/forms/mailer";
 
 export const runtime = "nodejs";
@@ -16,6 +17,11 @@ function escapeHtml(value: string) {
 }
 
 export async function POST(request: NextRequest) {
+  const permission = await requireAdminApiPermission(request, "mail:send");
+  if (!permission.ok) {
+    return permission.response;
+  }
+
   let body: {
     to?: string;
     subject?: string;

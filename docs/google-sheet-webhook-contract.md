@@ -128,8 +128,10 @@ Note: Apps Script currently requires important keys (for example `rfq_id`) at ro
 ### Quote update actions
 
 - Tried: `update_quote`, `save_quote`, `upsert_quote`
-- Current backend behavior: `Unknown action`
-- Current app behavior: keep UI responsive and return warning `QUOTE_ACTION_NOT_SUPPORTED`.
+- Current backend behavior: action đã được nhận và thực thi logic quote upsert.
+- Current blocker: thiếu tab dữ liệu trong spreadsheet đích (`QUOTES/QUOTE_ITEMS` hoặc `BAO_GIA/CHI_TIET_BG`).
+- Latest probe response: `Missing QUOTES/QUOTE_ITEMS sheet`.
+- Current app behavior: vẫn trả warning an toàn nếu backend chưa hỗ trợ đầy đủ hoặc sheet context chưa đúng.
 
 ## Delivery Files For Step 1-2
 
