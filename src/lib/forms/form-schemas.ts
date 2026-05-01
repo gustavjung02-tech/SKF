@@ -43,3 +43,37 @@ export const recruitmentSubmitSchema = z.object({
 });
 
 export type RecruitmentSubmitValues = z.infer<typeof recruitmentSubmitSchema>;
+
+const quoteRequestCustomerSchema = z.object({
+  name: z.string().trim().min(2, "Vui lòng nhập họ tên").max(120, "Họ tên quá dài"),
+  phone: z.string().trim().min(8, "Vui lòng nhập số điện thoại").max(40, "Số điện thoại quá dài"),
+  zalo: z.string().trim().max(40, "Zalo quá dài"),
+  company: z.string().trim().max(160, "Tên công ty quá dài"),
+  province: z.string().trim().max(160, "Tỉnh/thành quá dài"),
+  note: z.string().trim().max(2000, "Ghi chú quá dài"),
+});
+
+const quoteRequestItemSchema = z.object({
+  code: z.string().trim().min(1, "Thiếu mã sản phẩm").max(120, "Mã sản phẩm quá dài"),
+  normalizedCode: z.string().trim().min(1, "Thiếu mã chuẩn hóa").max(120, "Mã chuẩn hóa quá dài"),
+  name: z.string().trim().min(1, "Thiếu tên sản phẩm").max(240, "Tên sản phẩm quá dài"),
+  productGroup: z.string().trim().min(1, "Thiếu nhóm sản phẩm").max(240, "Nhóm sản phẩm quá dài"),
+  quantity: z.number().int("Số lượng không hợp lệ").positive("Số lượng phải lớn hơn 0"),
+  unit: z.string().trim().min(1, "Thiếu đơn vị tính").max(40, "Đơn vị tính quá dài"),
+  customerNote: z.string().trim().max(1000, "Ghi chú riêng quá dài"),
+});
+
+export const quoteRequestSubmitSchema = z.object({
+  id: z.string().trim().min(1, "Thiếu mã RFQ").max(80, "Mã RFQ quá dài"),
+  createdAt: z.string().datetime("Thời gian tạo không hợp lệ"),
+  source: z.literal("website-tra-ma-bao-gia"),
+  status: z.literal("new"),
+  customer: quoteRequestCustomerSchema,
+  items: z.array(quoteRequestItemSchema).min(1, "Vui lòng chọn ít nhất 1 mã cần báo giá"),
+  pricing: z.object({
+    currency: z.literal("VND"),
+    status: z.literal("not_priced"),
+  }),
+});
+
+export type QuoteRequestSubmitValues = z.infer<typeof quoteRequestSubmitSchema>;

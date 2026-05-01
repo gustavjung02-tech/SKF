@@ -724,6 +724,7 @@ export function SkfSearchQuoteExperience() {
   const [latestQuoteMessage, setLatestQuoteMessage] = useState("");
   const [latestQuoteJson, setLatestQuoteJson] = useState("");
   const [clipboardAvailable, setClipboardAvailable] = useState(true);
+  const [isSubmittingQuoteRequest, setIsSubmittingQuoteRequest] = useState(false);
 
   useEffect(() => {
     setQuery(initialQuery);
@@ -1150,27 +1151,19 @@ export function SkfSearchQuoteExperience() {
     }
   }
 
-  function downloadQuoteRequestJson() {
-    if (!latestQuoteJson) {
-      return;
+  async function submitQuoteRequest(rfqJson: string) {
+    const response = await fetch("/api/quote-requests", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: rfqJson,
+    });
+
+    const payload = (await response.json()) as { ok?: boolean; error?: string };
+    if (!response.ok || !payload.ok) {
+      throw new Error(payload.error ?? "Không gửi được phiếu yêu cầu báo giá lên hệ thống.");
     }
-
-    const quoteId = (() => {
-      try {
-        const parsed = JSON.parse(latestQuoteJson) as { id?: string };
-        return parsed.id || "rfq-skf";
-      } catch {
-        return "rfq-skf";
-      }
-    })();
-
-    const blob = new Blob([latestQuoteJson], { type: "application/json;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `${quoteId}.json`;
-    anchor.click();
-    window.setTimeout(() => URL.revokeObjectURL(url), 1200);
   }
 
   async function copyLatestQuoteMessageAgain() {
@@ -1261,19 +1254,36 @@ export function SkfSearchQuoteExperience() {
       return;
     }
 
-    saveQuoteRequestDraft(rfq);
-
     const quoteMessage = buildZaloQuoteMessage(rfq);
-    const copied = await tryCopyQuoteMessage(quoteMessage);
+    setIsSubmittingQuoteRequest(true);
 
-    setCopyNotice("Đã tạo phiếu yêu cầu báo giá và copy nội dung Zalo.");
-    window.setTimeout(() => setCopyNotice(""), 5500);
-    setLatestQuoteMessage(quoteMessage);
-    setLatestQuoteJson(rfqJson);
-    setClipboardAvailable(copied);
-    setIsQuoteModalOpen(false);
-    setIsQuoteResultModalOpen(true);
-    setQuoteFormError("");
+    try {
+      await submitQuoteRequest(rfqJson);
+      const copied = await tryCopyQuoteMessage(quoteMessage);
+
+      setCopyNotice("Đã gửi phiếu yêu cầu báo giá vào hệ thống và copy nội dung Zalo.");
+      window.setTimeout(() => setCopyNotice(""), 5500);
+      setLatestQuoteMessage(quoteMessage);
+      setLatestQuoteJson(rfqJson);
+      setClipboardAvailable(copied);
+      setIsQuoteModalOpen(false);
+      setIsQuoteResultModalOpen(true);
+      setQuoteFormError("");
+    } catch (error) {
+      saveQuoteRequestDraft(rfq);
+      const copied = await tryCopyQuoteMessage(quoteMessage);
+
+      setCopyNotice("Không gửi được lên hệ thống, đã lưu bản backup tạm trên máy và copy nội dung Zalo.");
+      window.setTimeout(() => setCopyNotice(""), 6500);
+      setLatestQuoteMessage(quoteMessage);
+      setLatestQuoteJson(rfqJson);
+      setClipboardAvailable(copied);
+      setIsQuoteModalOpen(false);
+      setIsQuoteResultModalOpen(true);
+      setQuoteFormError(error instanceof Error ? error.message : "Không gửi được phiếu yêu cầu báo giá.");
+    } finally {
+      setIsSubmittingQuoteRequest(false);
+    }
   }
 
   function closeQuoteModal() {
@@ -1701,9 +1711,9 @@ export function SkfSearchQuoteExperience() {
               {quoteFormError ? <p className="text-sm font-medium text-red-600">{quoteFormError}</p> : null}
 
               <div className="flex flex-wrap items-center gap-2">
-                <Button type="submit" className="bg-blue-800 text-white hover:bg-blue-900">
+                <Button type="submit" className="bg-blue-800 text-white hover:bg-blue-900" disabled={isSubmittingQuoteRequest}>
                   <MessageCircle className="mr-2 size-4" />
-                  Gửi yêu cầu báo giá
+                  {isSubmittingQuoteRequest ? "Đang gửi phiếu..." : "Gửi yêu cầu báo giá"}
                 </Button>
                 <Button type="button" variant="outline" className="border-slate-200 text-slate-600" onClick={closeQuoteModal}>
                   Hủy
@@ -1752,15 +1762,6 @@ export function SkfSearchQuoteExperience() {
                 Copy lại nội dung
               </Button>
             </div>
-
-            <details className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-              <summary className="cursor-pointer text-sm font-semibold text-slate-800">Tùy chọn khác</summary>
-              <div className="mt-2">
-                <Button type="button" variant="outline" className="border-slate-300 text-slate-700" onClick={downloadQuoteRequestJson}>
-                  Tải phiếu JSON
-                </Button>
-              </div>
-            </details>
           </div>
         </div>
       ) : null}
