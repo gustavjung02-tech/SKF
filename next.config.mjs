@@ -15,7 +15,7 @@ const createNextConfig = async (phase) => {
     compiler: {
       styledComponents: true,
     },
-    distDir: process.env.NEXT_DIST_DIR ?? (phase === PHASE_DEVELOPMENT_SERVER ? ".next-dev" : ".next"),
+    distDir: ".next",
     images: {
       remotePatterns: [
         {
