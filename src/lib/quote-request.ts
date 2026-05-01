@@ -104,6 +104,7 @@ export function buildZaloQuoteMessage(rfq: QuoteRequest) {
     const notePart = item.customerNote ? ` | Ghi chu: ${item.customerNote}` : "";
     return `${index + 1}. ${item.code} | SL: ${item.quantity} ${item.unit}${notePart}`;
   });
+  const phoneOrZalo = rfq.customer.phone || rfq.customer.zalo || "(khong co)";
 
   return [
     `PHIEU YEU CAU BAO GIA: ${rfq.id}`,
@@ -112,7 +113,7 @@ export function buildZaloQuoteMessage(rfq: QuoteRequest) {
     "Thong tin khach hang:",
     `- Ho ten: ${rfq.customer.name}`,
     `- Email: ${rfq.customer.email || "(khong co)"}`,
-    `- SDT/Zalo: ${rfq.customer.phone}`,
+    `- SDT/Zalo: ${phoneOrZalo}`,
     `- Cong ty: ${rfq.customer.company || "(khong co)"}`,
     `- Tinh thanh: ${rfq.customer.province || "(khong co)"}`,
     `- Ghi chu chung: ${rfq.customer.note || "(khong co)"}`,

@@ -1582,11 +1582,6 @@ export function SkfSearchQuoteExperience() {
     const customerEmail = customerForm.email.trim();
     const customerZalo = customerForm.zalo.trim() || customerPhone;
 
-    if (channel === "zalo" && !customerZalo) {
-      setQuoteFormError("Gửi Zalo cần có SĐT/Zalo để liên hệ.");
-      return;
-    }
-
     if (channel === "email" && !customerEmail) {
       setQuoteFormError("Gửi email chỉ cần nhập Email để nhận phản hồi tự động.");
       return;
@@ -2207,7 +2202,7 @@ export function SkfSearchQuoteExperience() {
                   Hủy
                 </Button>
               </div>
-              <p className="text-xs text-slate-500">Gửi Zalo: cần SĐT/Zalo để mở chat và dán nội dung. Gửi Email: chỉ cần nhập Email, hệ thống tự gửi thư cảm ơn và chuyển phiếu vào admin.</p>
+              <p className="text-xs text-slate-500">Gửi Zalo: không bắt buộc nhập trường nào, chỉ cần chọn mã là gửi được. Gửi Email: chỉ cần nhập Email, hệ thống tự gửi thư cảm ơn và chuyển phiếu vào admin.</p>
             </form>
           </div>
         </div>
