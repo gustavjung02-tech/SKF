@@ -151,6 +151,8 @@ const RESULT_CARD_IMAGES = {
   transmission: "/images/industry/hero-ung-dung-nganh-skf.png",
   fallback: "/images/brands/hero-san-pham-skf.png",
 };
+const CODE_VARIANT_PATTERN = /^(Z|ZZ|2Z|RS|RS1|2RS|2RS1|RSH|2RSH|C3|C4|TN9|E|N|NR)$/;
+
 type QuoteItemDraft = {
   quantity: string;
   customerNote: string;
@@ -164,14 +166,6 @@ const EMPTY_CUSTOMER_FORM: QuoteRequestCustomerForm = {
   province: "",
   note: "",
 };
-
-function FacebookMarkIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="currentColor">
-      <path d="M13.7 21v-8.2h2.8l.4-3.2h-3.2V7.5c0-.9.3-1.6 1.6-1.6h1.7V3c-.3 0-1.4-.1-2.6-.1-2.6 0-4.3 1.6-4.3 4.5v2.2H8v3.2h2.7V21h3z" />
-    </svg>
-  );
-}
 
 function normalizeCode(value: string) {
   return value.toUpperCase().replace(/[^A-Z0-9]/g, "");
@@ -557,6 +551,21 @@ function buildSpecsSummary(record: GroupRecord) {
   }
 
   return parts.join(" | ");
+}
+
+function extractCodeVariants(code: string) {
+  const tokens = String(code || "")
+    .toUpperCase()
+    .split(/[^A-Z0-9]+/)
+    .map((token) => token.trim())
+    .filter(Boolean);
+
+  if (tokens.length <= 1) {
+    return [];
+  }
+
+  const variants = tokens.slice(1).filter((token) => CODE_VARIANT_PATTERN.test(token));
+  return Array.from(new Set(variants));
 }
 
 function createVirtualBearingRecord(code: string): GroupRecord {
@@ -1318,86 +1327,36 @@ export function SkfSearchQuoteExperience() {
   const selectedQuoteText = selectedQuoteCodes.join(", ");
 
   return (
-    <div className="space-y-8">
-      <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_18px_42px_-32px_rgba(15,23,42,0.28)] sm:p-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-blue-700">Tra mã SKF</p>
-            <h2 className="font-heading text-2xl font-bold text-slate-950 sm:text-3xl">
-              Tra nhanh mã SKF và chọn sản phẩm cần báo giá
-            </h2>
-            <p className="max-w-3xl text-sm leading-6 text-slate-600">
-              Nhập mã, chọn nhóm hoặc lọc theo kích thước d/D/B-T rồi chọn các mã cần gửi báo giá.
-            </p>
+    <div className="space-y-6">
+      <section id="tra-ma-skf" className="scroll-mt-20 space-y-4">
+        <div className="rounded-2xl border border-[#C9DBF4] bg-white p-4 shadow-[0_18px_40px_-32px_rgba(0,80,164,0.55)] sm:p-5">
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#0050A4]">Nhập mã</p>
+            <span className="rounded-full bg-[#E30613]/10 px-2.5 py-1 text-[11px] font-semibold text-[#C80511]">Công cụ tra mã</span>
           </div>
 
-          <div className="space-y-2 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-900">
-            <p>Hiển thị 50 kết quả đầu tiên.</p>
-            <p className="text-xs text-blue-800/80">Quy trình chuẩn: tra mã, chọn mã, nhập thông tin rồi mới mở Zalo để gửi.</p>
-          </div>
-        </div>
-
-        <div className="mt-6 space-y-5">
-          <div className="grid gap-4 lg:grid-cols-[1.35fr_0.65fr]">
-            <form className="space-y-2" onSubmit={handleSearchSubmit}>
-              <Label htmlFor="skf-code-search">Mã sản phẩm</Label>
-              <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
-                <div className="relative">
-                  <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-                  <Input
-                    id="skf-code-search"
-                    value={query}
-                    onChange={(event) => setQuery(event.target.value)}
-                    placeholder="6205, 6308, NU308, LGHP 2"
-                    className="h-12 pl-11"
-                  />
-                </div>
-                <Button type="submit" className="h-12 bg-blue-800 px-5 text-white hover:bg-blue-900">
-                  <Search className="mr-2 size-4" />
-                  Tìm sản phẩm
-                </Button>
+          <form className="space-y-3" onSubmit={handleSearchSubmit}>
+            <Label htmlFor="skf-code-search" className="text-sm font-semibold text-slate-800">Mã sản phẩm SKF</Label>
+            <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+              <div className="relative">
+                <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-[#0050A4]" />
+                <Input
+                  id="skf-code-search"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Nhập mã SKF, ví dụ: 6205, 6205 2Z, NU308..."
+                  className="h-12 rounded-xl border-slate-300 bg-white pl-11 font-medium text-slate-900 focus-visible:border-[#0050A4] focus-visible:ring-[#0050A4]/40"
+                />
               </div>
-              <div className="grid grid-cols-3 gap-2">
-                <div className="space-y-1">
-                  <Label htmlFor="skf-inner-diameter" className="text-xs">Trục trong d</Label>
-                  <Input
-                    id="skf-inner-diameter"
-                    inputMode="decimal"
-                    value={innerDiameter}
-                    onChange={(event) => setInnerDiameter(event.target.value)}
-                    placeholder="20"
-                    className="h-9 px-3 text-sm"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="skf-outer-diameter" className="text-xs">Trục ngoài D</Label>
-                  <Input
-                    id="skf-outer-diameter"
-                    inputMode="decimal"
-                    value={outerDiameter}
-                    onChange={(event) => setOuterDiameter(event.target.value)}
-                    placeholder="52"
-                    className="h-9 px-3 text-sm"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="skf-width" className="text-xs">Độ dày B/T</Label>
-                  <Input
-                    id="skf-width"
-                    inputMode="decimal"
-                    value={width}
-                    onChange={(event) => setWidth(event.target.value)}
-                    placeholder="15"
-                    className="h-9 px-3 text-sm"
-                  />
-                </div>
-              </div>
-              {dimensionWarning ? <p className="text-xs font-medium text-red-600">{dimensionWarning}</p> : null}
-            </form>
+              <Button type="submit" className="h-12 rounded-xl bg-[#0050A4] px-5 text-white hover:bg-[#003D7D]">
+                <Search className="mr-2 size-4" />
+                Tra mã
+              </Button>
+            </div>
 
-            <div className="space-y-2">
-              <Label>Gợi ý nhanh</Label>
-              <div className="space-y-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+            <div className="rounded-xl border border-slate-200 bg-white px-3 py-2">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Gợi ý nhanh</p>
+              <div className="space-y-1">
                 {quickSuggestionGroups.map((group) => (
                   <div key={group.label} className="flex flex-wrap items-center gap-x-1.5 text-[12px] leading-5">
                     <span className="font-semibold text-slate-600">{group.label}:</span>
@@ -1406,7 +1365,7 @@ export function SkfSearchQuoteExperience() {
                         <button
                           type="button"
                           onClick={() => handleQuickSuggestion(suggestion)}
-                          className="font-medium text-blue-800 transition hover:text-blue-900 hover:underline"
+                          className="font-semibold text-[#0050A4] transition hover:text-[#003D7D] hover:underline"
                         >
                           {suggestion}
                         </button>
@@ -1417,62 +1376,99 @@ export function SkfSearchQuoteExperience() {
                 ))}
               </div>
             </div>
+          </form>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+          <div className="mb-4 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+              <SlidersHorizontal className="size-4 text-[#0050A4]" />
+              Lọc theo nhóm và kích thước d/D/B-T
+            </div>
+            <Button type="button" variant="outline" size="sm" className="border-slate-300 bg-white" onClick={resetFilters}>
+              <RotateCcw className="mr-1 size-3.5" />
+              Reset
+            </Button>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-                <SlidersHorizontal className="size-4 text-blue-700" />
-                Bộ lọc nhanh
-              </div>
-              <Button type="button" variant="outline" size="sm" onClick={resetFilters}>
-                <RotateCcw className="mr-1 size-3.5" />
-                Reset
-              </Button>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+            <div className="space-y-1.5 xl:col-span-2">
+              <Label className="text-xs font-semibold text-slate-700">Nhóm sản phẩm</Label>
+              <Select value={selectedGroup} onValueChange={handleGroupChange}>
+                <SelectTrigger className="h-11 w-full rounded-xl border-slate-300 bg-white focus-visible:border-[#0050A4] focus-visible:ring-[#0050A4]/40">
+                  <SelectValue placeholder="Chọn nhóm sản phẩm">{selectedGroupLabel || undefined}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {(filterOptions?.productGroups ?? []).map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
-            <div className="grid gap-3 md:grid-cols-2">
-              <div className="space-y-2 group-filter">
-                <Label>Nhóm sản phẩm</Label>
-                <Select value={selectedGroup} onValueChange={handleGroupChange}>
-                  <SelectTrigger className="h-11 w-full bg-white">
-                    <SelectValue placeholder="Chọn nhóm sản phẩm">{selectedGroupLabel || undefined}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(filterOptions?.productGroups ?? []).map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {selectedGroupLabel ? <p className="text-xs text-slate-500">{selectedGroupLabel}</p> : null}
-              </div>
+            <div className="space-y-1.5 xl:col-span-1">
+              <Label className="text-xs font-semibold text-slate-700">Ứng dụng</Label>
+              <Select value={selectedApplication} onValueChange={(value) => setSelectedApplication(value ?? "")}>
+                <SelectTrigger className="h-11 w-full rounded-xl border-slate-300 bg-white focus-visible:border-[#0050A4] focus-visible:ring-[#0050A4]/40">
+                  <SelectValue placeholder="Chọn ứng dụng" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableApplicationOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-              <div className="space-y-2">
-                <Label>Ứng dụng</Label>
-                <Select value={selectedApplication} onValueChange={(value) => setSelectedApplication(value ?? "")}>
-                  <SelectTrigger className="h-11 w-full bg-white">
-                    <SelectValue placeholder="Chọn ứng dụng" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableApplicationOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="skf-inner-diameter" className="text-xs font-semibold text-slate-700">d (trong)</Label>
+              <Input
+                id="skf-inner-diameter"
+                inputMode="decimal"
+                value={innerDiameter}
+                onChange={(event) => setInnerDiameter(event.target.value)}
+                placeholder="20"
+                className="h-11 rounded-xl border-slate-300 bg-white font-medium focus-visible:border-[#0050A4] focus-visible:ring-[#0050A4]/40"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="skf-outer-diameter" className="text-xs font-semibold text-slate-700">D (ngoài)</Label>
+              <Input
+                id="skf-outer-diameter"
+                inputMode="decimal"
+                value={outerDiameter}
+                onChange={(event) => setOuterDiameter(event.target.value)}
+                placeholder="52"
+                className="h-11 rounded-xl border-slate-300 bg-white font-medium focus-visible:border-[#0050A4] focus-visible:ring-[#0050A4]/40"
+              />
+            </div>
+
+            <div className="space-y-1.5 xl:col-span-1">
+              <Label htmlFor="skf-width" className="text-xs font-semibold text-slate-700">B/T (dày)</Label>
+              <Input
+                id="skf-width"
+                inputMode="decimal"
+                value={width}
+                onChange={(event) => setWidth(event.target.value)}
+                placeholder="15"
+                className="h-11 rounded-xl border-slate-300 bg-white font-medium focus-visible:border-[#0050A4] focus-visible:ring-[#0050A4]/40"
+              />
             </div>
           </div>
+
+          {dimensionWarning ? <p className="mt-3 text-xs font-semibold text-[#C80511]">{dimensionWarning}</p> : null}
         </div>
       </section>
 
       <section id="ket-qua-tra-ma" ref={resultsRef} className="scroll-mt-24 space-y-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h3 className="font-heading text-xl font-bold text-slate-950">Kết quả tra mã SKF</h3>
+            <h3 className="font-heading text-xl font-bold text-slate-950">Kết quả tra mã</h3>
             <p className="text-sm text-slate-600">
               {totalMatches > 0
                 ? `Tìm thấy ${totalMatches} kết quả phù hợp.`
@@ -1496,14 +1492,16 @@ export function SkfSearchQuoteExperience() {
           {results.map((item) => {
             const isSelected = selectedQuoteCodes.includes(item.code);
             const applicationSummary = item.applicationTextResolved.split("|")[0]?.trim() || "-";
+            const displayName = (item.name || "").trim() || item.subCategory || applicationSummary;
             const specsSummary = buildSpecsSummary(item);
             const thumbnail = resolveResultCardImage(item);
+            const variants = extractCodeVariants(item.code);
 
             return (
               <Card
                 key={`${item.productGroup}-${item.id}-${item.code}`}
                 className={`border-slate-200 shadow-sm transition ${
-                  isSelected ? "border-blue-300 bg-blue-50/45 ring-1 ring-blue-200" : "bg-white"
+                  isSelected ? "border-[#6EA4E0] bg-[#F2F7FF] ring-1 ring-[#B9D5F6]" : "bg-white"
                 }`}
               >
                 <CardContent className="p-4 sm:p-5">
@@ -1512,49 +1510,58 @@ export function SkfSearchQuoteExperience() {
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => toggleQuoteItem(item)}
-                      className="mt-1 size-4 rounded border-slate-300 text-blue-800"
+                      className="mt-1 size-4 rounded border-slate-300 text-[#0050A4]"
                       aria-label={`Chọn ${item.code} để báo giá`}
                     />
-                    <button
-                      type="button"
-                      onClick={() => toggleQuoteItem(item)}
-                      className="min-w-0 flex-1 text-left"
-                    >
-                      <div className="flex gap-3 sm:gap-4">
-                        <div className="relative size-16 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-100 sm:size-[78px]">
-                          <Image
-                            src={thumbnail.src}
-                            alt={thumbnail.alt}
-                            fill
-                            sizes="(max-width: 640px) 64px, 78px"
-                            className="object-cover"
-                          />
-                        </div>
 
-                        <div className="min-w-0 flex-1">
-                          <div className="flex flex-wrap gap-2">
-                        <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-800">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="rounded-full border border-[#B9D5F6] bg-[#EEF5FF] px-2.5 py-1 text-[11px] font-semibold text-[#0050A4]">
                           {item.productGroupLabel ?? item.productGroup}
                         </span>
                         {item.subCategory ? (
-                          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+                          <span className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-600">
                             {item.subCategory}
+                          </span>
+                        ) : null}
+                        {variants.length > 0 ? (
+                          <span className="rounded-full border border-[#F3B4B9] bg-[#FCECEF] px-2.5 py-1 text-[11px] font-semibold text-[#C80511]">
+                            Biến thể: {variants.join(", ")}
                           </span>
                         ) : null}
                       </div>
 
-                      <div className="mt-2">
-                        <p className="truncate text-base font-semibold text-slate-950 sm:text-lg">{item.code}</p>
-                        <p className="mt-1 truncate text-sm text-slate-600">{applicationSummary}</p>
-                        {specsSummary ? <p className="mt-1 text-xs font-medium text-slate-500">{specsSummary}</p> : null}
-                      </div>
+                      <div className="mt-2 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
+                        <div className="min-w-0">
+                          <p className="truncate text-lg font-bold text-slate-950">{item.code}</p>
+                          <p className="mt-0.5 truncate text-sm font-medium text-slate-700">{displayName}</p>
+                          {specsSummary ? <p className="mt-1 text-xs font-semibold text-slate-500">Thông số: {specsSummary}</p> : null}
+                        </div>
 
-                      <p className="mt-2 text-xs font-semibold text-blue-800">
-                        {isSelected ? "Đã chọn báo giá" : "Chọn báo giá"}
-                      </p>
+                        <div className="flex items-center gap-2">
+                          <div className="relative hidden size-14 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-100 sm:block">
+                            <Image
+                              src={thumbnail.src}
+                              alt={thumbnail.alt}
+                              fill
+                              sizes="56px"
+                              className="object-cover"
+                            />
+                          </div>
+                          <Button
+                            type="button"
+                            onClick={() => toggleQuoteItem(item)}
+                            className={
+                              isSelected
+                                ? "h-9 rounded-lg bg-[#003D7D] px-3 text-white hover:bg-[#003567]"
+                                : "h-9 rounded-lg bg-[#0050A4] px-3 text-white hover:bg-[#003D7D]"
+                            }
+                          >
+                            {isSelected ? "Đã chọn" : "Chọn báo giá"}
+                          </Button>
                         </div>
                       </div>
-                    </button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -1580,7 +1587,7 @@ export function SkfSearchQuoteExperience() {
             <div className="grid gap-2 sm:flex">
               <Button type="button" className="bg-blue-800 text-white hover:bg-blue-900" onClick={scrollToQuoteFlow}>
                 <MessageCircle className="mr-2 size-4" />
-                Bước 2: chuẩn bị gửi Zalo
+                Gửi yêu cầu báo giá
               </Button>
               <Button
                 type="button"
@@ -1600,22 +1607,13 @@ export function SkfSearchQuoteExperience() {
       ) : null}
 
       <section id="gui-yeu-cau-zalo" ref={quoteFlowRef} className="scroll-mt-24 space-y-4">
-        <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">Quy trình gửi Zalo</p>
-          <h3 className="mt-2 font-heading text-xl font-bold text-slate-950">Đi theo đúng 3 bước để không bị nhảy sang nhiều hướng</h3>
-          <div className="mt-4 grid gap-3 md:grid-cols-3">
-            <div className="rounded-2xl border border-blue-100 bg-white p-4">
-              <p className="text-sm font-semibold text-slate-950">1. Tra mã</p>
-              <p className="mt-1 text-sm text-slate-600">Tìm theo mã, nhóm hoặc kích thước để ra đúng danh sách.</p>
-            </div>
-            <div className="rounded-2xl border border-blue-100 bg-white p-4">
-              <p className="text-sm font-semibold text-slate-950">2. Chọn mã</p>
-              <p className="mt-1 text-sm text-slate-600">Tích các mã cần báo giá. Hệ thống sẽ gom lại thành một phiếu duy nhất.</p>
-            </div>
-            <div className="rounded-2xl border border-blue-100 bg-white p-4">
-              <p className="text-sm font-semibold text-slate-950">3. Mở Zalo</p>
-              <p className="mt-1 text-sm text-slate-600">Sau khi tạo phiếu và copy nội dung, mới mở Zalo để dán và gửi.</p>
-            </div>
+        <div className="rounded-2xl border border-[#C9DBF4] bg-[#F2F7FF] p-4 shadow-sm sm:p-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#0050A4]">Bước gửi báo giá</p>
+          <h3 className="mt-2 font-heading text-lg font-bold text-slate-950 sm:text-xl">Tra mã → Chọn mã → Mở Zalo để gửi</h3>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <span className="rounded-full border border-[#B9D5F6] bg-white px-3 py-1 text-xs font-semibold text-[#0050A4]">1. Tra mã</span>
+            <span className="rounded-full border border-[#B9D5F6] bg-white px-3 py-1 text-xs font-semibold text-[#0050A4]">2. Chọn mã</span>
+            <span className="rounded-full border border-[#F3B4B9] bg-white px-3 py-1 text-xs font-semibold text-[#C80511]">3. Gửi Zalo</span>
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2">
@@ -1805,11 +1803,11 @@ export function SkfSearchQuoteExperience() {
 
       <section id="lead-form" ref={leadFormRef} className="scroll-mt-24 space-y-4">
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h3 className="font-heading text-xl font-bold text-slate-950">Kênh phụ: form yêu cầu báo giá</h3>
+          <h3 className="font-heading text-xl font-bold text-slate-950">Kênh phụ: form báo giá</h3>
           <p className="mt-2 text-sm text-slate-600">
             {selectedQuoteCodes.length
-              ? `Ưu tiên hoàn tất bước gửi Zalo với ${selectedQuoteCodes.length} mã đã chọn. Form bên dưới chỉ là kênh phụ nếu anh/chị cần gửi thêm thông tin.`
-              : "Form này là kênh phụ. Luồng chính vẫn là tra mã, chọn mã rồi gửi qua Zalo."}
+              ? `Đã chọn ${selectedQuoteCodes.length} mã. Ưu tiên gửi Zalo trước, form này dùng khi cần bổ sung thông tin.`
+              : "Form phụ, dùng khi cần gửi thêm thông tin chi tiết."}
           </p>
         </div>
         <LeadForm initialRequestedCode={selectedQuoteText} />
