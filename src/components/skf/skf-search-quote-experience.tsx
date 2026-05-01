@@ -909,7 +909,8 @@ function resolveInitialGroup(param: string | null, filterOptions: FilterOptions 
 }
 
 async function fetchJson<T>(url: string): Promise<T> {
-  const response = await fetch(url, { cache: "force-cache" });
+  // Use revalidation-friendly caching to avoid stale JSON datasets across devices after deploy.
+  const response = await fetch(url, { cache: "no-cache" });
   if (!response.ok) {
     throw new Error(`Không thể tải dữ liệu: ${url}`);
   }
@@ -1457,6 +1458,7 @@ export function SkfSearchQuoteExperience() {
   }
 
   function resetFilters() {
+    setQuery("");
     setSelectedGroup("");
     setSelectedApplication("");
     setSelectedIndustry("");
@@ -1465,6 +1467,7 @@ export function SkfSearchQuoteExperience() {
     setInnerDiameter("");
     setOuterDiameter("");
     setWidth("");
+    setExpandedVariantGroups({});
     setError("");
   }
 
