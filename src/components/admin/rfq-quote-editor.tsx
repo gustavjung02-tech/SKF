@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ADMIN_RFQ_STATUSES, buildAdminQuoteText, calculateQuoteDraft, formatCurrencyVnd, normalizeAdminStatus, type AdminQuoteDraft, type AdminRfqDetail } from "@/lib/admin/quote";
+import { ADMIN_RFQ_STATUSES, buildAdminQuoteText, calculateQuoteDraft, formatCurrencyVnd, getAdminStatusLabel, normalizeAdminStatus, type AdminQuoteDraft, type AdminRfqDetail } from "@/lib/admin/quote";
 
 function badgeVariantForStatus(status: string) {
   switch (status) {
@@ -90,7 +90,7 @@ export function RfqQuoteEditor({ detail }: Props) {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant={badgeVariantForStatus(status)}>{status}</Badge>
+              <Badge variant={badgeVariantForStatus(status)}>{getAdminStatusLabel(status)}</Badge>
               <span className="text-xs text-slate-500">RFQ: {detail.id}</span>
             </div>
             <h1 className="font-heading text-2xl font-bold text-slate-950">Xử lý phiếu yêu cầu báo giá SKF</h1>
@@ -155,6 +155,7 @@ export function RfqQuoteEditor({ detail }: Props) {
                         <div className="space-y-1">
                           <Input
                             inputMode="numeric"
+                            className="min-w-[7rem]"
                             value={line.internalPrice ? `${line.internalPrice}` : ""}
                             onChange={(event) => updateLine(index, { internalPrice: Number(event.target.value.replace(/[^0-9]/g, "")) || null })}
                             placeholder="Chưa có giá"
@@ -206,7 +207,7 @@ export function RfqQuoteEditor({ detail }: Props) {
 
             <div className="mt-5 space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm">
               <div className="flex items-center justify-between"><span className="text-slate-600">Tạm tính</span><span className="font-semibold text-slate-950">{formatCurrencyVnd(calculated.totals.subtotal)}</span></div>
-              <div className="flex items-center justify-between"><span className="text-slate-600">CK tổng</span><span className="font-semibold text-slate-950">-{formatCurrencyVnd(calculated.totals.totalDiscountAmount)}</span></div>
+              <div className="flex items-center justify-between"><span className="text-slate-600">CK tổng</span><span className="font-semibold text-slate-950">{calculated.totals.totalDiscountAmount > 0 ? `-${formatCurrencyVnd(calculated.totals.totalDiscountAmount)}` : formatCurrencyVnd(0)}</span></div>
               <div className="flex items-center justify-between"><span className="text-slate-600">VAT</span><span className="font-semibold text-slate-950">+{formatCurrencyVnd(calculated.totals.vatAmount)}</span></div>
               <div className="flex items-center justify-between"><span className="text-slate-600">Phí giao hàng</span><span className="font-semibold text-slate-950">+{formatCurrencyVnd(quote.shippingFee)}</span></div>
               <div className="flex items-center justify-between border-t border-slate-200 pt-2 text-base"><span className="font-semibold text-slate-900">Tổng cộng</span><span className="font-bold text-blue-900">{formatCurrencyVnd(calculated.totals.grandTotal)}</span></div>
@@ -223,7 +224,7 @@ export function RfqQuoteEditor({ detail }: Props) {
               >
                 {ADMIN_RFQ_STATUSES.map((option) => (
                   <option key={option} value={option}>
-                    {option}
+                    {getAdminStatusLabel(option)}
                   </option>
                 ))}
               </select>

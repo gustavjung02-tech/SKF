@@ -1,6 +1,6 @@
 import type { QuoteRequest } from "@/lib/quote-request";
 import { findInternalPriceByNormalizedCode } from "@/lib/admin/price-master";
-import { buildDefaultQuoteDraft, hydrateQuoteDraft, normalizeAdminStatus, type AdminQuoteDraft, type AdminRfqDetail, type AdminRfqListItem } from "@/lib/admin/quote";
+import { buildDefaultQuoteDraft, getAdminStatusLabel, hydrateQuoteDraft, normalizeAdminStatus, type AdminQuoteDraft, type AdminRfqDetail, type AdminRfqListItem } from "@/lib/admin/quote";
 
 type SheetAction =
   | "create_rfq"
@@ -16,13 +16,20 @@ type SheetAction =
 const SHEET_CONTEXT = {
   spreadsheetName: "SKF_Admin_Bao_Gia",
   tabs: {
-    rfq: "RFQ",
-    rfqItems: "RFQ_ITEMS",
-    priceMaster: "PRICE_MASTER",
-    quotes: "QUOTES",
-    quoteItems: "QUOTE_ITEMS",
+    rfq: "YC_BAO_GIA",
+    rfqItems: "CHI_TIET_YC",
+    priceMaster: "BANG_GIA",
+    quotes: "BAO_GIA",
+    quoteItems: "CHI_TIET_BG",
   },
 } as const;
+
+function buildWebhookLogContext(action: SheetAction, payload: Record<string, unknown>) {
+  return {
+    action,
+    rfqId: normalizeString(payload.rfq_id || payload.rfqId || payload.id || payload.requestId),
+  };
+}
 
 function getWebhookUrl() {
   return process.env.GOOGLE_SHEET_WEBHOOK_URL?.trim() ?? "";
@@ -34,6 +41,36 @@ function getWebhookSecret() {
 
 function normalizeString(value: unknown, fallback = "") {
   return `${value ?? fallback}`.trim();
+}
+
+function normalizeLookupKey(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9]/g, "")
+    .toLowerCase();
+}
+
+function pickValueByAliases(record: Record<string, unknown>, aliases: string[]) {
+  for (const alias of aliases) {
+    if (alias in record) {
+      return record[alias];
+    }
+  }
+
+  const normalizedMap = new Map<string, unknown>();
+  for (const [key, value] of Object.entries(record)) {
+    normalizedMap.set(normalizeLookupKey(key), value);
+  }
+
+  for (const alias of aliases) {
+    const byNormalizedKey = normalizedMap.get(normalizeLookupKey(alias));
+    if (byNormalizedKey !== undefined) {
+      return byNormalizedKey;
+    }
+  }
+
+  return undefined;
 }
 
 function normalizeDateString(value: unknown) {
@@ -135,7 +172,7 @@ function pickFirstArray(record: Record<string, unknown>, keys: string[]) {
   return asArray(nested);
 }
 
-function getIdentifier(record: Record<string, unknown>, keys = ["id", "rfqId", "rfq_id", "code"]) {
+function getIdentifier(record: Record<string, unknown>, keys = ["id", "rfqId", "rfq_id", "code", "ma_yeu_cau", "ma_bao_gia"]) {
   for (const key of keys) {
     const value = normalizeString(record[key]);
     if (value) {
@@ -183,22 +220,22 @@ function pickTabRows(record: Record<string, unknown>, keys: string[]) {
 
 function normalizeQuoteLineSource(rawLine: unknown, fallbackItem?: { code: string; normalizedCode: string; name: string; quantity: number; unit: string; customerNote: string }) {
   const record = asRecord(rawLine);
-  const code = normalizeString(record.code || record.productCode || record.sku, fallbackItem?.code ?? "");
-  const normalizedCode = normalizeString(record.normalizedCode || record.normalized_code || code, fallbackItem?.normalizedCode ?? code).toUpperCase();
+  const code = normalizeString(record.code || record.productCode || record.sku || record.ma_hang, fallbackItem?.code ?? "");
+  const normalizedCode = normalizeString(record.normalizedCode || record.normalized_code || record.ma_chuan || code, fallbackItem?.normalizedCode ?? code).toUpperCase();
 
   return {
     code: code || fallbackItem?.code || "",
     normalizedCode,
-    name: normalizeString(record.name || record.productName || record.product_name, fallbackItem?.name ?? code),
-    quantity: Math.max(1, Math.round(normalizeNumber(record.quantity, fallbackItem?.quantity ?? 1))),
-    unit: normalizeString(record.unit, fallbackItem?.unit ?? "cai"),
-    customerNote: normalizeString(record.customerNote || record.customer_note || record.note, fallbackItem?.customerNote ?? ""),
+    name: normalizeString(record.name || record.productName || record.product_name || record.ten_san_pham, fallbackItem?.name ?? code),
+    quantity: Math.max(1, Math.round(normalizeNumber(record.quantity || record.so_luong, fallbackItem?.quantity ?? 1))),
+    unit: normalizeString(record.unit || record.don_vi, fallbackItem?.unit ?? "cai"),
+    customerNote: normalizeString(record.customerNote || record.customer_note || record.ghi_chu_khach || record.note, fallbackItem?.customerNote ?? ""),
     internalPrice:
-      record.internalPrice == null && record.internal_price == null && record.price == null
+      record.internalPrice == null && record.internal_price == null && record.price == null && record.gia_noi_bo == null
         ? null
-        : Math.max(0, Math.round(normalizeNumber(record.internalPrice || record.internal_price || record.price, 0))),
-    lineDiscountPercent: normalizeNumber(record.lineDiscountPercent || record.line_discount_percent || record.discountPercent || record.discount_percent, 0),
-    note: normalizeString(record.note || record.lineNote || record.line_note),
+        : Math.max(0, Math.round(normalizeNumber(record.internalPrice || record.internal_price || record.price || record.gia_noi_bo, 0))),
+    lineDiscountPercent: normalizeNumber(record.lineDiscountPercent || record.line_discount_percent || record.discountPercent || record.discount_percent || record.ck_dong_pt, 0),
+    note: normalizeString(record.note || record.lineNote || record.line_note || record.ghi_chu),
   };
 }
 
@@ -221,8 +258,8 @@ function buildQuoteSeed(rawQuote: unknown, rawQuoteItems: unknown[], detailItems
   const orderedLineItems = detailItems.map((item, index) => {
     const match =
       normalizedQuoteItems.find((quoteItem) => {
-        const normalizedCode = normalizeString(quoteItem.normalizedCode || quoteItem.normalized_code).toUpperCase();
-        const code = normalizeString(quoteItem.code || quoteItem.productCode || quoteItem.sku);
+        const normalizedCode = normalizeString(quoteItem.normalizedCode || quoteItem.normalized_code || quoteItem.ma_chuan).toUpperCase();
+        const code = normalizeString(quoteItem.code || quoteItem.productCode || quoteItem.sku || quoteItem.ma_hang);
         return normalizedCode === item.normalizedCode || code === item.code;
       }) ??
       normalizedQuoteItems.find((quoteItem) => normalizeNumber(quoteItem.index || quoteItem.lineIndex || quoteItem.line_index || quoteItem.position, -1) === index);
@@ -276,12 +313,12 @@ function resolveRfqItems(payload: unknown, rfqRecord: Record<string, unknown>, r
   if (rootItems.length > 0) {
     return rootItems.filter((row) => {
       const rowRecord = asRecord(row);
-      return isSameIdentifier(rowRecord, rfqId, ["rfqId", "rfq_id", "requestId", "request_id", "id"]);
+      return isSameIdentifier(rowRecord, rfqId, ["rfqId", "rfq_id", "requestId", "request_id", "id", "ma_yeu_cau"]);
     });
   }
 
-  const allItemRows = pickTabRows(rootRecord, [SHEET_CONTEXT.tabs.rfqItems, "RFQ_ITEMS", "rfqItems", "rfq_items"]);
-  return allItemRows.filter((row) => isSameIdentifier(asRecord(row), rfqId, ["rfqId", "rfq_id", "requestId", "request_id", "id"]));
+  const allItemRows = pickTabRows(rootRecord, [SHEET_CONTEXT.tabs.rfqItems, "CHI_TIET_YC", "RFQ_ITEMS", "rfqItems", "rfq_items"]);
+  return allItemRows.filter((row) => isSameIdentifier(asRecord(row), rfqId, ["rfqId", "rfq_id", "requestId", "request_id", "id", "ma_yeu_cau"]));
 }
 
 function resolveQuoteRecord(payload: unknown, rfqRecord: Record<string, unknown>, rfqId: string) {
@@ -296,8 +333,8 @@ function resolveQuoteRecord(payload: unknown, rfqRecord: Record<string, unknown>
     return nestedQuote;
   }
 
-  const quoteRows = pickTabRows(rootRecord, [SHEET_CONTEXT.tabs.quotes, "QUOTES", "quotes"]);
-  return findRowByIdentifier(quoteRows, rfqId, ["rfqId", "rfq_id", "requestId", "request_id", "id"]) ?? ({} satisfies Record<string, unknown>);
+  const quoteRows = pickTabRows(rootRecord, [SHEET_CONTEXT.tabs.quotes, "BAO_GIA", "QUOTES", "quotes"]);
+  return findRowByIdentifier(quoteRows, rfqId, ["rfqId", "rfq_id", "requestId", "request_id", "id", "ma_yeu_cau"]) ?? ({} satisfies Record<string, unknown>);
 }
 
 function resolveQuoteItems(payload: unknown, quoteRecord: Record<string, unknown>, rfqId: string) {
@@ -307,16 +344,16 @@ function resolveQuoteItems(payload: unknown, quoteRecord: Record<string, unknown
   }
 
   const rootRecord = asRecord(payload);
-  const allQuoteItemRows = pickTabRows(rootRecord, [SHEET_CONTEXT.tabs.quoteItems, "QUOTE_ITEMS", "quoteItems", "quote_items"]);
+  const allQuoteItemRows = pickTabRows(rootRecord, [SHEET_CONTEXT.tabs.quoteItems, "CHI_TIET_BG", "QUOTE_ITEMS", "quoteItems", "quote_items"]);
   if (allQuoteItemRows.length === 0) {
     return [];
   }
 
-  const quoteId = getIdentifier(quoteRecord, ["id", "quoteId", "quote_id"]);
+  const quoteId = getIdentifier(quoteRecord, ["id", "quoteId", "quote_id", "ma_bao_gia"]);
 
   return allQuoteItemRows.filter((row) => {
     const rowRecord = asRecord(row);
-    return isSameIdentifier(rowRecord, quoteId, ["quoteId", "quote_id"]) || isSameIdentifier(rowRecord, rfqId, ["rfqId", "rfq_id", "requestId", "request_id"]);
+    return isSameIdentifier(rowRecord, quoteId, ["quoteId", "quote_id", "ma_bao_gia"]) || isSameIdentifier(rowRecord, rfqId, ["rfqId", "rfq_id", "requestId", "request_id", "ma_yeu_cau"]);
   });
 }
 
@@ -350,24 +387,35 @@ function extractDataEnvelope<T>(payload: unknown): T {
 async function postSheetAction<T>(action: SheetAction, payload: Record<string, unknown>) {
   const webhookUrl = getWebhookUrl();
   const webhookSecret = getWebhookSecret();
+  const logContext = buildWebhookLogContext(action, payload);
+
   if (!webhookUrl || !webhookSecret) {
     throw new Error("Missing Google Sheet webhook configuration.");
   }
 
-  const response = await fetch(webhookUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    cache: "no-store",
-    body: JSON.stringify({
-      action,
-      secret: webhookSecret,
-      sheetContext: SHEET_CONTEXT,
-      payload,
-      ...payload,
-    }),
-  });
+  let response: Response;
+  try {
+    response = await fetch(webhookUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+      body: JSON.stringify({
+        action,
+        secret: webhookSecret,
+        sheetContext: SHEET_CONTEXT,
+        payload,
+        ...payload,
+      }),
+    });
+  } catch (error) {
+    console.error("[sheet-webhook] network failure", {
+      ...logContext,
+      message: error instanceof Error ? error.message : "Unknown network error",
+    });
+    throw error;
+  }
 
   const rawText = await response.text();
   let json: unknown = null;
@@ -378,11 +426,26 @@ async function postSheetAction<T>(action: SheetAction, payload: Record<string, u
   }
 
   if (!response.ok) {
-    throw new Error(typeof json === "object" && json && "error" in (json as Record<string, unknown>) ? normalizeString((json as Record<string, unknown>).error, "Webhook error") : `Webhook request failed with status ${response.status}.`);
+    const message =
+      typeof json === "object" && json && "error" in (json as Record<string, unknown>)
+        ? normalizeString((json as Record<string, unknown>).error, "Webhook error")
+        : `Webhook request failed with status ${response.status}.`;
+
+    console.error("[sheet-webhook] non-2xx response", {
+      ...logContext,
+      status: response.status,
+      message,
+    });
+    throw new Error(message);
   }
 
   if (json && typeof json === "object" && "ok" in (json as Record<string, unknown>) && (json as Record<string, unknown>).ok === false) {
-    throw new Error(normalizeString((json as Record<string, unknown>).error, "Webhook returned an error."));
+    const message = normalizeString((json as Record<string, unknown>).error, "Webhook returned an error.");
+    console.warn("[sheet-webhook] business error", {
+      ...logContext,
+      message,
+    });
+    throw new Error(message);
   }
 
   return extractDataEnvelope<T>(json);
@@ -390,15 +453,15 @@ async function postSheetAction<T>(action: SheetAction, payload: Record<string, u
 
 function normalizeQuoteRequestItem(rawItem: unknown) {
   const record = asRecord(rawItem);
-  const code = normalizeString(record.code || record.productCode || record.sku, "UNKNOWN");
+  const code = normalizeString(pickValueByAliases(record, ["code", "productCode", "sku", "ma_hang", "ma_san_pham"]), "UNKNOWN");
   return {
     code,
-    normalizedCode: normalizeString(record.normalizedCode || record.normalized_code || code, code).toUpperCase(),
-    name: normalizeString(record.name || record.productName || record.product_name || code, code),
-    productGroup: normalizeString(record.productGroup || record.product_group || record.group, "SKF"),
-    quantity: Math.max(1, Math.round(normalizeNumber(record.quantity, 1))),
-    unit: normalizeString(record.unit, "cai"),
-    customerNote: normalizeString(record.customerNote || record.customer_note || record.note),
+    normalizedCode: normalizeString(pickValueByAliases(record, ["normalizedCode", "normalized_code", "ma_chuan"]) || code, code).toUpperCase(),
+    name: normalizeString(pickValueByAliases(record, ["name", "productName", "product_name", "ten", "ten_san_pham"]) || code, code),
+    productGroup: normalizeString(pickValueByAliases(record, ["productGroup", "product_group", "group", "nhom_hang"]), "SKF"),
+    quantity: Math.max(1, Math.round(normalizeNumber(pickValueByAliases(record, ["quantity", "so_luong"]), 1))),
+    unit: normalizeString(pickValueByAliases(record, ["unit", "don_vi"]), "cai"),
+    customerNote: normalizeString(pickValueByAliases(record, ["customerNote", "customer_note", "note", "ghi_chu"])),
   };
 }
 
@@ -427,8 +490,15 @@ async function withFallbackInternalPrices(detail: AdminRfqDetail) {
 }
 
 export async function createRemoteQuoteRequest(rfq: QuoteRequest) {
+  const sheetStatusLabel = getAdminStatusLabel(rfq.status);
+  const rfqForSheet = {
+    ...rfq,
+    status: sheetStatusLabel,
+    statusCode: normalizeAdminStatus(rfq.status),
+  };
+
   try {
-    return await postSheetAction("create_rfq", { rfq });
+    return await postSheetAction("create_rfq", { rfq: rfqForSheet });
   } catch (error) {
     const message = error instanceof Error ? error.message.toLowerCase() : "";
     const shouldRetry = message.includes("invalid rfq") || message.includes("invalid payload") || message.includes("missing") || message.includes("rfq");
@@ -440,7 +510,7 @@ export async function createRemoteQuoteRequest(rfq: QuoteRequest) {
 
   try {
     return await postSheetAction("create_rfq", {
-      ...rfq,
+      ...rfqForSheet,
       rfqId: rfq.id,
       requestId: rfq.id,
       customer: rfq.customer,
@@ -455,9 +525,9 @@ export async function createRemoteQuoteRequest(rfq: QuoteRequest) {
   }
 
   return postSheetAction("create_rfq", {
-    request: rfq,
-    data: rfq,
-    payload: rfq,
+    request: rfqForSheet,
+    data: rfqForSheet,
+    payload: rfqForSheet,
     rfqId: rfq.id,
     requestId: rfq.id,
   });
@@ -467,12 +537,12 @@ export async function listAdminRfqs() {
   const rawList = await postSheetAction<unknown>("list_rfqs", {});
   const listRows = resolveRfqRows(rawList);
   const rootRecord = asRecord(rawList);
-  const itemRows = pickTabRows(rootRecord, [SHEET_CONTEXT.tabs.rfqItems, "RFQ_ITEMS", "rfqItems", "rfq_items"]);
+  const itemRows = pickTabRows(rootRecord, [SHEET_CONTEXT.tabs.rfqItems, "CHI_TIET_YC", "RFQ_ITEMS", "rfqItems", "rfq_items"]);
   const itemCountByRfqId = new Map<string, number>();
 
   for (const rawItem of itemRows) {
     const row = asRecord(rawItem);
-    const parentId = getIdentifier(row, ["rfqId", "rfq_id", "requestId", "request_id", "id"]);
+    const parentId = getIdentifier(row, ["rfqId", "rfq_id", "requestId", "request_id", "id", "ma_yeu_cau"]);
     if (!parentId) {
       continue;
     }
@@ -488,16 +558,23 @@ export async function listAdminRfqs() {
     const record = asRecord(rawItem);
     const customer = pickFirstRecord(record, ["customer", "customerInfo", "customer_info", "customerJson", "customer_json"]);
     const items = pickFirstArray(record, ["items", "rfqItems", "rfq_items"]);
-    const id = normalizeString(record.id || record.rfqId || record.rfq_id || record.code, "RFQ-UNKNOWN");
+    const id = normalizeString(pickValueByAliases(record, ["id", "rfqId", "rfq_id", "code", "ma_rfq", "ma_yeu_cau"]), "RFQ-UNKNOWN");
+
+    const createdAtValue = pickValueByAliases(record, ["createdAt", "created_at", "date", "ngay_tao", "ngay_yeu_cau"]);
+    const customerNameValue = pickValueByAliases(customer, ["name", "ten", "ten_khach_hang"]) ?? pickValueByAliases(record, ["customerName", "customer_name", "ten_khach_hang", "khach_hang"]);
+    const customerPhoneValue = pickValueByAliases(customer, ["phone", "dien_thoai", "so_dien_thoai"]) ?? pickValueByAliases(record, ["customerPhone", "customer_phone", "phone", "so_dien_thoai"]);
+    const customerZaloValue = pickValueByAliases(customer, ["zalo", "zalo_sdt"]) ?? pickValueByAliases(record, ["customerZalo", "customer_zalo", "zalo", "zalo_sdt"]);
+    const itemCountValue = pickValueByAliases(record, ["itemCount", "lineCount", "line_count", "so_dong_ma", "so_san_pham"]);
+    const statusValue = pickValueByAliases(record, ["status", "trang_thai"]);
 
     return {
       id,
-      createdAt: normalizeDateString(record.createdAt || record.created_at || record.date),
-      customerName: normalizeString(customer.name || record.customerName || record.customer_name, "Khách chưa rõ tên"),
-      customerPhone: normalizeString(customer.phone || record.customerPhone || record.customer_phone || record.phone),
-      customerZalo: normalizeString(customer.zalo || record.customerZalo || record.customer_zalo || record.zalo || customer.phone || record.customerPhone || record.customer_phone || record.phone),
-      itemCount: items.length > 0 ? items.length : Math.max(itemCountByRfqId.get(id) ?? 0, Math.round(normalizeNumber(record.itemCount || record.lineCount || record.line_count, 0))),
-      status: normalizeAdminStatus(record.status),
+      createdAt: normalizeDateString(createdAtValue),
+      customerName: normalizeString(customerNameValue, "Khách chưa rõ tên"),
+      customerPhone: normalizeString(customerPhoneValue),
+      customerZalo: normalizeString(customerZaloValue || customerPhoneValue),
+      itemCount: items.length > 0 ? items.length : Math.max(itemCountByRfqId.get(id) ?? 0, Math.round(normalizeNumber(itemCountValue, 0))),
+      status: normalizeAdminStatus(statusValue),
     } satisfies AdminRfqListItem;
   });
 }
@@ -592,18 +669,30 @@ export async function getAdminRfqDetail(rfqId: string) {
   const quoteRecord = resolveQuoteRecord(rawDetail, rfqRecord, rfqId);
   const quoteItems = resolveQuoteItems(rawDetail, quoteRecord, rfqId);
   const quoteSeed = buildQuoteSeed(quoteRecord, quoteItems, items);
+  const detailId = pickValueByAliases(rfqRecord, ["id", "rfqId", "rfq_id", "ma_rfq", "ma_yeu_cau"]);
+  const detailCreatedAt = pickValueByAliases(rfqRecord, ["createdAt", "created_at", "date", "ngay_tao", "ngay_yeu_cau"]);
+  const detailSource = pickValueByAliases(rfqRecord, ["source", "requestSource", "nguon"]);
+  const detailStatus = pickValueByAliases(rfqRecord, ["status", "trang_thai"]);
+
+  const customerName = pickValueByAliases(customerSource, ["name", "ten", "ten_khach_hang"]) ?? pickValueByAliases(rfqRecord, ["customerName", "customer_name", "ten_khach_hang", "khach_hang"]);
+  const customerPhone = pickValueByAliases(customerSource, ["phone", "dien_thoai", "so_dien_thoai"]) ?? pickValueByAliases(rfqRecord, ["customerPhone", "customer_phone", "phone", "so_dien_thoai"]);
+  const customerZalo = pickValueByAliases(customerSource, ["zalo", "zalo_sdt"]) ?? pickValueByAliases(rfqRecord, ["customerZalo", "customer_zalo", "zalo", "zalo_sdt"]);
+  const customerCompany = pickValueByAliases(customerSource, ["company", "cong_ty"]) ?? pickValueByAliases(rfqRecord, ["customerCompany", "customer_company", "cong_ty"]);
+  const customerProvince = pickValueByAliases(customerSource, ["province", "tinh_thanh"]) ?? pickValueByAliases(rfqRecord, ["customerProvince", "customer_province", "tinh_thanh"]);
+  const customerNote = pickValueByAliases(customerSource, ["note", "ghi_chu", "ghi_chu_khach"]) ?? pickValueByAliases(rfqRecord, ["customerNote", "customer_note", "ghi_chu", "ghi_chu_khach"]);
+
   const detail: AdminRfqDetail = {
-    id: normalizeString(rfqRecord.id || rfqRecord.rfqId || rfqRecord.rfq_id, rfqId),
-    createdAt: normalizeDateString(rfqRecord.createdAt || rfqRecord.created_at || rfqRecord.date),
-    source: normalizeString(rfqRecord.source || rfqRecord.requestSource, "website-tra-ma-bao-gia") as QuoteRequest["source"],
-    status: normalizeAdminStatus(rfqRecord.status),
+    id: normalizeString(detailId, rfqId),
+    createdAt: normalizeDateString(detailCreatedAt),
+    source: normalizeString(detailSource, "website-tra-ma-bao-gia") as QuoteRequest["source"],
+    status: normalizeAdminStatus(detailStatus),
     customer: {
-      name: normalizeString(customerSource.name || rfqRecord.customerName || rfqRecord.customer_name, "Khách chưa rõ tên"),
-      phone: normalizeString(customerSource.phone || rfqRecord.customerPhone || rfqRecord.customer_phone || rfqRecord.phone),
-      zalo: normalizeString(customerSource.zalo || rfqRecord.customerZalo || rfqRecord.customer_zalo || rfqRecord.zalo || customerSource.phone || rfqRecord.customerPhone || rfqRecord.customer_phone || rfqRecord.phone),
-      company: normalizeString(customerSource.company || rfqRecord.customerCompany || rfqRecord.customer_company),
-      province: normalizeString(customerSource.province || rfqRecord.customerProvince || rfqRecord.customer_province),
-      note: normalizeString(customerSource.note || rfqRecord.customerNote || rfqRecord.customer_note),
+      name: normalizeString(customerName, "Khách chưa rõ tên"),
+      phone: normalizeString(customerPhone),
+      zalo: normalizeString(customerZalo || customerPhone),
+      company: normalizeString(customerCompany),
+      province: normalizeString(customerProvince),
+      note: normalizeString(customerNote),
     },
     items,
     quote: items.length > 0 ? hydrateQuoteDraft(quoteSeed, items) : buildDefaultQuoteDraft([]),
@@ -657,12 +746,13 @@ export async function saveAdminQuote(rfqId: string, quote: AdminQuoteDraft) {
 
 export async function saveAdminStatus(rfqId: string, status: string) {
   const normalizedStatus = normalizeAdminStatus(status);
+  const statusLabel = getAdminStatusLabel(normalizedStatus);
   const actionVariants: SheetAction[] = ["update_status", "set_status", "update_rfq_status"];
   const payloadVariants: Array<Record<string, unknown>> = [
-    { rfqId, status: normalizedStatus },
-    { rfq_id: rfqId, status: normalizedStatus },
-    { id: rfqId, requestId: rfqId, status: normalizedStatus },
-    { rfq: { id: rfqId }, status: normalizedStatus },
+    { rfqId, status: statusLabel, statusCode: normalizedStatus },
+    { rfq_id: rfqId, status: statusLabel, statusCode: normalizedStatus },
+    { id: rfqId, requestId: rfqId, status: statusLabel, statusCode: normalizedStatus },
+    { rfq: { id: rfqId }, status: statusLabel, statusCode: normalizedStatus },
   ];
 
   let lastError: unknown = null;

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAdminCookieName, verifyAdminSessionToken } from "@/lib/admin/auth";
-import { type AdminRfqListItem } from "@/lib/admin/quote";
+import { ADMIN_RFQ_STATUSES, getAdminStatusLabel, type AdminRfqListItem } from "@/lib/admin/quote";
 import { listAdminRfqs } from "@/lib/admin/sheet-webhook";
 
 export const runtime = "nodejs";
@@ -83,11 +83,11 @@ export default async function AdminBaoGiaPage({
               />
               <select name="status" defaultValue={status} className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm outline-none focus:border-blue-400">
                 <option value="all">Tất cả trạng thái</option>
-                <option value="new">new</option>
-                <option value="draft">draft</option>
-                <option value="quoted">quoted</option>
-                <option value="sent">sent</option>
-                <option value="closed">closed</option>
+                {ADMIN_RFQ_STATUSES.map((option) => (
+                  <option key={option} value={option}>
+                    {getAdminStatusLabel(option)}
+                  </option>
+                ))}
               </select>
               <Button type="submit" className="bg-blue-800 text-white hover:bg-blue-900">
                 Lọc danh sách
@@ -126,7 +126,7 @@ export default async function AdminBaoGiaPage({
                     <td className="px-4 py-3 text-slate-900">{item.customerName}</td>
                     <td className="px-4 py-3 text-slate-600">{item.customerZalo || item.customerPhone || "Chưa có"}</td>
                     <td className="px-4 py-3 text-slate-600">{item.itemCount}</td>
-                    <td className="px-4 py-3"><Badge variant={badgeVariantForStatus(item.status)}>{item.status}</Badge></td>
+                    <td className="px-4 py-3"><Badge variant={badgeVariantForStatus(item.status)}>{getAdminStatusLabel(item.status)}</Badge></td>
                     <td className="px-4 py-3 text-right">
                       <Button asChild type="button" variant="outline">
                         <Link href={`/admin/bao-gia/${encodeURIComponent(item.id)}`}>Mở chi tiết</Link>

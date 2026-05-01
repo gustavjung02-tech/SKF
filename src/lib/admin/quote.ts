@@ -4,6 +4,14 @@ export const ADMIN_RFQ_STATUSES = ["new", "draft", "quoted", "sent", "closed"] a
 
 export type AdminRfqStatus = (typeof ADMIN_RFQ_STATUSES)[number];
 
+const ADMIN_STATUS_LABELS: Record<AdminRfqStatus, string> = {
+  new: "Mới tiếp nhận",
+  draft: "Đang soạn báo giá",
+  quoted: "Đã lên báo giá",
+  sent: "Đã gửi khách",
+  closed: "Đã chốt",
+};
+
 export type AdminQuoteLineDraft = {
   code: string;
   normalizedCode: string;
@@ -74,11 +82,40 @@ function clampPercent(value: unknown) {
 
 export function normalizeAdminStatus(value: unknown): AdminRfqStatus {
   const safeValue = `${value ?? ""}`.trim().toLowerCase();
+  const normalizedText = safeValue
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const viLabelToStatus: Record<string, AdminRfqStatus> = {
+    "moi tiep nhan": "new",
+    moi: "new",
+    "dang soan bao gia": "draft",
+    "dang xu ly": "draft",
+    "da len bao gia": "quoted",
+    "da lap bao gia": "quoted",
+    "da gui khach": "sent",
+    "da gui": "sent",
+    "da chot": "closed",
+    "hoan tat": "closed",
+  };
+
+  if (normalizedText in viLabelToStatus) {
+    return viLabelToStatus[normalizedText];
+  }
+
   if (ADMIN_RFQ_STATUSES.includes(safeValue as AdminRfqStatus)) {
     return safeValue as AdminRfqStatus;
   }
 
   return "new";
+}
+
+export function getAdminStatusLabel(status: unknown) {
+  const normalized = normalizeAdminStatus(status);
+  return ADMIN_STATUS_LABELS[normalized];
 }
 
 export function buildDefaultQuoteDraft(items: QuoteRequestItem[]): AdminQuoteDraft {
