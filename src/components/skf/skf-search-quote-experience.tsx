@@ -1709,7 +1709,7 @@ export function SkfSearchQuoteExperience() {
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                   placeholder="Nhập mã SKF, ví dụ: 6205, 6205 2Z, NU308..."
-                  className="h-12 rounded-xl border-[#3F6998] bg-[#0A223B] pl-11 font-semibold text-[#F4F9FF] placeholder:text-[#8BAECC] focus-visible:border-[#1FB6FF] focus-visible:ring-[#1FB6FF]/45"
+                  className="h-12 rounded-xl border-[#3F6998] bg-[#0A223B] pl-11 font-semibold text-[#F4F9FF] placeholder:text-[#8BAECC] focus-visible:border-[#1FB6FF] focus-visible:bg-[#0A223B] focus-visible:ring-[#1FB6FF]/45"
                 />
               </div>
               <Button type="submit" className="h-12 rounded-xl bg-[#1D72C9] px-5 text-white hover:bg-[#1159A6]">
@@ -1764,7 +1764,7 @@ export function SkfSearchQuoteExperience() {
             <div className="space-y-1.5 xl:col-span-2">
               <Label className="text-xs font-semibold text-[#B6D4F1]">Nhóm sản phẩm</Label>
               <Select value={selectedGroup} onValueChange={handleGroupChange}>
-                <SelectTrigger className="h-11 w-full rounded-xl border-[#3F6998] bg-[#0A223B] text-[#EAF2FB] focus-visible:border-[#1FB6FF] focus-visible:ring-[#1FB6FF]/45">
+                <SelectTrigger className="h-11 w-full rounded-xl border-[#3F6998] bg-[#0A223B] text-[#EAF2FB] focus-visible:border-[#1FB6FF] focus-visible:bg-[#0A223B] focus-visible:ring-[#1FB6FF]/45">
                   <SelectValue placeholder="Chọn nhóm sản phẩm">{selectedGroupLabel || undefined}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
@@ -1780,7 +1780,7 @@ export function SkfSearchQuoteExperience() {
             <div className="space-y-1.5 xl:col-span-1">
               <Label className="text-xs font-semibold text-[#B6D4F1]">Ứng dụng</Label>
               <Select value={selectedApplication} onValueChange={(value) => setSelectedApplication(value ?? "")}>
-                <SelectTrigger className="h-11 w-full rounded-xl border-[#3F6998] bg-[#0A223B] text-[#EAF2FB] focus-visible:border-[#1FB6FF] focus-visible:ring-[#1FB6FF]/45">
+                <SelectTrigger className="h-11 w-full rounded-xl border-[#3F6998] bg-[#0A223B] text-[#EAF2FB] focus-visible:border-[#1FB6FF] focus-visible:bg-[#0A223B] focus-visible:ring-[#1FB6FF]/45">
                   <SelectValue placeholder="Chọn ứng dụng" />
                 </SelectTrigger>
                 <SelectContent>
@@ -1801,7 +1801,7 @@ export function SkfSearchQuoteExperience() {
                 value={innerDiameter}
                 onChange={(event) => setInnerDiameter(event.target.value)}
                 placeholder="20"
-                className="h-11 rounded-xl border-[#3F6998] bg-[#0A223B] font-semibold text-[#F4F9FF] placeholder:text-[#8BAECC] focus-visible:border-[#1FB6FF] focus-visible:ring-[#1FB6FF]/45"
+                className="h-11 rounded-xl border-[#3F6998] bg-[#0A223B] font-semibold text-[#F4F9FF] placeholder:text-[#8BAECC] focus-visible:border-[#1FB6FF] focus-visible:bg-[#0A223B] focus-visible:ring-[#1FB6FF]/45"
               />
             </div>
 
@@ -1813,7 +1813,7 @@ export function SkfSearchQuoteExperience() {
                 value={outerDiameter}
                 onChange={(event) => setOuterDiameter(event.target.value)}
                 placeholder="52"
-                className="h-11 rounded-xl border-[#3F6998] bg-[#0A223B] font-semibold text-[#F4F9FF] placeholder:text-[#8BAECC] focus-visible:border-[#1FB6FF] focus-visible:ring-[#1FB6FF]/45"
+                className="h-11 rounded-xl border-[#3F6998] bg-[#0A223B] font-semibold text-[#F4F9FF] placeholder:text-[#8BAECC] focus-visible:border-[#1FB6FF] focus-visible:bg-[#0A223B] focus-visible:ring-[#1FB6FF]/45"
               />
             </div>
 
@@ -1825,7 +1825,7 @@ export function SkfSearchQuoteExperience() {
                 value={width}
                 onChange={(event) => setWidth(event.target.value)}
                 placeholder="15"
-                className="h-11 rounded-xl border-[#3F6998] bg-[#0A223B] font-semibold text-[#F4F9FF] placeholder:text-[#8BAECC] focus-visible:border-[#1FB6FF] focus-visible:ring-[#1FB6FF]/45"
+                className="h-11 rounded-xl border-[#3F6998] bg-[#0A223B] font-semibold text-[#F4F9FF] placeholder:text-[#8BAECC] focus-visible:border-[#1FB6FF] focus-visible:bg-[#0A223B] focus-visible:ring-[#1FB6FF]/45"
               />
             </div>
           </div>
