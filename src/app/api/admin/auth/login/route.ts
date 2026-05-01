@@ -166,9 +166,11 @@ export async function POST(request: NextRequest) {
 
   if (!input.email || !input.password) {
     if (input.isJson) {
-      return NextResponse.json({ ok: false, error: "Vui lòng nhập email và mật khẩu admin." }, { status: 400 });
+      const response = NextResponse.json({ ok: false, error: "Vui lòng nhập email và mật khẩu admin." }, { status: 400 });
+      response.cookies.delete(getAdminOtpCookieName());
+      return response;
     }
-    return NextResponse.redirect(
+    const response = NextResponse.redirect(
       buildLoginRedirect(request, input.nextPath, {
         error: "Vui lòng nhập email và mật khẩu admin.",
         step: "password",
@@ -176,14 +178,18 @@ export async function POST(request: NextRequest) {
       }),
       { status: 303 },
     );
+    response.cookies.delete(getAdminOtpCookieName());
+    return response;
   }
 
   const account = await getAdminAccountByCredentialsFromStore(input.email, input.password);
   if (!account) {
     if (input.isJson) {
-      return NextResponse.json({ ok: false, error: "Email hoặc mật khẩu admin không đúng." }, { status: 401 });
+      const response = NextResponse.json({ ok: false, error: "Email hoặc mật khẩu admin không đúng." }, { status: 401 });
+      response.cookies.delete(getAdminOtpCookieName());
+      return response;
     }
-    return NextResponse.redirect(
+    const response = NextResponse.redirect(
       buildLoginRedirect(request, input.nextPath, {
         error: "Email hoặc mật khẩu admin không đúng.",
         step: "password",
@@ -191,6 +197,8 @@ export async function POST(request: NextRequest) {
       }),
       { status: 303 },
     );
+    response.cookies.delete(getAdminOtpCookieName());
+    return response;
   }
 
   const otpCode = createOtpCode();

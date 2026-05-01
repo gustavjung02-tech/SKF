@@ -6,7 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { getAdminCookieName, getAdminLoginRedirect, getDefaultAdminLoginEmail, verifyAdminSessionToken } from "@/lib/admin/auth";
+import {
+  getAdminCookieName,
+  getAdminLoginRedirect,
+  getAdminOtpCookieName,
+  getDefaultAdminLoginEmail,
+  verifyAdminOtpStateToken,
+  verifyAdminSessionToken,
+} from "@/lib/admin/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +24,8 @@ export default async function AdminLoginPage({
 }) {
   const cookieStore = cookies();
   const nextPath = getAdminLoginRedirect(searchParams?.next);
-  const step = searchParams?.step === "otp" ? "otp" : "password";
+  const otpState = await verifyAdminOtpStateToken(cookieStore.get(getAdminOtpCookieName())?.value);
+  const step = otpState ? "otp" : searchParams?.step === "otp" ? "otp" : "password";
   const initialEmail = `${searchParams?.email ?? getDefaultAdminLoginEmail()}`.trim().toLowerCase();
   const isAuthenticated = await verifyAdminSessionToken(cookieStore.get(getAdminCookieName())?.value);
 
