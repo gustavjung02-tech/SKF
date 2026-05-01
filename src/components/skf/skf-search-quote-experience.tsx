@@ -1187,21 +1187,23 @@ export function SkfSearchQuoteExperience() {
       ? "Đường kính ngoài D phải lớn hơn trục trong d."
       : "";
 
-  function doesRecordMatchSupplementaryFilters(record: GroupRecord) {
-    const applicationTextResolved = getApplicationText(record);
-    const industriesText = getIndustriesText(record);
-    const machineGroupsText = getMachineGroupsText(record);
-
-    const matchesGroup = !selectedGroup || doesRecordMatchGroup(record, selectedGroup);
-    const matchesApplication = !selectedApplication || normalizeText(applicationTextResolved).includes(normalizeText(selectedApplication));
-    const matchesIndustry = !selectedIndustry || normalizeText(industriesText).includes(normalizeText(selectedIndustry));
-    const matchesMachineGroup = !selectedMachineGroup || normalizeText(machineGroupsText).includes(normalizeText(selectedMachineGroup));
-    const matchesPriority = !selectedPriority || record.priority === selectedPriority;
-
-    return matchesGroup && matchesApplication && matchesIndustry && matchesMachineGroup && matchesPriority;
-  }
-
   useEffect(() => {
+    const doesRecordMatchSupplementaryFilters = (record: GroupRecord) => {
+      const applicationTextResolved = getApplicationText(record);
+      const industriesText = getIndustriesText(record);
+      const machineGroupsText = getMachineGroupsText(record);
+
+      const matchesGroup = !selectedGroup || doesRecordMatchGroup(record, selectedGroup);
+      const matchesApplication =
+        !selectedApplication || normalizeText(applicationTextResolved).includes(normalizeText(selectedApplication));
+      const matchesIndustry = !selectedIndustry || normalizeText(industriesText).includes(normalizeText(selectedIndustry));
+      const matchesMachineGroup =
+        !selectedMachineGroup || normalizeText(machineGroupsText).includes(normalizeText(selectedMachineGroup));
+      const matchesPriority = !selectedPriority || record.priority === selectedPriority;
+
+      return matchesGroup && matchesApplication && matchesIndustry && matchesMachineGroup && matchesPriority;
+    };
+
     const rawQuery = deferredQuery.trim();
     const expectedInner = parsedInnerDiameter;
     const expectedOuter = parsedOuterDiameter;
