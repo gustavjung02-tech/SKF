@@ -1302,7 +1302,12 @@ export function SkfSearchQuoteExperience() {
     }
 
     if (variantGroupKeys.size > 0) {
-      for (const sibling of candidateData) {
+      const variantSiblingPool = new Map<string, GroupRecord>();
+      for (const poolRecord of [...(codeIndex ?? []), ...allGroupData, ...candidateData]) {
+        variantSiblingPool.set(poolRecord.id, poolRecord);
+      }
+
+      for (const sibling of Array.from(variantSiblingPool.values())) {
         if (!doesRecordMatchSupplementaryFilters(sibling)) {
           continue;
         }
@@ -1536,11 +1541,6 @@ export function SkfSearchQuoteExperience() {
     window.open(shareUrl, "_blank", "noopener,noreferrer");
   }
 
-  function openEmailComposer(subject: string, body: string) {
-    const mailtoUrl = `${siteConfig.emailHref}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailtoUrl;
-  }
-
   function updateCustomerForm<K extends keyof QuoteRequestCustomerForm>(key: K, value: QuoteRequestCustomerForm[K]) {
     setCustomerForm((current) => ({ ...current, [key]: value }));
   }
@@ -1574,23 +1574,18 @@ export function SkfSearchQuoteExperience() {
       return;
     }
 
-    const customerName = customerForm.name.trim();
+    const customerName = customerForm.name.trim() || (channel === "email" ? "Khach gui email" : "Khach gui Zalo");
     const customerPhone = customerForm.phone.trim();
     const customerEmail = customerForm.email.trim();
     const customerZalo = customerForm.zalo.trim() || customerPhone;
-
-    if (!customerName) {
-      setQuoteFormError("Vui lòng nhập họ tên người liên hệ.");
-      return;
-    }
 
     if (channel === "zalo" && !customerZalo) {
       setQuoteFormError("Gửi Zalo cần có SĐT/Zalo để liên hệ.");
       return;
     }
 
-    if (channel === "email" && !customerEmail && !customerPhone) {
-      setQuoteFormError("Gửi email cần tối thiểu Email hoặc SĐT.");
+    if (channel === "email" && !customerEmail) {
+      setQuoteFormError("Gửi email chỉ cần nhập Email để nhận phản hồi tự động.");
       return;
     }
 
@@ -1643,20 +1638,18 @@ export function SkfSearchQuoteExperience() {
 
       if (channel === "zalo") {
         openZaloWithMessage(zaloMessage);
-      } else {
-        openEmailComposer(emailMessage.subject, emailMessage.body);
       }
 
       setCopyNotice(
         channel === "zalo"
           ? "Đã lưu admin và mở Zalo. Nếu máy không tự điền đủ nội dung, hãy bấm Copy lại rồi dán gửi."
-          : "Đã lưu admin và mở email soạn sẵn nội dung gửi khách.",
+          : "Đã lưu admin và đã gửi email cảm ơn tự động cho khách. Nhân viên sẽ xử lý báo giá trên admin.",
       );
       window.setTimeout(() => setCopyNotice(""), 6000);
-      setLatestQuoteMessage(messageForClipboard);
+      setLatestQuoteMessage(channel === "zalo" ? messageForClipboard : "");
       setLatestQuoteJson(rfqJson);
       setLatestSubmitChannel(channel);
-      setClipboardAvailable(copied);
+      setClipboardAvailable(channel === "zalo" ? copied : true);
       setIsQuoteModalOpen(false);
       setIsQuoteResultModalOpen(true);
       setQuoteFormError("");
@@ -2006,9 +1999,9 @@ export function SkfSearchQuoteExperience() {
               {copyNotice ? <p className="mt-1 text-xs font-medium text-emerald-700">{copyNotice}</p> : null}
             </div>
             <div className="grid gap-2 sm:flex">
-              <Button type="button" className="bg-[#1D72C9] text-white hover:bg-[#1159A6]" onClick={scrollToQuoteFlow}>
+              <Button type="button" className="bg-[#1D72C9] text-white hover:bg-[#1159A6]" onClick={openQuoteModal}>
                 <MessageCircle className="mr-2 size-4" />
-                Gửi yêu cầu báo giá
+                Chọn cách gửi báo giá
               </Button>
               <Button
                 type="button"
@@ -2030,20 +2023,21 @@ export function SkfSearchQuoteExperience() {
       <section id="gui-yeu-cau-zalo" ref={quoteFlowRef} className="scroll-mt-24 space-y-4">
         <div className="rounded-2xl border border-[#2D567F] bg-[#0D2744]/95 p-4 shadow-[0_20px_44px_-28px_rgba(4,12,25,0.8)] sm:p-5">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8EC6FF]">Bước gửi báo giá</p>
-          <h3 className="mt-2 font-heading text-lg font-bold text-[#F0F7FF] sm:text-xl">Tra mã → Chọn mã → Mở Zalo để gửi</h3>
+          <h3 className="mt-2 font-heading text-lg font-bold text-[#F0F7FF] sm:text-xl">Tra mã → Chọn mã → Gửi theo 2 cách riêng</h3>
           <div className="mt-3 flex flex-wrap gap-2">
             <span className="rounded-full border border-[#4B79A8] bg-[#12395D] px-3 py-1 text-xs font-semibold text-[#DDEEFF]">1. Tra mã</span>
             <span className="rounded-full border border-[#4B79A8] bg-[#12395D] px-3 py-1 text-xs font-semibold text-[#DDEEFF]">2. Chọn mã</span>
-            <span className="rounded-full border border-[#8F4E59] bg-[#4C2330] px-3 py-1 text-xs font-semibold text-[#FFB9C2]">3. Gửi Zalo</span>
+            <span className="rounded-full border border-[#8F4E59] bg-[#4C2330] px-3 py-1 text-xs font-semibold text-[#FFB9C2]">3A. Gửi Zalo</span>
+            <span className="rounded-full border border-[#4B79A8] bg-[#12395D] px-3 py-1 text-xs font-semibold text-[#DDEEFF]">3B. Gửi Email</span>
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2">
             <Button type="button" className="bg-[#1D72C9] text-white hover:bg-[#1159A6]" onClick={openQuoteModal}>
               <MessageCircle className="mr-2 size-4" />
-              {selectedQuoteItems.length > 0 ? "Mở phiếu gửi Zalo" : "Chọn mã trước khi mở phiếu"}
+              {selectedQuoteItems.length > 0 ? "Chọn gửi Zalo / Email" : "Chọn mã trước khi mở phiếu"}
             </Button>
             <Button type="button" variant="outline" className="border-[#406C99] text-[#D6E9FD] hover:bg-[#17466F]" onClick={scrollToLeadForm}>
-              Đi tới form phụ
+              Form phụ (tùy chọn)
             </Button>
           </div>
 
@@ -2059,11 +2053,11 @@ export function SkfSearchQuoteExperience() {
 
       {isQuoteModalOpen ? (
         <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/50 p-3">
-          <div className="max-h-[92vh] w-full max-w-3xl overflow-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl sm:p-5">
+          <div className="max-h-[92vh] w-full max-w-3xl overflow-auto rounded-2xl border border-slate-200 bg-white p-4 text-slate-900 shadow-2xl sm:p-5">
             <div className="mb-4 flex items-start justify-between gap-3">
               <div>
-                <h3 className="font-heading text-xl font-bold text-slate-950">Phiếu yêu cầu báo giá</h3>
-                <p className="mt-1 text-sm text-slate-600">Nhập nhanh thông tin khách và số lượng theo từng mã đã chọn.</p>
+                <h3 className="font-heading text-xl font-bold text-slate-950">Chọn cách gửi báo giá</h3>
+                <p className="mt-1 text-sm text-slate-600">2 cách gửi là độc lập: Zalo dùng để chat nhanh, Email dùng để nhận phản hồi tự động cảm ơn.</p>
               </div>
               <Button type="button" variant="outline" className="border-slate-200 text-slate-600" onClick={closeQuoteModal}>
                 <X className="mr-1 size-4" />
@@ -2080,12 +2074,13 @@ export function SkfSearchQuoteExperience() {
             >
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label htmlFor="rfq-customer-name">Họ tên (bắt buộc)</Label>
+                  <Label htmlFor="rfq-customer-name">Họ tên (tùy chọn cho Email)</Label>
                   <Input
                     id="rfq-customer-name"
                     value={customerForm.name}
                     onChange={(event) => updateCustomerForm("name", event.target.value)}
                     placeholder="Nguyen Van A"
+                    className="bg-white text-slate-900 placeholder:text-slate-400"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -2101,15 +2096,17 @@ export function SkfSearchQuoteExperience() {
                       }
                     }}
                     placeholder="0969 155 751"
+                    className="bg-white text-slate-900 placeholder:text-slate-400"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="rfq-customer-email">Email</Label>
+                  <Label htmlFor="rfq-customer-email">Email (bắt buộc khi gửi Email)</Label>
                   <Input
                     id="rfq-customer-email"
                     value={customerForm.email}
                     onChange={(event) => updateCustomerForm("email", event.target.value)}
                     placeholder="ten@congty.com"
+                    className="bg-white text-slate-900 placeholder:text-slate-400"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -2119,6 +2116,7 @@ export function SkfSearchQuoteExperience() {
                     value={customerForm.company}
                     onChange={(event) => updateCustomerForm("company", event.target.value)}
                     placeholder="Ten nha may"
+                    className="bg-white text-slate-900 placeholder:text-slate-400"
                   />
                 </div>
                 <div className="space-y-1.5 sm:col-span-2">
@@ -2128,6 +2126,7 @@ export function SkfSearchQuoteExperience() {
                     value={customerForm.province}
                     onChange={(event) => updateCustomerForm("province", event.target.value)}
                     placeholder="TP.HCM"
+                    className="bg-white text-slate-900 placeholder:text-slate-400"
                   />
                 </div>
               </div>
@@ -2140,6 +2139,7 @@ export function SkfSearchQuoteExperience() {
                   value={customerForm.note}
                   onChange={(event) => updateCustomerForm("note", event.target.value)}
                   placeholder="Yeu cau giao nhanh, hoa don VAT..."
+                  className="bg-white text-slate-900 placeholder:text-slate-400"
                 />
               </div>
 
@@ -2161,6 +2161,7 @@ export function SkfSearchQuoteExperience() {
                               value={draft.quantity}
                               onChange={(event) => updateQuoteItemDraft(item.code, { quantity: event.target.value.replace(/[^0-9]/g, "") })}
                               placeholder="1"
+                              className="bg-white text-slate-900 placeholder:text-slate-400"
                             />
                           </div>
                           <div className="space-y-1">
@@ -2170,6 +2171,7 @@ export function SkfSearchQuoteExperience() {
                               value={draft.customerNote}
                               onChange={(event) => updateQuoteItemDraft(item.code, { customerNote: event.target.value })}
                               placeholder="Vi du: can hang chinh hang, giao truoc thu 6"
+                              className="bg-white text-slate-900 placeholder:text-slate-400"
                             />
                           </div>
                         </div>
@@ -2202,7 +2204,7 @@ export function SkfSearchQuoteExperience() {
                   Hủy
                 </Button>
               </div>
-              <p className="text-xs text-slate-500">Gửi Email yêu cầu: Họ tên + (Email hoặc SĐT). Gửi Zalo yêu cầu: Họ tên + SĐT/Zalo.</p>
+              <p className="text-xs text-slate-500">Gửi Zalo: cần SĐT/Zalo để mở chat và dán nội dung. Gửi Email: chỉ cần nhập Email, hệ thống tự gửi thư cảm ơn và chuyển phiếu vào admin.</p>
             </form>
           </div>
         </div>
@@ -2217,7 +2219,7 @@ export function SkfSearchQuoteExperience() {
                 <p className="mt-1 text-sm text-slate-600">
                   {latestSubmitChannel === "zalo"
                     ? "Phiếu đã lưu vào admin. Hệ thống đã mở kênh Zalo, nếu nội dung chưa tự điền thì bấm Copy lại rồi dán gửi."
-                    : "Phiếu đã lưu vào admin. Hệ thống đã mở email soạn sẵn nội dung để gửi khách."}
+                    : "Phiếu đã lưu vào admin. Hệ thống đã gửi email cảm ơn tự động tới khách và nhân viên sẽ xử lý báo giá."}
                 </p>
               </div>
               <Button type="button" variant="outline" className="border-slate-200 text-slate-600" onClick={() => setIsQuoteResultModalOpen(false)}>
@@ -2263,8 +2265,8 @@ export function SkfSearchQuoteExperience() {
           <h3 className="font-heading text-xl font-bold text-slate-950">Kênh phụ: form báo giá</h3>
           <p className="mt-2 text-sm text-slate-600">
             {selectedQuoteCodes.length
-              ? `Đã chọn ${selectedQuoteCodes.length} mã. Ưu tiên gửi Zalo trước, form này dùng khi cần bổ sung thông tin.`
-              : "Form phụ, dùng khi cần gửi thêm thông tin chi tiết."}
+              ? `Đã chọn ${selectedQuoteCodes.length} mã. Đây là form phụ tùy chọn, không bắt buộc khi đã gửi Zalo/Email ở bước trên.`
+              : "Form phụ tùy chọn, dùng khi cần gửi thêm thông tin kỹ thuật chi tiết."}
           </p>
         </div>
         <LeadForm initialRequestedCode={selectedQuoteText} />
