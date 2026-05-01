@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { listManagedAdminAccounts } from "@/lib/admin/account-store";
+import { getManagedAdminStorageMode, listManagedAdminAccounts } from "@/lib/admin/account-store";
 import {
   ADMIN_PERMISSION_DEFINITIONS,
   ADMIN_ROLE_DEFINITIONS,
@@ -74,6 +74,7 @@ export default async function AdminPermissionsPage({ searchParams }: AdminPermis
 
   const superAdminEmail = getFixedSuperAdminEmail();
   const superAdminPermissions = getSuperAdminPermissions();
+  const storageMode = getManagedAdminStorageMode();
   const managedAccounts = await listManagedAdminAccounts();
   const status = searchParams?.status === "success" || searchParams?.status === "error" ? searchParams.status : undefined;
   const message = typeof searchParams?.message === "string" ? searchParams.message : "";
@@ -97,8 +98,16 @@ export default async function AdminPermissionsPage({ searchParams }: AdminPermis
         </div>
       ) : null}
 
-      <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-        Danh sách tài khoản cấp dưới hiện đang lưu bằng file local trong server Node. Khi chạy production serverless, cần chuyển sang DB/KV trước khi mở rộng vận hành nhiều tài khoản.
+      <div
+        className={
+          storageMode === "blob"
+            ? "rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900"
+            : "rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
+        }
+      >
+        {storageMode === "blob"
+          ? "Danh sách tài khoản cấp dưới đang lưu trên Vercel Blob, phù hợp cho môi trường production serverless."
+          : "Danh sách tài khoản cấp dưới hiện đang lưu bằng file local trong server Node. Khi đẩy lên môi trường serverless, cần cấu hình Vercel Blob hoặc backend lưu trữ tương đương."}
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">

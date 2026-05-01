@@ -1,3 +1,4 @@
+import { get, put } from "@vercel/blob";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import {
@@ -26,6 +27,11 @@ type AdminUsersFileShape = {
 };
 
 const ADMIN_USERS_FILE_PATH = path.join(process.cwd(), "data", "admin", "admin-users.json");
+const ADMIN_USERS_BLOB_PATH = "admin/admin-users.json";
+
+export function getManagedAdminStorageMode() {
+  return process.env.BLOB_READ_WRITE_TOKEN ? "blob" : "file";
+}
 
 function normalizeEmail(value: string) {
   return String(value || "").trim().toLowerCase();
@@ -68,6 +74,54 @@ async function writeAdminUsersFile(data: AdminUsersFileShape) {
   await fs.writeFile(ADMIN_USERS_FILE_PATH, JSON.stringify(data, null, 2), "utf8");
 }
 
+async function readAdminUsersBlob(): Promise<AdminUsersFileShape> {
+  const result = await get(ADMIN_USERS_BLOB_PATH, {
+    access: "private",
+    useCache: false,
+  });
+
+  if (!result?.stream) {
+    return { users: [] };
+  }
+
+  const raw = await new Response(result.stream).text();
+
+  try {
+    const parsed = JSON.parse(raw) as Partial<AdminUsersFileShape>;
+    return {
+      users: Array.isArray(parsed.users) ? parsed.users : [],
+    };
+  } catch {
+    return { users: [] };
+  }
+}
+
+async function writeAdminUsersBlob(data: AdminUsersFileShape) {
+  await put(ADMIN_USERS_BLOB_PATH, JSON.stringify(data, null, 2), {
+    access: "private",
+    addRandomSuffix: false,
+    allowOverwrite: true,
+    contentType: "application/json; charset=utf-8",
+  });
+}
+
+async function readAdminUsersStore(): Promise<AdminUsersFileShape> {
+  if (getManagedAdminStorageMode() === "blob") {
+    return readAdminUsersBlob();
+  }
+
+  return readAdminUsersFile();
+}
+
+async function writeAdminUsersStore(data: AdminUsersFileShape) {
+  if (getManagedAdminStorageMode() === "blob") {
+    await writeAdminUsersBlob(data);
+    return;
+  }
+
+  await writeAdminUsersFile(data);
+}
+
 function sanitizeManagedRecord(record: ManagedAdminAccountRecord): ManagedAdminAccountRecord {
   const role = record.role === "manager" || record.role === "admin" || record.role === "staff" ? record.role : "staff";
   const status = record.status === "disabled" ? "disabled" : "active";
@@ -86,7 +140,7 @@ function sanitizeManagedRecord(record: ManagedAdminAccountRecord): ManagedAdminA
 }
 
 export async function listManagedAdminAccounts() {
-  const data = await readAdminUsersFile();
+  const data = await readAdminUsersStore();
   return data.users.map(sanitizeManagedRecord);
 }
 
@@ -97,7 +151,7 @@ export async function createManagedAdminAccount(input: {
   permissions: AdminPermission[];
   password: string;
 }) {
-  const data = await readAdminUsersFile();
+  const data = await readAdminUsersStore();
   const email = normalizeEmail(input.email);
 
   if (!email) {
@@ -126,7 +180,7 @@ export async function createManagedAdminAccount(input: {
   });
 
   data.users.push(record);
-  await writeAdminUsersFile(data);
+  await writeAdminUsersStore(data);
   return record;
 }
 
@@ -139,7 +193,7 @@ export async function updateManagedAdminAccount(input: {
   status: AdminAccountStatus;
   password?: string;
 }) {
-  const data = await readAdminUsersFile();
+  const data = await readAdminUsersStore();
   const index = data.users.findIndex((user) => user.id === input.id);
   if (index < 0) {
     throw new Error("Không tìm thấy tài khoản cần cập nhật.");
@@ -171,12 +225,12 @@ export async function updateManagedAdminAccount(input: {
     updatedAt: new Date().toISOString(),
   });
 
-  await writeAdminUsersFile(data);
+  await writeAdminUsersStore(data);
   return data.users[index];
 }
 
 export async function updateManagedAdminAccountStatus(id: string, status: AdminAccountStatus) {
-  const data = await readAdminUsersFile();
+  const data = await readAdminUsersStore();
   const index = data.users.findIndex((user) => user.id === id);
   if (index < 0) {
     throw new Error("Không tìm thấy tài khoản cần cập nhật.");
@@ -188,12 +242,12 @@ export async function updateManagedAdminAccountStatus(id: string, status: AdminA
     status: status === "disabled" ? "disabled" : "active",
     updatedAt: new Date().toISOString(),
   };
-  await writeAdminUsersFile(data);
+  await writeAdminUsersStore(data);
   return data.users[index];
 }
 
 export async function updateManagedAdminPassword(id: string, password: string) {
-  const data = await readAdminUsersFile();
+  const data = await readAdminUsersStore();
   const index = data.users.findIndex((user) => user.id === id);
   if (index < 0) {
     throw new Error("Không tìm thấy tài khoản cần đổi mật khẩu.");
@@ -205,18 +259,18 @@ export async function updateManagedAdminPassword(id: string, password: string) {
     passwords: [normalizeSecret(password)],
     updatedAt: new Date().toISOString(),
   };
-  await writeAdminUsersFile(data);
+  await writeAdminUsersStore(data);
   return data.users[index];
 }
 
 export async function deleteManagedAdminAccount(id: string) {
-  const data = await readAdminUsersFile();
+  const data = await readAdminUsersStore();
   const nextUsers = data.users.filter((user) => user.id !== id);
   if (nextUsers.length === data.users.length) {
     throw new Error("Không tìm thấy tài khoản cần xóa.");
   }
 
-  await writeAdminUsersFile({ users: nextUsers });
+  await writeAdminUsersStore({ users: nextUsers });
 }
 
 export async function getAdminAccountByCredentialsFromStore(emailCandidate: string, passwordCandidate: string): Promise<AdminAccount | null> {

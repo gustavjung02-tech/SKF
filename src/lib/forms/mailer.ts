@@ -4,6 +4,8 @@ const DEFAULT_INTERNAL_RECIPIENT = "gustavjung02@gmail.com";
 const DEFAULT_FROM = "SKF Công Nghiệp <onboarding@resend.dev>";
 const DEFAULT_ASSET_BASE_URL = `https://${siteConfig.domain}`;
 
+const warnedMissingMailFromKinds = new Set<string>();
+
 const MAIL_FROM_ENV_BY_KIND = {
   default: "FORM_MAIL_FROM",
   support: "FORM_MAIL_FROM_SUPPORT",
@@ -58,8 +60,11 @@ export function getMailFromAddress(kind: MailFromKind = "default") {
     return configured;
   }
 
-  if (process.env.NODE_ENV === "production") {
-    throw new Error(`${MAIL_FROM_ENV_BY_KIND[kind]} or FORM_MAIL_FROM is missing`);
+  if (process.env.NODE_ENV === "production" && !warnedMissingMailFromKinds.has(kind)) {
+    warnedMissingMailFromKinds.add(kind);
+    console.warn(
+      `[mailer] ${MAIL_FROM_ENV_BY_KIND[kind]} and FORM_MAIL_FROM are missing. Falling back to ${DEFAULT_FROM}.`,
+    );
   }
 
   return DEFAULT_FROM;
