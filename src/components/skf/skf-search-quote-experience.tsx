@@ -1640,7 +1640,7 @@ export function SkfSearchQuoteExperience() {
 
       setCopyNotice(
         channel === "zalo"
-          ? "Đã lưu admin và mở Zalo. Nội dung đã sẵn, chỉ cần nhấn Send."
+          ? "Đã mở Zalo. Nội dung đã được copy sẵn, vui lòng dán và nhấn Send."
           : "Đã lưu admin và đã gửi email cảm ơn tự động cho khách. Nhân viên sẽ xử lý báo giá trên admin.",
       );
       window.setTimeout(() => setCopyNotice(""), 6000);
@@ -2216,7 +2216,7 @@ export function SkfSearchQuoteExperience() {
                 <h3 className="font-heading text-xl font-bold text-slate-950">Đã tạo phiếu yêu cầu báo giá</h3>
                 <p className="mt-1 text-sm text-slate-600">
                   {latestSubmitChannel === "zalo"
-                    ? "Phiếu đã lưu vào admin. Nội dung đã sẵn, chỉ cần nhấn Send."
+                    ? "Đã mở Zalo. Nội dung đã được copy sẵn, vui lòng dán và nhấn Send."
                     : "Phiếu đã lưu vào admin. Hệ thống đã gửi email cảm ơn tự động tới khách và nhân viên sẽ xử lý báo giá."}
                 </p>
               </div>
@@ -2230,7 +2230,7 @@ export function SkfSearchQuoteExperience() {
               <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50 p-3">
                 <p className="mb-2 text-sm font-medium text-amber-800">
                   {latestSubmitChannel === "zalo"
-                    ? "Vui lòng copy nội dung bên dưới rồi dán vào Zalo."
+                    ? "Không copy tự động được. Vui lòng bấm Copy nội dung dự phòng, sau đó dán vào Zalo và nhấn Send."
                     : "Vui lòng copy nội dung bên dưới rồi dán vào email nếu cần."}
                 </p>
                 <Textarea
