@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { AdminShell } from "@/components/admin/admin-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAdminCookieName, verifyAdminSessionToken } from "@/lib/admin/auth";
+import { getAdminCookieName, getVerifiedAdminSession } from "@/lib/admin/auth";
 import { ADMIN_RFQ_STATUSES, getAdminStatusLabel, type AdminRfqListItem } from "@/lib/admin/quote";
 import { listAdminRfqs } from "@/lib/admin/sheet-webhook";
 
@@ -39,8 +40,8 @@ export default async function AdminBaoGiaPage({
   searchParams?: { q?: string; status?: string };
 }) {
   const cookieStore = cookies();
-  const isAuthenticated = await verifyAdminSessionToken(cookieStore.get(getAdminCookieName())?.value);
-  if (!isAuthenticated) {
+  const session = await getVerifiedAdminSession(cookieStore.get(getAdminCookieName())?.value);
+  if (!session) {
     redirect("/admin/login?next=/admin/bao-gia");
   }
 
@@ -58,19 +59,25 @@ export default async function AdminBaoGiaPage({
   const visibleRfqs = filterRfqs(rfqs, query, status);
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl space-y-6">
+    <AdminShell
+      section="bao-gia"
+      sessionEmail={session.email}
+      title="Admin báo giá SKF"
+      description="Đọc RFQ đã lưu, mở chi tiết và xử lý báo giá nội bộ mà không public bảng giá cho khách."
+      actions={
+        <form action="/api/admin/auth/logout" method="post">
+          <Button type="submit" variant="outline">
+            Đăng xuất
+          </Button>
+        </form>
+      }
+    >
         <Card className="border-slate-200 bg-white shadow-sm">
-          <CardHeader className="gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <CardHeader>
             <div>
-              <CardTitle>Admin báo giá SKF</CardTitle>
-              <CardDescription>Đọc RFQ đã lưu, mở chi tiết và xử lý báo giá nội bộ mà không public bảng giá cho khách.</CardDescription>
+              <CardTitle>Bộ lọc RFQ</CardTitle>
+              <CardDescription>Tìm nhanh theo mã RFQ, tên khách hoặc trạng thái xử lý.</CardDescription>
             </div>
-            <form action="/api/admin/auth/logout" method="post">
-              <Button type="submit" variant="outline">
-                Đăng xuất
-              </Button>
-            </form>
           </CardHeader>
           <CardContent>
             <form className="grid gap-3 md:grid-cols-[minmax(0,1fr)_220px_auto]" action="/admin/bao-gia" method="get">
@@ -140,7 +147,6 @@ export default async function AdminBaoGiaPage({
 
           {visibleRfqs.length === 0 ? <div className="border-t border-slate-200 px-4 py-6 text-sm text-slate-600">Chưa có RFQ nào phù hợp với bộ lọc hiện tại.</div> : null}
         </div>
-      </div>
-    </div>
+    </AdminShell>
   );
 }

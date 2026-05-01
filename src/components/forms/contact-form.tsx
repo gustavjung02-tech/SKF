@@ -44,16 +44,16 @@ export function ContactForm() {
       const payload: { ok?: boolean; message?: string; error?: string } = await response.json().catch(() => ({}));
 
       if (!response.ok || !payload.ok) {
-        setSubmitError(payload.error ?? "Không thể gửi yêu cầu. Vui lòng thử lại hoặc liên hệ trực tiếp đội THL B2B qua điện thoại.");
+        setSubmitError(payload.error ?? "Không thể gửi yêu cầu. Vui lòng thử lại hoặc liên hệ trực tiếp SKF Công Nghiệp qua điện thoại.");
         return;
       }
 
       setSubmitMessage(
-        payload.message ?? "THL đã tiếp nhận thông tin. Đội THL B2B sẽ phản hồi chi tiết thủ công qua email hoặc điện thoại.",
+        payload.message ?? "SKF Công Nghiệp đã tiếp nhận thông tin. Đội ngũ sẽ phản hồi chi tiết qua email hoặc điện thoại.",
       );
       reset();
     } catch {
-      setSubmitError("Không thể kết nối hệ thống gửi form. Vui lòng thử lại hoặc liên hệ trực tiếp đội THL B2B qua điện thoại.");
+      setSubmitError("Không thể kết nối hệ thống gửi form. Vui lòng thử lại hoặc liên hệ trực tiếp SKF Công Nghiệp qua điện thoại.");
     }
   }
 
@@ -78,7 +78,7 @@ export function ContactForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="contactMessage">Nội dung cần THL hỗ trợ</Label>
+        <Label htmlFor="contactMessage">Nội dung cần SKF Công Nghiệp hỗ trợ</Label>
         <Textarea
           id="contactMessage"
           rows={4}

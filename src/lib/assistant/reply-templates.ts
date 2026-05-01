@@ -683,7 +683,7 @@ export function buildErrorFallbackMessage(input: {
       text: [
         `Em đã ghi nhận mã ${extractedCode}.`,
         "Hiện hệ thống đối chiếu đang gián đoạn ngắn.",
-        "Anh/chị có thể gửi thêm ảnh tem hoặc thương hiệu mong muốn để THL đối chiếu tiếp.",
+        "Anh/chị có thể gửi thêm ảnh tem hoặc thương hiệu mong muốn để SKF Công Nghiệp đối chiếu tiếp.",
       ].join("\n"),
       options: errorRecoveryOptions,
       optionStyle: "stacked",

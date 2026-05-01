@@ -1,4 +1,4 @@
-# Sanity Phase 2 Plan – THL-web
+# Sanity Phase 2 Plan – SKF Web
 
 > Blueprint only. Không cài packages hay tạo config ở phase này.
 

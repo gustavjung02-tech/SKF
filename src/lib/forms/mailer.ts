@@ -1,8 +1,18 @@
 import { siteConfig } from "@/config/site";
 
-const DEFAULT_INTERNAL_RECIPIENT = "khuongbinh.info@gmail.com";
+const DEFAULT_INTERNAL_RECIPIENT = "gustavjung02@gmail.com";
 const DEFAULT_FROM = "SKF Công Nghiệp <onboarding@resend.dev>";
 const DEFAULT_ASSET_BASE_URL = `https://${siteConfig.domain}`;
+
+const MAIL_FROM_ENV_BY_KIND = {
+  default: "FORM_MAIL_FROM",
+  support: "FORM_MAIL_FROM_SUPPORT",
+  sales: "FORM_MAIL_FROM_SALES",
+  recruitment: "FORM_MAIL_FROM_RECRUITMENT",
+  security: "FORM_MAIL_FROM_SECURITY",
+} as const;
+
+export type MailFromKind = keyof typeof MAIL_FROM_ENV_BY_KIND;
 
 type SendMailInput = {
   to: string | string[];
@@ -10,6 +20,8 @@ type SendMailInput = {
   html: string;
   text: string;
   replyTo?: string;
+  from?: string;
+  fromKind?: MailFromKind;
 };
 
 function readNonEmptyEnv(name: string) {
@@ -39,15 +51,15 @@ export function getInternalRecipient() {
   return readNonEmptyEnv("FORM_MAIL_TO") ?? DEFAULT_INTERNAL_RECIPIENT;
 }
 
-export function getMailFromAddress() {
-  const configured = readNonEmptyEnv("FORM_MAIL_FROM");
+export function getMailFromAddress(kind: MailFromKind = "default") {
+  const configured = readNonEmptyEnv(MAIL_FROM_ENV_BY_KIND[kind]) ?? readNonEmptyEnv("FORM_MAIL_FROM");
 
   if (configured) {
     return configured;
   }
 
   if (process.env.NODE_ENV === "production") {
-    throw new Error("FORM_MAIL_FROM is missing");
+    throw new Error(`${MAIL_FROM_ENV_BY_KIND[kind]} or FORM_MAIL_FROM is missing`);
   }
 
   return DEFAULT_FROM;
@@ -77,6 +89,7 @@ export function buildMailBrandHeaderHtml() {
 
 export async function sendMail(input: SendMailInput) {
   const apiKey = getResendClient();
+  const fromAddress = input.from?.trim() || getMailFromAddress(input.fromKind);
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -84,7 +97,7 @@ export async function sendMail(input: SendMailInput) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: getMailFromAddress(),
+      from: fromAddress,
       to: input.to,
       subject: input.subject,
       html: input.html,
@@ -108,7 +121,7 @@ export async function sendMail(input: SendMailInput) {
   }
 
   return {
-    from: getMailFromAddress(),
+    from: fromAddress,
     to: input.to,
     subject: input.subject,
   };

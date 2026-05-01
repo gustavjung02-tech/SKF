@@ -78,10 +78,10 @@ NEXT_PUBLIC_SHOW_ASSISTANT_PROVIDER=false
 
 # Form email (bắt buộc cho submit form liên hệ/lead)
 RESEND_API_KEY=<your_key>
-FORM_MAIL_TO=khuongbinh.info@gmail.com
+FORM_MAIL_TO=gustavjung02@gmail.com
 
 # Bắt buộc trên Cloudflare/production
-FORM_MAIL_FROM="THL B2B <noreply@mail.your-domain.com>"
+FORM_MAIL_FROM="SKF Công Nghiệp <noreply@skf-congnghiep.info>"
 
 # Khuyến nghị để logo trong email dùng đúng domain live
 FORM_ASSET_BASE_URL=https://luanphutung.vn
@@ -155,8 +155,8 @@ pnpm install
 
 ```env
 RESEND_API_KEY=...
-FORM_MAIL_TO=khuongbinh.info@gmail.com
-FORM_MAIL_FROM=THL B2B <noreply@mail.your-domain.com>
+FORM_MAIL_TO=gustavjung02@gmail.com
+FORM_MAIL_FROM=SKF Công Nghiệp <noreply@skf-congnghiep.info>
 FORM_ASSET_BASE_URL=https://luanphutung.vn
 STUDIO_EXTERNAL_URL=https://studio.your-domain.com
 OPENAI_API_KEY=... # hoặc GEMINI_API_KEY nếu dùng Gemini

@@ -1,4 +1,4 @@
-Tạo nhánh /tuyen-dung cho website THL.
+Tạo nhánh /tuyen-dung cho website SKF Công Nghiệp.
 
 Mục tiêu:
 - Trang tuyển dụng chuyên nghiệp, rõ ràng, phù hợp công ty B2B ngành vật tư truyền động công nghiệp.
@@ -6,7 +6,7 @@ Mục tiêu:
 - Giao diện không quá màu mè; tone công nghiệp, tin cậy, rõ thông tin.
 
 Thư mục ảnh:
-F:\1_A_Disk_D\THL\Web_Site\thl-web\public\images\tuyen-dung
+F:\1_A_Disk_D\SKF\Web_Site\Web_SKF\public\images\tuyen-dung
 
 Ảnh dùng trong code:
 - /images/tuyen-dung/tuyen-dung-hero.png
@@ -17,9 +17,9 @@ F:\1_A_Disk_D\THL\Web_Site\thl-web\public\images\tuyen-dung
 - /images/tuyen-dung/tuyen-dung-moi-truong-lam-viec.png
 
 Hero:
-H1: "Gia nhập đội ngũ THL"
+H1: "Gia nhập đội ngũ SKF Công Nghiệp"
 Sub:
-"THL tuyển dụng nhân sự cho các vị trí kinh doanh, kế toán, logistics, kho và giao nhận trong lĩnh vực vật tư truyền động công nghiệp."
+"SKF Công Nghiệp tuyển dụng nhân sự cho các vị trí kinh doanh, kế toán, logistics, kho và giao nhận trong lĩnh vực vật tư truyền động công nghiệp."
 
 Mô tả phụ:
 "Chúng tôi tìm kiếm những người làm việc nghiêm túc, có tinh thần trách nhiệm, chủ động học hỏi và mong muốn phát triển lâu dài trong môi trường B2B phục vụ nhà máy, xưởng cơ khí, bảo trì và mua hàng công nghiệp."
@@ -132,11 +132,11 @@ Quyền lợi:
 - Được làm trong môi trường hàng hóa công nghiệp, có quy trình kiểm tra và phối hợp nội bộ.
 
 Section môi trường làm việc:
-Tiêu đề: "Môi trường làm việc tại THL"
+Tiêu đề: "Môi trường làm việc tại SKF Công Nghiệp"
 Nội dung:
-"THL hoạt động trong lĩnh vực vật tư truyền động công nghiệp, phục vụ nhóm khách hàng B2B như nhà máy sản xuất, bộ phận bảo trì, kỹ thuật, mua hàng, xưởng cơ khí và nhà thầu cơ điện.
+"SKF Công Nghiệp hoạt động trong lĩnh vực vật tư truyền động công nghiệp, phục vụ nhóm khách hàng B2B như nhà máy sản xuất, bộ phận bảo trì, kỹ thuật, mua hàng, xưởng cơ khí và nhà thầu cơ điện.
 
-Công việc tại THL yêu cầu sự rõ ràng, chính xác và trách nhiệm. Mỗi vị trí đều gắn với quy trình thực tế: tiếp nhận yêu cầu, đối chiếu thông tin, xử lý đơn hàng, giao hàng và chăm sóc khách hàng.
+Công việc tại SKF Công Nghiệp yêu cầu sự rõ ràng, chính xác và trách nhiệm. Mỗi vị trí đều gắn với quy trình thực tế: tiếp nhận yêu cầu, đối chiếu thông tin, xử lý đơn hàng, giao hàng và chăm sóc khách hàng.
 
 Chúng tôi ưu tiên những ứng viên có thái độ làm việc nghiêm túc, chịu học, biết phối hợp và mong muốn phát triển lâu dài."
 
@@ -153,7 +153,7 @@ Nội dung:
 - Kinh nghiệm làm việc nếu có
 - CV hoặc mô tả ngắn quá trình làm việc
 
-THL sẽ liên hệ lại với ứng viên phù hợp để trao đổi chi tiết."
+SKF Công Nghiệp sẽ liên hệ lại với ứng viên phù hợp để trao đổi chi tiết."
 
 CTA cuối:
 - "Ứng tuyển ngay"

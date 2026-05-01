@@ -4,11 +4,9 @@
  * - save_quote
  * - upsert_quote
  *
- * Expected tabs:
- * - RFQ
- * - RFQ_ITEMS
- * - QUOTES
- * - QUOTE_ITEMS
+ * Expected tabs (supports both naming styles):
+ * - BAO_GIA or QUOTES
+ * - CHI_TIET_BG or QUOTE_ITEMS
  */
 
 function _jsonOk(data) {
@@ -50,6 +48,17 @@ function _sheetByName(ss, name) {
   return sh;
 }
 
+function _sheetByAnyName(ss, names) {
+  var list = Array.isArray(names) ? names : [];
+  for (var i = 0; i < list.length; i += 1) {
+    var candidate = String(list[i] || "").trim();
+    if (!candidate) continue;
+    var sh = ss.getSheetByName(candidate);
+    if (sh) return sh;
+  }
+  throw new Error("Missing sheet: " + list.join(" | "));
+}
+
 function _readHeaderMap(sheet) {
   var lastCol = Math.max(1, sheet.getLastColumn());
   var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
@@ -73,6 +82,15 @@ function _ensureHeader(sheet, requiredHeaders) {
   var appendStart = currentLastCol + 1;
   sheet.getRange(1, appendStart, 1, missing.length).setValues([missing]);
   return _readHeaderMap(sheet);
+}
+
+function _resolveHeader(sheet, map, aliases, requiredLabel) {
+  var list = Array.isArray(aliases) ? aliases : [];
+  for (var i = 0; i < list.length; i += 1) {
+    var key = String(list[i] || "").trim();
+    if (key && map[key]) return map[key];
+  }
+  throw new Error("Missing header: " + requiredLabel + " @ " + sheet.getName());
 }
 
 function _findRowByValue(sheet, colIndex, value) {
@@ -99,21 +117,16 @@ function _upsertQuote(input) {
   var sheetContext = input.sheetContext || {};
   var spreadsheetName = sheetContext.spreadsheetName || "SKF_Admin_Bao_Gia";
   var tabs = sheetContext.tabs || {};
-  // Hỗ trợ cả tên tab tiếng Việt mới và tên cũ (fallback)
-  var quotesTabName = tabs.quotes || "BAO_GIA";
-  var quoteItemsTabName = tabs.quoteItems || "CHI_TIET_BG";
+  var quotesTabCandidates = [tabs.quotes, "BAO_GIA", "QUOTES"];
+  var quoteItemsTabCandidates = [tabs.quoteItems, "CHI_TIET_BG", "QUOTE_ITEMS"];
 
   var files = DriveApp.getFilesByName(spreadsheetName);
   if (!files.hasNext()) return { ok: false, error: "Spreadsheet not found" };
   var ss = SpreadsheetApp.open(files.next());
 
-  // Thử tên tab mới, nếu không có thì thử tên cũ
-  var quotesSheet = ss.getSheetByName(quotesTabName) || ss.getSheetByName("QUOTES");
-  if (!quotesSheet) return { ok: false, error: "Khong tim thay tab bao gia: " + quotesTabName };
-  var quoteItemsSheet = ss.getSheetByName(quoteItemsTabName) || ss.getSheetByName("QUOTE_ITEMS");
-  if (!quoteItemsSheet) return { ok: false, error: "Khong tim thay tab chi tiet bao gia: " + quoteItemsTabName };
+  var quotesSheet = _sheetByAnyName(ss, quotesTabCandidates);
+  var quoteItemsSheet = _sheetByAnyName(ss, quoteItemsTabCandidates);
 
-  // Tiêu đề tiếng Việt cho tab BAO_GIA
   var quoteHeaders = _ensureHeader(quotesSheet, [
     "ma_bao_gia",
     "ma_yeu_cau",
@@ -122,10 +135,17 @@ function _upsertQuote(input) {
     "vat_pt",
     "phi_van_chuyen",
     "ghi_chu",
-    "cap_nhat"
+    "cap_nhat",
+    "quote_id",
+    "rfq_id",
+    "currency",
+    "total_discount_percent",
+    "vat_percent",
+    "shipping_fee",
+    "note",
+    "updated_at"
   ]);
 
-  // Tiêu đề tiếng Việt cho tab CHI_TIET_BG
   var quoteItemsHeaders = _ensureHeader(quoteItemsSheet, [
     "ma_bao_gia",
     "ma_yeu_cau",
@@ -139,34 +159,68 @@ function _upsertQuote(input) {
     "gia_noi_bo",
     "ck_dong_pt",
     "ghi_chu",
-    "cap_nhat"
+    "cap_nhat",
+    "quote_id",
+    "rfq_id",
+    "line_no",
+    "code",
+    "normalized_code",
+    "name",
+    "quantity",
+    "unit",
+    "customer_note",
+    "internal_price",
+    "line_discount_percent",
+    "note",
+    "updated_at"
   ]);
+
+  var qQuoteId = _resolveHeader(quotesSheet, quotesHeaders, ["ma_bao_gia", "quote_id"], "quote id");
+  var qRfqId = _resolveHeader(quotesSheet, quotesHeaders, ["ma_yeu_cau", "rfq_id"], "rfq id");
+  var qCurrency = _resolveHeader(quotesSheet, quotesHeaders, ["don_vi_tien", "currency"], "currency");
+  var qTotalDiscount = _resolveHeader(quotesSheet, quotesHeaders, ["ck_tong_pt", "total_discount_percent"], "total discount");
+  var qVat = _resolveHeader(quotesSheet, quotesHeaders, ["vat_pt", "vat_percent"], "vat percent");
+  var qShipping = _resolveHeader(quotesSheet, quotesHeaders, ["phi_van_chuyen", "shipping_fee"], "shipping fee");
+  var qNote = _resolveHeader(quotesSheet, quotesHeaders, ["ghi_chu", "note"], "note");
+  var qUpdatedAt = _resolveHeader(quotesSheet, quotesHeaders, ["cap_nhat", "updated_at"], "updated at");
+
+  var qiQuoteId = _resolveHeader(quoteItemsSheet, quoteItemsHeaders, ["ma_bao_gia", "quote_id"], "quote item quote id");
+  var qiRfqId = _resolveHeader(quoteItemsSheet, quoteItemsHeaders, ["ma_yeu_cau", "rfq_id"], "quote item rfq id");
+  var qiLineNo = _resolveHeader(quoteItemsSheet, quoteItemsHeaders, ["stt", "line_no"], "line no");
+  var qiCode = _resolveHeader(quoteItemsSheet, quoteItemsHeaders, ["ma_hang", "code"], "code");
+  var qiNormalizedCode = _resolveHeader(quoteItemsSheet, quoteItemsHeaders, ["ma_chuan", "normalized_code"], "normalized code");
+  var qiName = _resolveHeader(quoteItemsSheet, quoteItemsHeaders, ["ten_san_pham", "name"], "name");
+  var qiQuantity = _resolveHeader(quoteItemsSheet, quoteItemsHeaders, ["so_luong", "quantity"], "quantity");
+  var qiUnit = _resolveHeader(quoteItemsSheet, quoteItemsHeaders, ["don_vi", "unit"], "unit");
+  var qiCustomerNote = _resolveHeader(quoteItemsSheet, quoteItemsHeaders, ["ghi_chu_khach", "customer_note"], "customer note");
+  var qiInternalPrice = _resolveHeader(quoteItemsSheet, quoteItemsHeaders, ["gia_noi_bo", "internal_price"], "internal price");
+  var qiLineDiscount = _resolveHeader(quoteItemsSheet, quoteItemsHeaders, ["ck_dong_pt", "line_discount_percent"], "line discount percent");
+  var qiNote = _resolveHeader(quoteItemsSheet, quoteItemsHeaders, ["ghi_chu", "note"], "quote item note");
+  var qiUpdatedAt = _resolveHeader(quoteItemsSheet, quoteItemsHeaders, ["cap_nhat", "updated_at"], "quote item updated at");
 
   var quoteId = "Q-" + rfqId;
   var nowIso = new Date().toISOString();
 
-  // Ghi dòng báo giá tổng
   var quoteRowValues = new Array(quotesSheet.getLastColumn()).fill("");
-  quoteRowValues[quoteHeaders["ma_bao_gia"] - 1] = quoteId;
-  quoteRowValues[quoteHeaders["ma_yeu_cau"] - 1] = rfqId;
-  quoteRowValues[quoteHeaders["don_vi_tien"] - 1] = quote.currency || "VND";
-  quoteRowValues[quoteHeaders["ck_tong_pt"] - 1] = Number(quote.totalDiscountPercent || 0);
-  quoteRowValues[quoteHeaders["vat_pt"] - 1] = Number(quote.vatPercent || 0);
-  quoteRowValues[quoteHeaders["phi_van_chuyen"] - 1] = Number(quote.shippingFee || 0);
-  quoteRowValues[quoteHeaders["ghi_chu"] - 1] = String(quote.note || "");
-  quoteRowValues[quoteHeaders["cap_nhat"] - 1] = nowIso;
+  quoteRowValues[qQuoteId - 1] = quoteId;
+  quoteRowValues[qRfqId - 1] = rfqId;
+  quoteRowValues[qCurrency - 1] = quote.currency || "VND";
+  quoteRowValues[qTotalDiscount - 1] = Number(quote.totalDiscountPercent || 0);
+  quoteRowValues[qVat - 1] = Number(quote.vatPercent || 0);
+  quoteRowValues[qShipping - 1] = Number(quote.shippingFee || 0);
+  quoteRowValues[qNote - 1] = String(quote.note || "");
+  quoteRowValues[qUpdatedAt - 1] = nowIso;
 
-  var existingQuoteRow = _findRowByValue(quotesSheet, quoteHeaders["ma_yeu_cau"], rfqId);
+  var existingQuoteRow = _findRowByValue(quotesSheet, qRfqId, rfqId);
   if (existingQuoteRow > 0) {
     quotesSheet.getRange(existingQuoteRow, 1, 1, quoteRowValues.length).setValues([quoteRowValues]);
   } else {
     quotesSheet.appendRow(quoteRowValues);
   }
 
-  // Xoá dòng cũ trong chi tiết báo giá rồi ghi lại
   var quoteItemsLastRow = quoteItemsSheet.getLastRow();
   if (quoteItemsLastRow >= 2) {
-    var rfqCol = quoteItemsHeaders["ma_yeu_cau"];
+    var rfqCol = qiRfqId;
     var existing = quoteItemsSheet.getRange(2, rfqCol, quoteItemsLastRow - 1, 1).getValues();
     for (var i = existing.length - 1; i >= 0; i -= 1) {
       if (String(existing[i][0] || "").trim() === rfqId) {
@@ -179,19 +233,19 @@ function _upsertQuote(input) {
   for (var li = 0; li < lineItems.length; li += 1) {
     var line = lineItems[li] || {};
     var row = new Array(quoteItemsSheet.getLastColumn()).fill("");
-    row[quoteItemsHeaders["ma_bao_gia"] - 1] = quoteId;
-    row[quoteItemsHeaders["ma_yeu_cau"] - 1] = rfqId;
-    row[quoteItemsHeaders["stt"] - 1] = li + 1;
-    row[quoteItemsHeaders["ma_hang"] - 1] = String(line.code || "");
-    row[quoteItemsHeaders["ma_chuan"] - 1] = String(line.normalizedCode || "");
-    row[quoteItemsHeaders["ten_san_pham"] - 1] = String(line.name || "");
-    row[quoteItemsHeaders["so_luong"] - 1] = Number(line.quantity || 0);
-    row[quoteItemsHeaders["don_vi"] - 1] = String(line.unit || "");
-    row[quoteItemsHeaders["ghi_chu_khach"] - 1] = String(line.customerNote || "");
-    row[quoteItemsHeaders["gia_noi_bo"] - 1] = line.internalPrice == null ? "" : Number(line.internalPrice || 0);
-    row[quoteItemsHeaders["ck_dong_pt"] - 1] = Number(line.lineDiscountPercent || 0);
-    row[quoteItemsHeaders["ghi_chu"] - 1] = String(line.note || "");
-    row[quoteItemsHeaders["cap_nhat"] - 1] = nowIso;
+    row[qiQuoteId - 1] = quoteId;
+    row[qiRfqId - 1] = rfqId;
+    row[qiLineNo - 1] = li + 1;
+    row[qiCode - 1] = String(line.code || "");
+    row[qiNormalizedCode - 1] = String(line.normalizedCode || "");
+    row[qiName - 1] = String(line.name || "");
+    row[qiQuantity - 1] = Number(line.quantity || 0);
+    row[qiUnit - 1] = String(line.unit || "");
+    row[qiCustomerNote - 1] = String(line.customerNote || "");
+    row[qiInternalPrice - 1] = line.internalPrice == null ? "" : Number(line.internalPrice || 0);
+    row[qiLineDiscount - 1] = Number(line.lineDiscountPercent || 0);
+    row[qiNote - 1] = String(line.note || "");
+    row[qiUpdatedAt - 1] = nowIso;
     quoteItemsSheet.appendRow(row);
   }
 

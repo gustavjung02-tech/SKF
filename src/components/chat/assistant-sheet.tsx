@@ -142,7 +142,7 @@ export function AssistantSheet({ open, onClose, children }: AssistantSheetProps)
       <button
         ref={overlayRef}
         type="button"
-        aria-label="Đóng hỗ trợ kỹ thuật THL"
+        aria-label="Đóng hỗ trợ kỹ thuật SKF Công Nghiệp"
         className={cn(
           "absolute inset-0 bg-slate-950/35 transition-opacity duration-300 supports-backdrop-filter:backdrop-blur-[2px]",
           open ? "opacity-100" : "opacity-0"
@@ -173,7 +173,7 @@ export function AssistantSheet({ open, onClose, children }: AssistantSheetProps)
                 size="icon-sm"
                 className="absolute right-0 rounded-full text-slate-500 hover:bg-white hover:text-slate-800"
                 onClick={onClose}
-                aria-label="Đóng hỗ trợ kỹ thuật THL"
+                aria-label="Đóng hỗ trợ kỹ thuật SKF Công Nghiệp"
               >
                 <X className="size-4" />
               </Button>

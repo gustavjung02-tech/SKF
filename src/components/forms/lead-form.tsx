@@ -97,17 +97,17 @@ export function LeadForm({ initialRequestedCode = "" }: LeadFormProps) {
       const data: { ok?: boolean; message?: string; error?: string } = await response.json().catch(() => ({}));
 
       if (!response.ok || !data.ok) {
-        setSubmitError(data.error ?? "Không thể gửi yêu cầu. Vui lòng thử lại hoặc liên hệ trực tiếp đội THL B2B qua điện thoại.");
+        setSubmitError(data.error ?? "Không thể gửi yêu cầu. Vui lòng thử lại hoặc liên hệ trực tiếp SKF Công Nghiệp qua điện thoại.");
         return;
       }
 
       setSubmitMessage(
-        data.message ?? "THL đã tiếp nhận yêu cầu kỹ thuật. Đội THL B2B sẽ phản hồi chi tiết thủ công qua email hoặc điện thoại.",
+        data.message ?? "SKF Công Nghiệp đã tiếp nhận yêu cầu kỹ thuật. Đội ngũ sẽ phản hồi chi tiết qua email hoặc điện thoại.",
       );
       reset(createDefaultValues(initialRequestedCode));
       setUploadedImages([]);
     } catch {
-      setSubmitError("Không thể kết nối hệ thống gửi form. Vui lòng thử lại hoặc liên hệ trực tiếp đội THL B2B qua điện thoại.");
+      setSubmitError("Không thể kết nối hệ thống gửi form. Vui lòng thử lại hoặc liên hệ trực tiếp SKF Công Nghiệp qua điện thoại.");
     }
   }
 

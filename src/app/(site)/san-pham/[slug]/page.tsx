@@ -159,7 +159,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             <div className="rounded-lg border border-slate-900 bg-slate-950 p-5 text-white">
               <h2 className="font-heading text-xl font-bold">Cần xác nhận mã hoặc phương án thay thế?</h2>
               <p className="mt-3 text-sm leading-relaxed text-slate-300">
-                Gửi mã cũ, ảnh tem, kích thước hoặc ảnh vị trí lắp để THL đối chiếu trước khi báo giá.
+                Gửi mã cũ, ảnh tem, kích thước hoặc ảnh vị trí lắp để SKF Công Nghiệp đối chiếu trước khi báo giá.
               </p>
               <div className="mt-4 flex flex-col gap-2">
                 <Button asChild className="bg-blue-500 text-white hover:bg-blue-400">
@@ -169,7 +169,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                   </Link>
                 </Button>
                 <Button asChild variant="outline" className="border-white/20 bg-white/10 text-white hover:bg-white hover:text-slate-950">
-                  <a href={siteConfig.phoneHref}>Liên hệ THL B2B</a>
+                  <a href={siteConfig.phoneHref}>Liên hệ SKF Công Nghiệp</a>
                 </Button>
               </div>
             </div>

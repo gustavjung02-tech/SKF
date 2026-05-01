@@ -67,7 +67,7 @@ function formatLeadInternalHtml(payload: {
   const lines = buildLeadLines(payload);
   return `
     ${buildMailBrandHeaderHtml()}
-    <h2>Yêu cầu kỹ thuật mới từ website THL</h2>
+    <h2>Yêu cầu kỹ thuật mới từ website SKF Công Nghiệp</h2>
     <ul>
       ${lines.map((line) => `<li>${toSafeHtml(line)}</li>`).join("")}
     </ul>
@@ -88,7 +88,7 @@ function formatLeadInternalText(payload: {
   notes?: string;
   uploadedFiles?: string[];
 }) {
-  return ["Yêu cầu kỹ thuật mới từ website THL", ...buildLeadLines(payload)].join("\n");
+  return ["Yêu cầu kỹ thuật mới từ website SKF Công Nghiệp", ...buildLeadLines(payload)].join("\n");
 }
 
 function formatLeadAutoReplyHtml(payload: { fullName: string }) {
@@ -97,21 +97,21 @@ function formatLeadAutoReplyHtml(payload: { fullName: string }) {
   return `
     ${buildMailBrandHeaderHtml()}
     <p>Kính gửi anh/chị ${safeFullName},</p>
-    <p>THL B2B đã tiếp nhận yêu cầu kỹ thuật / báo giá của anh/chị.</p>
-    <p>Đội THL B2B sẽ đối chiếu dữ liệu và phản hồi chi tiết thủ công qua email hoặc điện thoại, bao gồm hướng xử lý kỹ thuật tiếp theo.</p>
+    <p>SKF Công Nghiệp đã tiếp nhận yêu cầu kỹ thuật / báo giá của anh/chị.</p>
+    <p>Đội ngũ SKF Công Nghiệp sẽ đối chiếu dữ liệu và phản hồi chi tiết qua email hoặc điện thoại, bao gồm hướng xử lý kỹ thuật tiếp theo.</p>
     <p>Trường hợp cần gấp, anh/chị vui lòng liên hệ trực tiếp số ${siteConfig.phone}.</p>
-    <p>Trân trọng,<br/>Đội THL B2B - Công Ty TNHH Tân Hòa Lợi</p>
+    <p>Trân trọng,<br/>Đội ngũ SKF Công Nghiệp</p>
   `;
 }
 
 function formatLeadAutoReplyText(payload: { fullName: string }) {
   return [
     `Kính gửi anh/chị ${payload.fullName},`,
-    "THL B2B đã tiếp nhận yêu cầu kỹ thuật / báo giá của anh/chị.",
-    "Đội THL B2B sẽ đối chiếu dữ liệu và phản hồi chi tiết thủ công qua email hoặc điện thoại, bao gồm hướng xử lý kỹ thuật tiếp theo.",
+    "SKF Công Nghiệp đã tiếp nhận yêu cầu kỹ thuật / báo giá của anh/chị.",
+    "Đội ngũ SKF Công Nghiệp sẽ đối chiếu dữ liệu và phản hồi chi tiết qua email hoặc điện thoại, bao gồm hướng xử lý kỹ thuật tiếp theo.",
     `Trường hợp cần gấp, anh/chị vui lòng liên hệ trực tiếp số ${siteConfig.phone}.`,
     "Trân trọng,",
-    "Đội THL B2B - Công Ty TNHH Tân Hòa Lợi",
+    "Đội ngũ SKF Công Nghiệp",
   ].join("\n");
 }
 
@@ -140,17 +140,18 @@ export async function POST(request: NextRequest) {
   try {
     await sendMail({
       to: getInternalRecipient(),
-      subject: `[THL B2B] Yêu cầu kỹ thuật - ${payload.fullName} - ${payload.productGroup}`,
+      subject: `[SKF Công Nghiệp] Yêu cầu kỹ thuật - ${payload.fullName} - ${payload.productGroup}`,
       html: formatLeadInternalHtml(payload),
       text: formatLeadInternalText(payload),
       replyTo: payload.email,
+      fromKind: "sales",
     });
   } catch (error) {
     console.error("[forms/lead] send internal mail error:", error);
     return NextResponse.json(
       {
         ok: false,
-        error: "THL đã nhận yêu cầu nhưng chưa gửi được email nội bộ. Vui lòng liên hệ trực tiếp qua số điện thoại.",
+        error: "SKF Công Nghiệp đã nhận yêu cầu nhưng chưa gửi được email nội bộ. Vui lòng liên hệ trực tiếp qua số điện thoại.",
       },
       { status: 500 },
     );
@@ -160,9 +161,10 @@ export async function POST(request: NextRequest) {
   try {
     await sendMail({
       to: payload.email,
-      subject: "THL B2B đã tiếp nhận yêu cầu kỹ thuật",
+      subject: "SKF Công Nghiệp đã tiếp nhận yêu cầu kỹ thuật",
       html: formatLeadAutoReplyHtml(payload),
       text: formatLeadAutoReplyText(payload),
+      fromKind: "sales",
     });
   } catch (error) {
     autoReplySent = false;
@@ -172,7 +174,7 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({
     ok: true,
     message: autoReplySent
-      ? "THL đã tiếp nhận yêu cầu kỹ thuật. Đội THL B2B sẽ phản hồi chi tiết thủ công qua email hoặc điện thoại."
-      : "THL đã tiếp nhận yêu cầu kỹ thuật. Email xác nhận tự động tạm thời chưa gửi được, đội THL B2B vẫn sẽ phản hồi thủ công qua email hoặc điện thoại.",
+      ? "SKF Công Nghiệp đã tiếp nhận yêu cầu kỹ thuật. Đội ngũ sẽ phản hồi chi tiết qua email hoặc điện thoại."
+      : "SKF Công Nghiệp đã tiếp nhận yêu cầu kỹ thuật. Email xác nhận tự động tạm thời chưa gửi được, đội ngũ vẫn sẽ phản hồi qua email hoặc điện thoại.",
   });
 }

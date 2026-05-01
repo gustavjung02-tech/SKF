@@ -25,7 +25,7 @@ function formatContactHtml(payload: {
 
   return `
     ${buildMailBrandHeaderHtml()}
-    <h2>Yêu cầu liên hệ mới từ website THL</h2>
+    <h2>Yêu cầu liên hệ mới từ website SKF Công Nghiệp</h2>
     <p><strong>Họ tên:</strong> ${safeFullName}</p>
     <p><strong>Email:</strong> ${safeEmail}</p>
     <p><strong>Số điện thoại:</strong> ${safePhone}</p>
@@ -41,7 +41,7 @@ function formatContactText(payload: {
   message: string;
 }) {
   return [
-    "Yêu cầu liên hệ mới từ website THL",
+    "Yêu cầu liên hệ mới từ website SKF Công Nghiệp",
     `Họ tên: ${payload.fullName}`,
     `Email: ${payload.email}`,
     `Số điện thoại: ${payload.phone}`,
@@ -56,21 +56,21 @@ function formatContactAutoReplyHtml(payload: { fullName: string }) {
   return `
     ${buildMailBrandHeaderHtml()}
     <p>Kính gửi anh/chị ${safeFullName},</p>
-    <p>THL B2B đã tiếp nhận thông tin liên hệ của anh/chị.</p>
-    <p>Đội THL B2B sẽ rà soát nội dung và phản hồi chi tiết thủ công qua email hoặc điện thoại trong khung giờ làm việc.</p>
+    <p>SKF Công Nghiệp đã tiếp nhận thông tin liên hệ của anh/chị.</p>
+    <p>Đội ngũ SKF Công Nghiệp sẽ rà soát nội dung và phản hồi chi tiết qua email hoặc điện thoại trong khung giờ làm việc.</p>
     <p>Nếu cần xử lý gấp, anh/chị có thể liên hệ trực tiếp số ${siteConfig.phone}.</p>
-    <p>Trân trọng,<br/>Đội THL B2B - Công Ty TNHH Tân Hòa Lợi</p>
+    <p>Trân trọng,<br/>Đội ngũ SKF Công Nghiệp</p>
   `;
 }
 
 function formatContactAutoReplyText(payload: { fullName: string }) {
   return [
     `Kính gửi anh/chị ${payload.fullName},`,
-    "THL B2B đã tiếp nhận thông tin liên hệ của anh/chị.",
-    "Đội THL B2B sẽ rà soát nội dung và phản hồi chi tiết thủ công qua email hoặc điện thoại trong khung giờ làm việc.",
+    "SKF Công Nghiệp đã tiếp nhận thông tin liên hệ của anh/chị.",
+    "Đội ngũ SKF Công Nghiệp sẽ rà soát nội dung và phản hồi chi tiết qua email hoặc điện thoại trong khung giờ làm việc.",
     `Nếu cần xử lý gấp, anh/chị có thể liên hệ trực tiếp số ${siteConfig.phone}.`,
     "Trân trọng,",
-    "Đội THL B2B - Công Ty TNHH Tân Hòa Lợi",
+    "Đội ngũ SKF Công Nghiệp",
   ].join("\n");
 }
 
@@ -99,17 +99,18 @@ export async function POST(request: NextRequest) {
   try {
     await sendMail({
       to: getInternalRecipient(),
-      subject: `[THL B2B] Liên hệ mới - ${payload.fullName}`,
+      subject: `[SKF Công Nghiệp] Liên hệ mới - ${payload.fullName}`,
       html: formatContactHtml(payload),
       text: formatContactText(payload),
       replyTo: payload.email,
+      fromKind: "support",
     });
   } catch (error) {
     console.error("[forms/contact] send internal mail error:", error);
     return NextResponse.json(
       {
         ok: false,
-        error: "THL đã nhận yêu cầu nhưng chưa gửi được email nội bộ. Vui lòng liên hệ trực tiếp qua số điện thoại.",
+        error: "SKF Công Nghiệp đã nhận yêu cầu nhưng chưa gửi được email nội bộ. Vui lòng liên hệ trực tiếp qua số điện thoại.",
       },
       { status: 500 },
     );
@@ -119,9 +120,10 @@ export async function POST(request: NextRequest) {
   try {
     await sendMail({
       to: payload.email,
-      subject: "THL B2B đã tiếp nhận thông tin liên hệ",
+      subject: "SKF Công Nghiệp đã tiếp nhận thông tin liên hệ",
       html: formatContactAutoReplyHtml(payload),
       text: formatContactAutoReplyText(payload),
+      fromKind: "support",
     });
   } catch (error) {
     autoReplySent = false;
@@ -131,7 +133,7 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({
     ok: true,
     message: autoReplySent
-      ? "THL đã tiếp nhận thông tin. Đội THL B2B sẽ phản hồi chi tiết thủ công qua email hoặc điện thoại."
-      : "THL đã tiếp nhận thông tin. Email xác nhận tự động tạm thời chưa gửi được, đội THL B2B vẫn sẽ phản hồi thủ công qua email hoặc điện thoại.",
+      ? "SKF Công Nghiệp đã tiếp nhận thông tin. Đội ngũ sẽ phản hồi chi tiết qua email hoặc điện thoại."
+      : "SKF Công Nghiệp đã tiếp nhận thông tin. Email xác nhận tự động tạm thời chưa gửi được, đội ngũ vẫn sẽ phản hồi qua email hoặc điện thoại.",
   });
 }

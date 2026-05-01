@@ -178,7 +178,7 @@ export function buildCommercialGuardResponse(context: AssistantPolicyContext): A
     buying_motive: context.parsedIntent.buying_motive,
     suggested_options: ["exact_code", "image_of_label", "quantity", "delivery_area", "contact_info"],
     missing_fields: ["code", "quantity", "delivery_area", "contact_info"],
-    next_question: "Anh/chị gửi giúp mã hoặc ảnh tem, kèm số lượng và khu vực giao để đội THL B2B tiếp nhận và liên hệ xác minh.",
+    next_question: "Anh/chị gửi giúp mã hoặc ảnh tem, kèm số lượng và khu vực giao để đội ngũ SKF Công Nghiệp tiếp nhận và liên hệ xác minh.",
     final_status: "manual_review",
     pricing_note: "Giá được xác nhận riêng.",
     stock_note: "Chưa xác nhận tồn kho tự động.",

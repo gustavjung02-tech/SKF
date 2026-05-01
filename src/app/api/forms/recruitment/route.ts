@@ -56,7 +56,7 @@ function formatRecruitmentInternalHtml(payload: {
 
   return `
     ${buildMailBrandHeaderHtml()}
-    <h2>Hồ sơ ứng tuyển mới từ website THL</h2>
+    <h2>Hồ sơ ứng tuyển mới từ website SKF Công Nghiệp</h2>
     <ul>
       ${lines.map((line) => `<li>${toSafeHtml(line)}</li>`).join("")}
     </ul>
@@ -73,7 +73,7 @@ function formatRecruitmentInternalText(payload: {
   notes?: string;
   uploadedFiles?: string[];
 }) {
-  return ["Hồ sơ ứng tuyển mới từ website THL", ...buildRecruitmentLines(payload)].join("\n");
+  return ["Hồ sơ ứng tuyển mới từ website SKF Công Nghiệp", ...buildRecruitmentLines(payload)].join("\n");
 }
 
 function formatRecruitmentAutoReplyHtml(payload: { fullName: string; position: string }) {
@@ -83,21 +83,21 @@ function formatRecruitmentAutoReplyHtml(payload: { fullName: string; position: s
   return `
     ${buildMailBrandHeaderHtml()}
     <p>Kính gửi anh/chị ${safeName},</p>
-    <p>THL đã tiếp nhận hồ sơ ứng tuyển vị trí <strong>${safePosition}</strong>.</p>
+    <p>SKF Công Nghiệp đã tiếp nhận hồ sơ ứng tuyển vị trí <strong>${safePosition}</strong>.</p>
     <p>Bộ phận tuyển dụng sẽ rà soát hồ sơ và liên hệ lại với ứng viên phù hợp để trao đổi chi tiết.</p>
-    <p>Nếu cần hỗ trợ thêm, anh/chị có thể liên hệ số ${siteConfig.phone} hoặc Zalo kinh doanh của THL.</p>
-    <p>Trân trọng,<br/>Bộ phận tuyển dụng THL</p>
+    <p>Nếu cần hỗ trợ thêm, anh/chị có thể liên hệ số ${siteConfig.phone} hoặc ${siteConfig.zaloLabel} của SKF Công Nghiệp.</p>
+    <p>Trân trọng,<br/>Bộ phận tuyển dụng SKF Công Nghiệp</p>
   `;
 }
 
 function formatRecruitmentAutoReplyText(payload: { fullName: string; position: string }) {
   return [
     `Kính gửi anh/chị ${payload.fullName},`,
-    `THL đã tiếp nhận hồ sơ ứng tuyển vị trí ${payload.position}.`,
+    `SKF Công Nghiệp đã tiếp nhận hồ sơ ứng tuyển vị trí ${payload.position}.`,
     "Bộ phận tuyển dụng sẽ rà soát hồ sơ và liên hệ lại với ứng viên phù hợp để trao đổi chi tiết.",
-    `Nếu cần hỗ trợ thêm, anh/chị có thể liên hệ số ${siteConfig.phone} hoặc Zalo kinh doanh của THL.`,
+    `Nếu cần hỗ trợ thêm, anh/chị có thể liên hệ số ${siteConfig.phone} hoặc ${siteConfig.zaloLabel} của SKF Công Nghiệp.`,
     "Trân trọng,",
-    "Bộ phận tuyển dụng THL",
+    "Bộ phận tuyển dụng SKF Công Nghiệp",
   ].join("\n");
 }
 
@@ -127,17 +127,18 @@ export async function POST(request: NextRequest) {
   try {
     await sendMail({
       to: getInternalRecipient(),
-      subject: `[THL Tuyển dụng] Ứng tuyển - ${payload.position} - ${payload.fullName}`,
+      subject: `[SKF Công Nghiệp Tuyển dụng] Ứng tuyển - ${payload.position} - ${payload.fullName}`,
       html: formatRecruitmentInternalHtml(payload),
       text: formatRecruitmentInternalText(payload),
       replyTo: normalizedEmail && normalizedEmail.length > 0 ? normalizedEmail : undefined,
+      fromKind: "recruitment",
     });
   } catch (error) {
     console.error("[forms/recruitment] send internal mail error:", error);
     return NextResponse.json(
       {
         ok: false,
-        error: "THL đã nhận hồ sơ nhưng chưa gửi được email nội bộ. Vui lòng liên hệ trực tiếp bộ phận tuyển dụng.",
+        error: "SKF Công Nghiệp đã nhận hồ sơ nhưng chưa gửi được email nội bộ. Vui lòng liên hệ trực tiếp bộ phận tuyển dụng.",
       },
       { status: 500 },
     );
@@ -148,9 +149,10 @@ export async function POST(request: NextRequest) {
     try {
       await sendMail({
         to: normalizedEmail,
-        subject: "THL đã tiếp nhận hồ sơ ứng tuyển",
+        subject: "SKF Công Nghiệp đã tiếp nhận hồ sơ ứng tuyển",
         html: formatRecruitmentAutoReplyHtml(payload),
         text: formatRecruitmentAutoReplyText(payload),
+        fromKind: "recruitment",
       });
       autoReplySent = true;
     } catch (error) {
@@ -161,7 +163,7 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({
     ok: true,
     message: autoReplySent
-      ? "THL đã tiếp nhận hồ sơ ứng tuyển. Bộ phận tuyển dụng sẽ liên hệ lại với ứng viên phù hợp."
-      : "THL đã tiếp nhận hồ sơ ứng tuyển. Bộ phận tuyển dụng sẽ liên hệ lại với ứng viên phù hợp.",
+      ? "SKF Công Nghiệp đã tiếp nhận hồ sơ ứng tuyển. Bộ phận tuyển dụng sẽ liên hệ lại với ứng viên phù hợp."
+      : "SKF Công Nghiệp đã tiếp nhận hồ sơ ứng tuyển. Bộ phận tuyển dụng sẽ liên hệ lại với ứng viên phù hợp.",
   });
 }

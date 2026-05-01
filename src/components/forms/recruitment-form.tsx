@@ -95,17 +95,17 @@ export function RecruitmentForm({ selectedJob }: RecruitmentFormProps) {
 
       const data: { ok?: boolean; message?: string; error?: string } = await response.json().catch(() => ({}));
       if (!response.ok || !data.ok) {
-        setSubmitError(data.error ?? "Không thể gửi hồ sơ ứng tuyển. Vui lòng thử lại hoặc liên hệ trực tiếp THL.");
+        setSubmitError(data.error ?? "Không thể gửi hồ sơ ứng tuyển. Vui lòng thử lại hoặc liên hệ trực tiếp SKF Công Nghiệp.");
         return;
       }
 
       setSubmitMessage(
-        data.message ?? "THL đã tiếp nhận thông tin ứng tuyển và sẽ liên hệ lại với ứng viên phù hợp.",
+        data.message ?? "SKF Công Nghiệp đã tiếp nhận thông tin ứng tuyển và sẽ liên hệ lại với ứng viên phù hợp.",
       );
       reset(defaultValues);
       setUploadedFiles([]);
     } catch {
-      setSubmitError("Không thể kết nối hệ thống tuyển dụng. Vui lòng thử lại hoặc liên hệ trực tiếp THL.");
+      setSubmitError("Không thể kết nối hệ thống tuyển dụng. Vui lòng thử lại hoặc liên hệ trực tiếp SKF Công Nghiệp.");
     }
   }
 

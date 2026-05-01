@@ -1,4 +1,4 @@
-# Content Architecture Plan – THL-web
+# Content Architecture Plan – SKF Web
 
 ## Trạng thái hiện tại (Phase 1 – Static)
 

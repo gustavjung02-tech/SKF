@@ -1,17 +1,17 @@
 # Plan: NTN + Tsubaki Chu Luc Nhat B2B
 
-Chuyen website thanh mat tien so cua THL voi dinh vi ro rang: nha phan phoi chinh thuc vat tu truyen dong cong nghiep, lay NTN va Tsubaki lam hai thuong hieu chu luc cua he danh muc Nhat chinh hang. Huong trien khai uu tien sua truc thong diep va hierarchy thuong hieu truoc, sau do nang visual language sang phong cach Nhat B2B: chuan xac, ky thuat, tiet che, sach, co cam giac corporate industrial thay vi landing page ban hang nhanh.
+Chuyen website thanh mat tien so cua SKF Công Nghiệp voi dinh vi ro rang: nha phan phoi chinh thuc vat tu truyen dong cong nghiep, lay NTN va Tsubaki lam hai thuong hieu chu luc cua he danh muc Nhat chinh hang. Huong trien khai uu tien sua truc thong diep va hierarchy thuong hieu truoc, sau do nang visual language sang phong cach Nhat B2B: chuan xac, ky thuat, tiet che, sach, co cam giac corporate industrial thay vi landing page ban hang nhanh.
 
 ## Nguyen Tac Trien Khai
 
 - Lam dung theo site dang co va theo phase dang trien khai.
 - Khong bi dan boi bo anh SEO da chuan bi san trong `public/images/seo`.
-- Uu tien theo dung thu tu: dinh vi THL, cau truc 2 thuong hieu chu luc, copy, visual system, SEO nen.
+- Uu tien theo dung thu tu: dinh vi SKF Công Nghiệp, cau truc 2 thuong hieu chu luc, copy, visual system, SEO nen.
 - Anh rieng theo route la chuyen sau, chi xu ly khi that su khop voi phase trien khai va branding dang dung.
 
 ## Steps
 
-1. Pha 1 - Chot dinh vi va loai bo thong diep lam yeu thuong hieu. Thay cac noi dung dang keo site ve huong ca nhan nhu "kenh tu van ca nhan", "By Khuong Binh", "khong phai website chinh thuc cua cong ty" bang thong diep doanh nghiep: THL la nha phan phoi chinh thuc, chuyen cung cap giai phap vat tu truyen dong cong nghiep chinh hang cho nha may. Buoc nay chan toan bo buoc sau.
+1. Pha 1 - Chot dinh vi va loai bo thong diep lam yeu thuong hieu. Thay cac noi dung dang keo site ve huong ca nhan nhu "kenh tu van ca nhan", "By Khuong Binh", "khong phai website chinh thuc cua cong ty" bang thong diep doanh nghiep: SKF Công Nghiệp la nha phan phoi chinh thuc, chuyen cung cap giai phap vat tu truyen dong cong nghiep chinh hang cho nha may. Buoc nay chan toan bo buoc sau.
 2. Chuan hoa he ngon ngu thuong hieu trong cau hinh chung. Cap nhat slogan, intro, footer credit, contact framing, metadata nen trong `src/config/site.ts` va cac thanh phan layout de moi diem cham deu dung cung mot giong chuyen nghiep, doanh nghiep, ky thuat. Phu thuoc buoc 1.
 3. Pha 2 - Thiet ke lai hierarchy homepage theo mo hinh 2 core brands + 3 supporting brands va khoa cung cau truc nay trong trien khai. Trang chu bat buoc chuyen khoi mo hinh 1 primary brand + 4 secondary brands hien tai; khong chap nhan phuong an giu NTN lam card lon duy nhat. Cau truc muc tieu: 2 brand chu luc NTN va Tsubaki phai dung ngang vai trong cung mot tang uu tien thi giac, dung 2 card chu luc can bang hoac 1 khoi split-brand doi xung; Koyo, NOK, Soho nam o tang phu tro ngay sau do duoi dang 3 supporting cards hoac 1 cum phu ro rang. Phu thuoc buoc 1.
 4. Viet lai hero homepage de the hien dong thoi 4 lop gia tri: nha phan phoi chinh thuc, thuong hieu Nhat chinh hang, nang luc ky thuat cong nghiep, toc do phan hoi B2B. Cap nhat headline, subheadline, eyebrow, badge, hero stats, hero flow cards va CTA de nguoi xem hieu ngay day la doanh nghiep phan phoi chinh danh chu khong phai moi gioi hay trang tu van ca nhan. Phu thuoc buoc 3.
@@ -20,10 +20,10 @@ Chuyen website thanh mat tien so cua THL voi dinh vi ro rang: nha phan phoi chin
 7. Pha 4 - Chuyen visual language sang Nhat B2B ro rang hon. Thay huong dung mau cyan sang va hieu ung marketing bang palette tiet che kieu corporate industrial: navy sau, steel gray, white sach, diem nhan xanh brand co kiem soat. Giam glow mem va cam giac promotional; tang cac mat phang sach, border ro, khoang trang deu, grid chac, iconography ky thuat va nhip chu chat hon. Phu thuoc buoc 3.
 8. Cu the hoa visual system de agent thuc hien khong tu suy dien. Hero can cam giac "corporate export / industrial technical"; section titles phai gon, dut khoat; the thuong hieu nen dung logo surface sach, border chinh xac, badge nguon goc Nhat hoac official distributor neu duoc phep; CTA phai nhat quan 1 mau chinh va 1 kieu secondary outline. Phu thuoc buoc 7.
 9. Ra typography va density noi dung. Giu cam giac hien dai nhung nghieng ve tai lieu ky thuat doanh nghiep: headline chac, it khau hieu, body copy ngan hon, giam lap lai "tra ma/bao gia"; uu tien thong tin dinh danh, nang luc, ung dung, quy trinh xu ly. Song song duoc voi buoc 7.
-10. Pha 5 - Viet lai trang Gioi thieu thanh trang nang luc doanh nghiep. Trang nay phai tra loi duoc: THL la ai, phan phoi chinh thuc nhung thuong hieu nao, phuc vu nhom khach hang nao, quy trinh tiep nhan xu ly nhu cau ra sao, tai sao nha may nen lam viec voi THL. Khong giu bat ky cau nao phu nhan tinh chinh thuc cua doanh nghiep. Phu thuoc buoc 1.
+10. Pha 5 - Viet lai trang Gioi thieu thanh trang nang luc doanh nghiep. Trang nay phai tra loi duoc: SKF Công Nghiệp la ai, phan phoi chinh thuc nhung thuong hieu nao, phuc vu nhom khach hang nao, quy trinh tiep nhan xu ly nhu cau ra sao, tai sao nha may nen lam viec voi SKF Công Nghiệp. Khong giu bat ky cau nao phu nhan tinh chinh thuc cua doanh nghiep. Phu thuoc buoc 1.
 11. Cap nhat footer, header va cac quick actions de dong bo voi dinh vi moi. Footer phai dong vai tro mini corporate profile; header va CTA can giam chat "chat nhanh" thuan ban hang, tang chat "lien he bo phan ky thuat / kinh doanh cong nghiep". Phu thuoc buoc 2 va buoc 7.
-12. Pha 6 - Ra SEO va metadata theo dinh vi moi. Title/description trang chu, gioi thieu va nhom san pham can phan anh ro THL la nha phan phoi chinh thuc, NTN + Tsubaki la hai tru cot, danh muc la hang Nhat chinh hang cho nha may. Song song duoc voi buoc 10 va 11.
-13. Kiem tra legal va brand accuracy truoc khi publish. Moi claim nhu "nha phan phoi chinh thuc", "chinh hang", cach dung logo, mau thuong hieu, badge xac tin phai dung tai lieu THL va guideline brand dang co. Day la buoc bat buoc cuoi cung.
+12. Pha 6 - Ra SEO va metadata theo dinh vi moi. Title/description trang chu, gioi thieu va nhom san pham can phan anh ro SKF Công Nghiệp la nha phan phoi chinh thuc, NTN + Tsubaki la hai tru cot, danh muc la hang Nhat chinh hang cho nha may. Song song duoc voi buoc 10 va 11.
+13. Kiem tra legal va brand accuracy truoc khi publish. Moi claim nhu "nha phan phoi chinh thuc", "chinh hang", cach dung logo, mau thuong hieu, badge xac tin phai dung tai lieu SKF Công Nghiệp va guideline brand dang co. Day la buoc bat buoc cuoi cung.
 
 ## Relevant Files
 
@@ -57,7 +57,7 @@ Chuyen website thanh mat tien so cua THL voi dinh vi ro rang: nha phan phoi chin
 - Copy headline phai thien ve nang luc va dinh danh doanh nghiep hon la khau hieu ban hang.
 - Copy body ngan, chac, giau thong tin ky thuat; tranh lap y cung mot loi diem qua nhieu section.
 - NTN va Tsubaki phai luon duoc mo ta nhu 2 tru cot danh muc; Koyo, NOK, Soho la nhom bo tro theo ung dung.
-- Khi dung claim official distributor hoac chinh hang, chi dung o noi phu hop va khong vuot qua tai lieu xac thuc THL dang co.
+- Khi dung claim official distributor hoac chinh hang, chi dung o noi phu hop va khong vuot qua tai lieu xac thuc SKF Công Nghiệp dang co.
 
 ## Verification
 
@@ -71,7 +71,7 @@ Chuyen website thanh mat tien so cua THL voi dinh vi ro rang: nha phan phoi chin
 ## Decisions
 
 - Da chot: NTN va Tsubaki la 2 thuong hieu chu luc, xuat hien ngang vai tren homepage theo cau truc khoa cung 2 primary brands + 3 supporting brands.
-- Da chot: THL duoc dinh vi la nha phan phoi chinh thuc, khong dung lai giong "kenh tu van ca nhan".
+- Da chot: SKF Công Nghiệp duoc dinh vi la nha phan phoi chinh thuc, khong dung lai giong "kenh tu van ca nhan".
 - Da chot: visual refresh di theo phong cach Nhat B2B tiet che, ky thuat, corporate industrial; khong di theo huong neon, bong bay hoac landing page sales.
 - Da chot: khong lay bo anh trong `public/images/seo` lam dau vao chinh cho luot trien khai nay; bo anh do chi la tai san chuan bi cho giai doan sau.
 - Da chot: uu tien SEO nen phu hop voi site hien tai; anh preview rieng theo route chi xu ly sau khi noi dung, hierarchy va branding da on dinh.
@@ -79,6 +79,6 @@ Chuyen website thanh mat tien so cua THL voi dinh vi ro rang: nha phan phoi chin
 
 ## Further Considerations
 
-1. Neu THL co guideline brand hoac bo nhan dien chinh thuc, agent trien khai nen uu tien bam guideline do thay vi tu chon palette tuong doi.
+1. Neu SKF Công Nghiệp co guideline brand hoac bo nhan dien chinh thuc, agent trien khai nen uu tien bam guideline do thay vi tu chon palette tuong doi.
 2. Neu co anh that cua kho, doi ngu, quay ky thuat hoac khu vuc giao nhan, nen uu tien dung o trust section de tang do tin cay hon nhieu so voi chi sua copy.
 3. Neu muon day chuan Nhat B2B them mot nac, co the yeu cau luot sau tap trung rieng vao motion, typography va background treatment, nhung chua nen gop vao luot dau neu muc tieu hien tai la chot dinh vi va hierarchy.
