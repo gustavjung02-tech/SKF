@@ -37,13 +37,13 @@ export default function QuotePage() {
             highlightText="Tra mã SKF"
             description="Tìm theo mã, nhóm sản phẩm hoặc thông số d / D / B-T. Chọn nhiều mã và gửi yêu cầu qua Zalo."
             primaryCta={{
-              label: "Mở trang tra mã",
+              label: "Bắt đầu tra mã",
               href: "#tra-ma-skf",
               icon: <Search className="mr-2 size-4" />,
               tone: "blue",
             }}
             secondaryCta={{
-              label: "Xem bước gửi Zalo",
+              label: "Xem bước gửi báo giá",
               href: "#gui-yeu-cau-zalo",
               icon: <MessageCircle className="mr-2 size-4" />,
               tone: "red",

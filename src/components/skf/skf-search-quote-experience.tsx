@@ -1580,7 +1580,7 @@ export function SkfSearchQuoteExperience() {
             <div className="grid gap-2 sm:flex">
               <Button type="button" className="bg-blue-800 text-white hover:bg-blue-900" onClick={scrollToQuoteFlow}>
                 <MessageCircle className="mr-2 size-4" />
-                Bước 2: gửi qua Zalo
+                Bước 2: chuẩn bị gửi Zalo
               </Button>
               <Button
                 type="button"
@@ -1621,7 +1621,7 @@ export function SkfSearchQuoteExperience() {
           <div className="mt-4 flex flex-wrap gap-2">
             <Button type="button" className="bg-blue-800 text-white hover:bg-blue-900" onClick={openQuoteModal}>
               <MessageCircle className="mr-2 size-4" />
-              {selectedQuoteItems.length > 0 ? "Bắt đầu bước gửi Zalo" : "Chọn mã trước khi gửi Zalo"}
+              {selectedQuoteItems.length > 0 ? "Mở phiếu gửi Zalo" : "Chọn mã trước khi mở phiếu"}
             </Button>
             <Button type="button" variant="outline" className="border-slate-200 text-slate-700" onClick={scrollToLeadForm}>
               Đi tới form phụ
@@ -1750,7 +1750,7 @@ export function SkfSearchQuoteExperience() {
               <div className="flex flex-wrap items-center gap-2">
                 <Button type="submit" className="bg-blue-800 text-white hover:bg-blue-900" disabled={isSubmittingQuoteRequest}>
                   <MessageCircle className="mr-2 size-4" />
-                  {isSubmittingQuoteRequest ? "Đang gửi phiếu..." : "Gửi yêu cầu báo giá"}
+                  {isSubmittingQuoteRequest ? "Đang tạo phiếu..." : "Tạo phiếu và copy nội dung"}
                 </Button>
                 <Button type="button" variant="outline" className="border-slate-200 text-slate-600" onClick={closeQuoteModal}>
                   Hủy
