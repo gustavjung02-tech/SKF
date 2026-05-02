@@ -1,0 +1,441 @@
+{
+  "generatedAt": "2026-05-02T07:18:43.706Z",
+  "input": {
+    "sourceFile": null,
+    "sourceDir": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf",
+    "sourceFilesCount": 17,
+    "catalogPath": "F:\\1_A_Disk_D\\SKF\\Web_Site\\Web_SKF\\public\\data\\skf-code-index.json",
+    "priceJsonPath": "F:\\1_A_Disk_D\\SKF\\Web_Site\\Web_SKF\\data_SP\\pricing\\skf-price-master-bacdanskf.json",
+    "priceCsvPath": "F:\\1_A_Disk_D\\SKF\\Web_Site\\Web_SKF\\data_SP\\pricing\\skf-price-master-bacdanskf.csv",
+    "allowOverwrite": false
+  },
+  "output": {
+    "backupJsonPath": "F:\\1_A_Disk_D\\SKF\\Web_Site\\Web_SKF\\data_SP\\pricing\\backups\\skf-price-master-bacdanskf.20260502-141843.backup.json",
+    "backupCsvPath": "F:\\1_A_Disk_D\\SKF\\Web_Site\\Web_SKF\\data_SP\\pricing\\backups\\skf-price-master-bacdanskf.20260502-141843.backup.csv",
+    "priceJsonPath": "F:\\1_A_Disk_D\\SKF\\Web_Site\\Web_SKF\\data_SP\\pricing\\skf-price-master-bacdanskf.json",
+    "priceCsvPath": "F:\\1_A_Disk_D\\SKF\\Web_Site\\Web_SKF\\data_SP\\pricing\\skf-price-master-bacdanskf.csv",
+    "reportJsonPath": "F:\\1_A_Disk_D\\SKF\\Web_Site\\Web_SKF\\data_SP\\reports\\price-merge-report.json",
+    "reportMdPath": "F:\\1_A_Disk_D\\SKF\\Web_Site\\Web_SKF\\data_SP\\reports\\price-merge-report.md"
+  },
+  "sourceStats": {
+    "totalRows": 77314,
+    "mappedRows": 77214,
+    "validPriceRows": 74099,
+    "skippedNoCode": 100,
+    "skippedNoPrice": 3115,
+    "duplicateReplaced": 41253
+  },
+  "summary": {
+    "baselineRecordCount": 3328,
+    "mergedRecordCount": 35722,
+    "insertedCount": 32394,
+    "filledExistingCount": 21,
+    "skippedExistingPricedCount": 431,
+    "skippedOutsideCatalogCount": 0,
+    "baselineCoverage": 8.41229365185881,
+    "mergedCoverage": 95.42074889276607,
+    "coverageGain": 87.00845524090727
+  },
+  "sampleChanges": [
+    {
+      "action": "inserted",
+      "normalizedCode": "S7216CDGAP4A",
+      "catalogCode": "S7216 CDGA/P4A",
+      "catalogName": "S7216 CDGA/P4A",
+      "priceVnd": 10407000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7216ACDGAP4A",
+      "catalogCode": "S7216 ACDGA/P4A",
+      "catalogName": "S7216 ACDGA/P4A",
+      "priceVnd": 10407000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7216ACDP4ADGA",
+      "catalogCode": "S7216 ACD/P4ADGA",
+      "catalogName": "S7216 ACD/P4ADGA",
+      "priceVnd": 21335000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7215CDGAP4A",
+      "catalogCode": "S7215 CDGA/P4A",
+      "catalogName": "S7215 CDGA/P4A",
+      "priceVnd": 8719000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7215CDP4ADGA",
+      "catalogCode": "S7215 CD/P4ADGA",
+      "catalogName": "S7215 CD/P4ADGA",
+      "priceVnd": 17874000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7215ACDP4ADBC",
+      "catalogCode": "S7215 ACD/P4ADBC",
+      "catalogName": "S7215 ACD/P4ADBC",
+      "priceVnd": 20645000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7215ACDP4ADBA",
+      "catalogCode": "S7215 ACD/P4ADBA",
+      "catalogName": "S7215 ACD/P4ADBA",
+      "priceVnd": 19662000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7212CDGAP4A",
+      "catalogCode": "S7212 CDGA/P4A",
+      "catalogName": "S7212 CDGA/P4A",
+      "priceVnd": 6778000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7212ACDGAP4A",
+      "catalogCode": "S7212 ACDGA/P4A",
+      "catalogName": "S7212 ACDGA/P4A",
+      "priceVnd": 6778000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7212ACDP4ADBA",
+      "catalogCode": "S7212 ACD/P4ADBA",
+      "catalogName": "S7212 ACD/P4ADBA",
+      "priceVnd": 15286000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7211CDGAP4A",
+      "catalogCode": "S7211 CDGA/P4A",
+      "catalogName": "S7211 CDGA/P4A",
+      "priceVnd": 5960000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7211CDGAHCP4A",
+      "catalogCode": "S7211 CDGA/HCP4A",
+      "catalogName": "S7211 CDGA/HCP4A",
+      "priceVnd": 10133000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7211CDP4ADGA",
+      "catalogCode": "S7211 CD/P4ADGA",
+      "catalogName": "S7211 CD/P4ADGA",
+      "priceVnd": 12219000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7211CDHCP4ADBC",
+      "catalogCode": "S7211 CD/HCP4ADBC",
+      "catalogName": "S7211 CD/HCP4ADBC",
+      "priceVnd": 23992000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7211ACDGBP4A",
+      "catalogCode": "S7211 ACDGB/P4A",
+      "catalogName": "S7211 ACDGB/P4A",
+      "priceVnd": 5960000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7210CDGAP4A",
+      "catalogCode": "S7210 CDGA/P4A",
+      "catalogName": "S7210 CDGA/P4A",
+      "priceVnd": 5376000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7210CDHCP4ADGA",
+      "catalogCode": "S7210 CD/HCP4ADGA",
+      "catalogName": "S7210 CD/HCP4ADGA",
+      "priceVnd": 18735000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7210ACDGAP4A",
+      "catalogCode": "S7210 ACDGA/P4A",
+      "catalogName": "S7210 ACDGA/P4A",
+      "priceVnd": 5376000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7209CDGAP4A",
+      "catalogCode": "S7209 CDGA/P4A",
+      "catalogName": "S7209 CDGA/P4A",
+      "priceVnd": 4768000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7209CDP4ADBA",
+      "catalogCode": "S7209 CD/P4ADBA",
+      "catalogName": "S7209 CD/P4ADBA",
+      "priceVnd": 10752000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7209ACDGAP4A",
+      "catalogCode": "S7209 ACDGA/P4A",
+      "catalogName": "S7209 ACDGA/P4A",
+      "priceVnd": 4768000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7208CDGAP4A",
+      "catalogCode": "S7208 CDGA/P4A",
+      "catalogName": "S7208 CDGA/P4A",
+      "priceVnd": 4341000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7208CDP4ADGB",
+      "catalogCode": "S7208 CD/P4ADGB",
+      "catalogName": "S7208 CD/P4ADGB",
+      "priceVnd": 8898000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7208CDP4ADBC",
+      "catalogCode": "S7208 CD/P4ADBC",
+      "catalogName": "S7208 CD/P4ADBC",
+      "priceVnd": 10277000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7208CDP4ADBB",
+      "catalogCode": "S7208 CD/P4ADBB",
+      "catalogName": "S7208 CD/P4ADBB",
+      "priceVnd": 9788000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7208ACDGAP4A",
+      "catalogCode": "S7208 ACDGA/P4A",
+      "catalogName": "S7208 ACDGA/P4A",
+      "priceVnd": 4341000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7208ACDHCP4ADBA",
+      "catalogCode": "S7208 ACD/HCP4ADBA",
+      "catalogName": "S7208 ACD/HCP4ADBA",
+      "priceVnd": 16640000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S7202ACDGAP4A",
+      "catalogCode": "S7202 ACDGA/P4A",
+      "catalogName": "S7202 ACDGA/P4A",
+      "priceVnd": 2745000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S71930CDP4ADBA",
+      "catalogCode": "S71930 CD/P4ADBA",
+      "catalogName": "S71930 CD/P4ADBA",
+      "priceVnd": 60328000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S71930ACDGBP4A",
+      "catalogCode": "S71930 ACDGB/P4A",
+      "catalogName": "S71930 ACDGB/P4A",
+      "priceVnd": 26753000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S71928CDGAHCP4A",
+      "catalogCode": "S71928 CDGA/HCP4A",
+      "catalogName": "S71928 CDGA/HCP4A",
+      "priceVnd": 44641000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S71928ACDGAP4A",
+      "catalogCode": "S71928 ACDGA/P4A",
+      "catalogName": "S71928 ACDGA/P4A",
+      "priceVnd": 26259000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S71928ACDP4ADGA",
+      "catalogCode": "S71928 ACD/P4ADGA",
+      "catalogName": "S71928 ACD/P4ADGA",
+      "priceVnd": 53832000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S71928ACDP4ADBB",
+      "catalogCode": "S71928 ACD/P4ADBB",
+      "catalogName": "S71928 ACD/P4ADBB",
+      "priceVnd": 59215000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S71926CDGAP4A",
+      "catalogCode": "S71926 CDGA/P4A",
+      "catalogName": "S71926 CDGA/P4A",
+      "priceVnd": 23280000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S71926CDP4ADGA",
+      "catalogCode": "S71926 CD/P4ADGA",
+      "catalogName": "S71926 CD/P4ADGA",
+      "priceVnd": 47724000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S71926ACDGBP4A",
+      "catalogCode": "S71926 ACDGB/P4A",
+      "catalogName": "S71926 ACDGB/P4A",
+      "priceVnd": 23280000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S71926ACDGAP4A",
+      "catalogCode": "S71926 ACDGA/P4A",
+      "catalogName": "S71926 ACDGA/P4A",
+      "priceVnd": 23280000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S71924CDGBHCP4A",
+      "catalogCode": "S71924 CDGB/HCP4A",
+      "catalogName": "S71924 CDGB/HCP4A",
+      "priceVnd": 37765000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S71924CDGAP4A",
+      "catalogCode": "S71924 CDGA/P4A",
+      "catalogName": "S71924 CDGA/P4A",
+      "priceVnd": 22215000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S71924CDP4ADGA",
+      "catalogCode": "S71924 CD/P4ADGA",
+      "catalogName": "S71924 CD/P4ADGA",
+      "priceVnd": 45540000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S71922CDGAP4A",
+      "catalogCode": "S71922 CDGA/P4A",
+      "catalogName": "S71922 CDGA/P4A",
+      "priceVnd": 19200000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S71922CDGAHCP4A",
+      "catalogCode": "S71922 CDGA/HCP4A",
+      "catalogName": "S71922 CDGA/HCP4A",
+      "priceVnd": 32640000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S71922CDP4ADGA",
+      "catalogCode": "S71922 CD/P4ADGA",
+      "catalogName": "S71922 CD/P4ADGA",
+      "priceVnd": 39360000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S71922CDHCP4ADGA",
+      "catalogCode": "S71922 CD/HCP4ADGA",
+      "catalogName": "S71922 CD/HCP4ADGA",
+      "priceVnd": 66911000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S71922ACDGAP4A",
+      "catalogCode": "S71922 ACDGA/P4A",
+      "catalogName": "S71922 ACDGA/P4A",
+      "priceVnd": 19200000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S71922ACDGAHCP4A",
+      "catalogCode": "S71922 ACDGA/HCP4A",
+      "catalogName": "S71922 ACDGA/HCP4A",
+      "priceVnd": 32640000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S71922ACDP4ADGA",
+      "catalogCode": "S71922 ACD/P4ADGA",
+      "catalogName": "S71922 ACD/P4ADGA",
+      "priceVnd": 39360000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S71922ACDHCP4ADGA",
+      "catalogCode": "S71922 ACD/HCP4ADGA",
+      "catalogName": "S71922 ACD/HCP4ADGA",
+      "priceVnd": 66911000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    },
+    {
+      "action": "inserted",
+      "normalizedCode": "S71920CDGAP4A",
+      "catalogCode": "S71920 CDGA/P4A",
+      "catalogName": "S71920 CDGA/P4A",
+      "priceVnd": 12855000,
+      "sourceFile": "F:\\1_A_Disk_D\\Khương Bình\\Web-SKF\\data-skf\\skf_selected_category_vong-bi_2026-04-29-13-45-12.json"
+    }
+  ]
+}

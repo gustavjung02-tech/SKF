@@ -69,3 +69,66 @@ Script tra ve JSON report gom:
 1. Chi merge khi ket qua it nhat `CONDITIONAL_PASS`.
 2. Neu `sourceOutsideCatalogRate` cao, can loc nhom danh muc truoc khi merge chinh thuc.
 3. Sau merge luon chay lai script de xac nhan coverage thuc te.
+
+## 6. Dry-run Va Merge That
+
+### Dry-run xuat danh sach ma moi duoc bo sung gia
+
+```powershell
+node scripts/skf/export-price-diff-dry-run.mjs --sourceDir "F:\1_A_Disk_D\Khương Bình\Web-SKF\data-skf"
+```
+
+File ket qua:
+- `data_SP/reports/price-diff-dry-run.json`
+- `data_SP/reports/price-diff-dry-run.csv`
+
+### Merge that vao price master (co backup truoc khi ghi)
+
+```powershell
+node scripts/skf/merge-price-master-from-source.mjs --sourceDir "F:\1_A_Disk_D\Khương Bình\Web-SKF\data-skf"
+```
+
+File ket qua:
+- Backup: `data_SP/pricing/backups/*.backup.json` va `*.backup.csv`
+- Price master cap nhat: `data_SP/pricing/skf-price-master-bacdanskf.json` va `.csv`
+- Merge report: `data_SP/reports/price-merge-report.json` va `.md`
+
+Mac dinh script chi `fill missing / insert new`, khong ghi de ma da co gia.
+Neu can ghi de gia cu, dung them co `--allowOverwrite`.
+
+## 7. Chuan Cau Truc File Dau Vao Cho Cac Lan Update Sau
+
+File JSON moi gui vao chi can dam bao cac truong sau:
+
+### Bat buoc toi thieu
+1. `normalizedCode` hoac `code` hoac `sku`
+2. `price` hoac `priceVnd`
+
+### Khuyen nghi co them
+1. `name`
+2. `url` hoac `sourceUrl`
+3. `image`
+4. `stockStatus`
+5. `crawledAt`
+
+### Vi du 1 record hop le
+
+```json
+{
+	"sku": "6205-2Z-SKF",
+	"code": "6205-2Z-SKF",
+	"normalizedCode": "62052ZSKF",
+	"name": "Vong Bi 6205-2Z SKF",
+	"price": "92000",
+	"stockStatus": "out_of_stock",
+	"url": "https://example.com/6205-2z",
+	"image": "https://example.com/6205-2z.jpg",
+	"crawledAt": "2026-05-02T10:00:00.000Z"
+}
+```
+
+### Rule ap vao file dau vao
+1. Script se tu cat hau to `SKF` o cuoi ma sau khi normalize.
+2. Script se tu parse `price` tu chuoi sang so.
+3. Gia `<= 0`, rong, hoac khong parse duoc se bi bo qua.
+4. Neu trung `normalizedCode`, ban ghi sau se thay the ban ghi truoc trong nguon input.
