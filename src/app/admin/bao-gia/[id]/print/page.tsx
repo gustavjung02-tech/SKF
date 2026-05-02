@@ -23,6 +23,12 @@ function normalizeQueryValue(value?: string | string[]) {
   return `${value ?? ""}`;
 }
 
+function decodeBase64Url(value: string) {
+  const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
+  return Buffer.from(padded, "base64").toString("utf-8");
+}
+
 function resolveExportLog(quoteId: string, searchParams?: PrintSearchParams) {
   const isPdfMode = normalizeQueryValue(searchParams?.mode) === "pdf";
   if (!isPdfMode) {
@@ -48,7 +54,7 @@ function decodeQuoteParam(rawD?: string | string[]) {
   const encoded = normalizeQueryValue(rawD);
   if (!encoded) return null;
   try {
-    const json = Buffer.from(encoded, "base64url").toString("utf-8");
+    const json = decodeBase64Url(encoded);
     return hydrateProactiveQuote(JSON.parse(json));
   } catch {
     return null;
