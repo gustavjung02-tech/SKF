@@ -3,35 +3,57 @@ import path from "node:path";
 import { createHash, randomUUID } from "node:crypto";
 import { hydrateProactiveQuote, normalizeAdminQuoteSourceType, normalizeAdminQuoteStatus, type AdminProactiveQuoteRecord } from "@/lib/admin/proactive-quote";
 
+// Primary store path (readable on all platforms; writable only on local dev).
 const STORE_FILE_PATH = path.join(process.cwd(), "data_SP", "pricing", "admin-proactive-quotes.json");
+// Fallback path writable on Vercel Lambda (/tmp) — ephemeral per warm instance.
+const TMP_FILE_PATH = "/tmp/admin-proactive-quotes.json";
 
 type ProactiveQuoteStoreData = {
   quotes: AdminProactiveQuoteRecord[];
 };
 
-async function ensureStoreDir() {
-  await mkdir(path.dirname(STORE_FILE_PATH), { recursive: true });
-}
+// Module-level cache: survives across requests within the same process/Lambda instance.
+let memCache: ProactiveQuoteStoreData | null = null;
 
-async function readStoreFile() {
-  try {
-    const raw = await readFile(STORE_FILE_PATH, "utf-8");
-    const parsed = JSON.parse(raw) as ProactiveQuoteStoreData;
-    if (!parsed || !Array.isArray(parsed.quotes)) {
-      return { quotes: [] } satisfies ProactiveQuoteStoreData;
-    }
-
-    return {
-      quotes: parsed.quotes.map((quote) => hydrateProactiveQuote(quote)),
-    } satisfies ProactiveQuoteStoreData;
-  } catch {
-    return { quotes: [] } satisfies ProactiveQuoteStoreData;
+async function readStoreFile(): Promise<ProactiveQuoteStoreData> {
+  if (memCache !== null) {
+    return { quotes: [...memCache.quotes] };
   }
+  for (const filePath of [STORE_FILE_PATH, TMP_FILE_PATH]) {
+    try {
+      const raw = await readFile(filePath, "utf-8");
+      const parsed = JSON.parse(raw) as ProactiveQuoteStoreData;
+      if (parsed && Array.isArray(parsed.quotes)) {
+        const data = { quotes: parsed.quotes.map((quote) => hydrateProactiveQuote(quote)) };
+        memCache = data;
+        return { quotes: [...data.quotes] };
+      }
+    } catch {
+      // Try next path.
+    }
+  }
+  return { quotes: [] };
 }
 
 async function writeStoreFile(data: ProactiveQuoteStoreData) {
-  await ensureStoreDir();
-  await writeFile(STORE_FILE_PATH, JSON.stringify(data, null, 2), "utf-8");
+  // Always update in-memory cache first — works on every environment.
+  memCache = { quotes: [...data.quotes] };
+
+  // Try primary path (works on local dev).
+  try {
+    await mkdir(path.dirname(STORE_FILE_PATH), { recursive: true });
+    await writeFile(STORE_FILE_PATH, JSON.stringify(data, null, 2), "utf-8");
+    return;
+  } catch {
+    // Primary path is read-only (serverless). Fall through to /tmp.
+  }
+
+  // Fallback: /tmp is writable on Vercel Lambda.
+  try {
+    await writeFile(TMP_FILE_PATH, JSON.stringify(data, null, 2), "utf-8");
+  } catch {
+    // /tmp also unavailable (Cloudflare Workers). Data lives in memCache only.
+  }
 }
 
 function buildQuoteId() {

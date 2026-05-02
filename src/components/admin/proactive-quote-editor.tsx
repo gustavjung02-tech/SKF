@@ -342,7 +342,8 @@ export function ProactiveQuoteEditor({ initialQuote }: Props) {
         return;
       }
 
-      const exportUrl = `/admin/bao-gia/${encodeURIComponent(saved.quote_id)}/print?mode=pdf`;
+        const encoded = Buffer.from(JSON.stringify(saved)).toString("base64url");
+        const exportUrl = `/admin/bao-gia/${encodeURIComponent(saved.quote_id)}/print?mode=pdf&d=${encoded}`;
 
       const printWindow = window.open(exportUrl, "_blank", "noopener,noreferrer");
       if (printWindow) {

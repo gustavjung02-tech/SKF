@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { buildAdminQuoteText, calculateQuoteDraft, formatCurrencyVnd } from "@/lib/admin/quote";
-import { buildProactiveQuoteCopyText, calculateProactiveQuote, getAdminQuoteSourceLabel, getAdminQuoteStatusLabel } from "@/lib/admin/proactive-quote";
+import { buildProactiveQuoteCopyText, calculateProactiveQuote, getAdminQuoteSourceLabel, getAdminQuoteStatusLabel, hydrateProactiveQuote } from "@/lib/admin/proactive-quote";
 import { getProactiveQuoteById } from "@/lib/admin/proactive-quote-store";
 import { getAdminRfqDetail } from "@/lib/admin/sheet-webhook";
 
@@ -11,6 +11,8 @@ type PrintSearchParams = {
   mode?: string | string[];
   logBy?: string | string[];
   logSource?: string | string[];
+  /** base64url-encoded AdminProactiveQuoteRecord — fallback when store lookup misses (serverless cold-start). */
+  d?: string | string[];
 };
 
 function normalizeQueryValue(value?: string | string[]) {
@@ -42,6 +44,17 @@ function resolveExportLog(quoteId: string, searchParams?: PrintSearchParams) {
   };
 }
 
+function decodeQuoteParam(rawD?: string | string[]) {
+  const encoded = normalizeQueryValue(rawD);
+  if (!encoded) return null;
+  try {
+    const json = Buffer.from(encoded, "base64url").toString("utf-8");
+    return hydrateProactiveQuote(JSON.parse(json));
+  } catch {
+    return null;
+  }
+}
+
 function ExportLogBlock({ log }: { log: ReturnType<typeof resolveExportLog> }) {
   if (!log) {
     return null;
@@ -64,7 +77,7 @@ function ExportLogBlock({ log }: { log: ReturnType<typeof resolveExportLog> }) {
 export default async function AdminBaoGiaPrintPage({ params, searchParams }: { params: { id: string }; searchParams?: PrintSearchParams }) {
   const exportLog = resolveExportLog(params.id, searchParams);
   const printedAt = new Date().toLocaleString("vi-VN");
-  const proactiveQuote = await getProactiveQuoteById(params.id);
+  const proactiveQuote = (await getProactiveQuoteById(params.id)) ?? decodeQuoteParam(searchParams?.d);
   if (proactiveQuote) {
     const calculated = calculateProactiveQuote(proactiveQuote);
     const quoteText = buildProactiveQuoteCopyText(proactiveQuote, "zalo");
