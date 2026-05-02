@@ -31,7 +31,7 @@ type AdminPermissionsPageProps = {
 const roleGuides: Record<Exclude<AdminRole, "owner">, { title: string; description: string; defaults: AdminPermission[] }> = {
   manager: {
     title: "Quản lý",
-    description: "Phù hợp cho người điều phối RFQ, kiểm soát tiến độ và hỗ trợ nội bộ.",
+    description: "Phù hợp cho người điều phối RFQ, kiểm soát tiến độ và hỗ trợ vận hành.",
     defaults: ["quotes:read", "quotes:write", "quotes:status", "quotes:send", "rfq:assign", "mail:send"],
   },
   admin: {

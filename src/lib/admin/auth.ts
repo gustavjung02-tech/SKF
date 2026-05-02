@@ -42,9 +42,9 @@ export type AdminAccount = {
 
 export const ADMIN_PERMISSION_DEFINITIONS: Array<{ value: AdminPermission; label: string; description: string }> = [
   { value: "quotes:read", label: "Xem RFQ", description: "Xem danh sách yêu cầu và chi tiết từng RFQ." },
-  { value: "quotes:write", label: "Soạn báo giá", description: "Cập nhật dữ liệu báo giá và ghi chú nội bộ." },
+  { value: "quotes:write", label: "Soạn báo giá", description: "Cập nhật dữ liệu báo giá và ghi chú vận hành." },
   { value: "quotes:status", label: "Đổi trạng thái", description: "Chuyển trạng thái RFQ hoặc báo giá." },
-  { value: "quotes:send", label: "Xác nhận gửi báo giá", description: "Đánh dấu báo giá đã gửi và hoàn tất bước nội bộ." },
+  { value: "quotes:send", label: "Xác nhận gửi báo giá", description: "Đánh dấu báo giá đã gửi và hoàn tất bước vận hành." },
   { value: "rfq:assign", label: "Phân công RFQ", description: "Phụ trách điều phối RFQ cho nhân sự xử lý." },
   { value: "mail:send", label: "Gửi mail", description: "Gửi mail thủ công từ admin." },
   { value: "users:create", label: "Tạo tài khoản", description: "Tạo tài khoản admin hoặc nhân viên mới." },
@@ -54,7 +54,7 @@ export const ADMIN_PERMISSION_DEFINITIONS: Array<{ value: AdminPermission; label
 
 export const ADMIN_ROLE_DEFINITIONS: Array<{ value: AdminRole; label: string; description: string }> = [
   { value: "owner", label: "Owner", description: "Toàn quyền hệ thống." },
-  { value: "manager", label: "Quản lý", description: "Điều phối vận hành báo giá và hỗ trợ nội bộ." },
+  { value: "manager", label: "Quản lý", description: "Điều phối vận hành báo giá và hỗ trợ hệ thống." },
   { value: "admin", label: "Admin vận hành", description: "Phụ trách nghiệp vụ admin hằng ngày." },
   { value: "staff", label: "Nhân viên", description: "Xử lý RFQ và báo giá theo phân quyền được cấp." },
 ];

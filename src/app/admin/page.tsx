@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 const adminCards = [
   {
     title: "Báo giá RFQ",
-    description: "Xử lý RFQ, soạn báo giá và cập nhật trạng thái đơn nội bộ.",
+    description: "Xử lý RFQ, soạn báo giá và cập nhật trạng thái đơn trong hệ thống.",
     href: "/admin/bao-gia",
     icon: FileSpreadsheet,
   },
@@ -24,7 +24,7 @@ const adminCards = [
   },
   {
     title: "Mail admin",
-    description: "Gửi mail thủ công từ các sender đã cấu hình và chuẩn bị điểm nối cho inbox nội bộ.",
+    description: "Gửi mail thủ công từ các sender đã cấu hình và chuẩn bị điểm nối cho inbox hệ thống.",
     href: "/admin/mail",
     icon: Mail,
   },
@@ -45,7 +45,7 @@ export default async function AdminIndexPage() {
       section="tong-quan"
       sessionEmail={session.email}
       title="Admin SKF Công Nghiệp"
-      description="Điểm vào quản trị cho báo giá, phân quyền và mail nội bộ."
+      description="Điểm vào quản trị cho báo giá, phân quyền và mail hệ thống."
       actions={
         <form action="/api/admin/auth/logout" method="post">
           <Button type="submit" variant="outline">
@@ -90,7 +90,7 @@ export default async function AdminIndexPage() {
           </div>
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
             <p className="text-sm font-medium text-slate-900">Đã có</p>
-            <p className="mt-1 text-sm text-slate-600">Xử lý RFQ và báo giá nội bộ từ Google Sheet</p>
+            <p className="mt-1 text-sm text-slate-600">Xử lý RFQ và báo giá vận hành từ Google Sheet</p>
           </div>
           <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
             <div className="inline-flex items-center gap-2 text-sm font-medium text-amber-900">

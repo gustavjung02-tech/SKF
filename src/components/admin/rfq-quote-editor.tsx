@@ -124,7 +124,7 @@ export function RfqQuoteEditor({ detail }: Props) {
                   <th className="px-4 py-3 font-semibold">Mã</th>
                   <th className="px-4 py-3 font-semibold">Tên</th>
                   <th className="px-4 py-3 font-semibold">SL</th>
-                  <th className="px-4 py-3 font-semibold">Giá nội bộ</th>
+                  <th className="px-4 py-3 font-semibold">Giá hệ thống</th>
                   <th className="px-4 py-3 font-semibold">CK dòng %</th>
                   <th className="px-4 py-3 font-semibold">Đơn giá sau CK</th>
                   <th className="px-4 py-3 font-semibold">Thành tiền</th>
@@ -173,7 +173,7 @@ export function RfqQuoteEditor({ detail }: Props) {
                       <td className="px-4 py-3 font-medium text-slate-900">{formatCurrencyVnd(calculatedLine.unitPriceAfterDiscount)}</td>
                       <td className="px-4 py-3 font-semibold text-slate-950">{formatCurrencyVnd(calculatedLine.lineTotal)}</td>
                       <td className="px-4 py-3">
-                        <Textarea rows={3} value={line.note} onChange={(event) => updateLine(index, { note: event.target.value })} placeholder="Ghi chú nội bộ hoặc ghi chú dòng báo giá" />
+                        <Textarea rows={3} value={line.note} onChange={(event) => updateLine(index, { note: event.target.value })} placeholder="Ghi chú vận hành hoặc ghi chú dòng báo giá" />
                       </td>
                     </tr>
                   );

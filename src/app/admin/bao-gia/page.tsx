@@ -66,7 +66,7 @@ export default async function AdminBaoGiaPage({
       section="bao-gia"
       sessionEmail={session.email}
       title="Admin báo giá SKF"
-      description="Đọc RFQ đã lưu, mở chi tiết và xử lý báo giá nội bộ mà không public bảng giá cho khách."
+      description="Đọc RFQ đã lưu, mở chi tiết và xử lý báo giá vận hành mà không public bảng giá cho khách."
       actions={
         <div className="flex items-center gap-2">
           <Button asChild type="button" className="bg-blue-800 text-white hover:bg-blue-900">
